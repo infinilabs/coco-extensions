@@ -1,0 +1,22 @@
+{
+  "id": "UUIDGenerator",
+  "title": "UUID Generator",
+  "platforms": [
+    "macos"
+  ],
+  "description": "Copy generated UUIDs to the clipboard",
+  "icon": "icon.png",
+  "type": "command",
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "uuidgen | pbcopy"
+    ]
+  },
+  "commands": null,
+  "scripts": null,
+  "quick_links": null,
+  "alias": "",
+  "enabled": true
+}

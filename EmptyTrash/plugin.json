@@ -1,0 +1,20 @@
+{
+  "id": "EmptyTrash",
+  "title": "Empty Trash",
+  "description": "...",
+  "icon": "icon.png",
+  "type": "command",
+  "platforms": ["macos"],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "osascript -e 'try' -e 'tell application \"Finder\" to empty' -e 'end try'"
+    ]
+  },
+  "commands": null,
+  "scripts": null,
+  "quick_links": null,
+  "alias": "",
+  "enabled": true
+}

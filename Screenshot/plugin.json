@@ -1,0 +1,19 @@
+{
+  "id": "Screenshot",
+  "title": "Screenshot",
+  "description": "...",
+  "icon": "icon.png",
+  "type": "command",
+  "platforms": ["macos"],
+  "action": {
+    "exec": "screencapture",
+    "args": [
+      "-p"
+    ]
+  },
+  "commands": null,
+  "scripts": null,
+  "quick_links": null,
+  "alias": "",
+  "enabled": true
+}
