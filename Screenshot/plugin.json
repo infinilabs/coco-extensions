@@ -3,17 +3,85 @@
   "title": "Screenshot",
   "description": "...",
   "icon": "icon.png",
-  "type": "command",
+  "type": "extension",
   "platforms": ["macos"],
-  "action": {
-    "exec": "screencapture",
-    "args": [
-      "-p"
-    ]
-  },
-  "commands": null,
-  "scripts": null,
-  "quick_links": null,
-  "alias": "",
+  "commands": [
+    {
+      "id": "capture-screen",
+      "title": "Capture Screen",
+      "description": "...",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "screencapture",
+        "args": [
+          "-p"
+        ]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "capture-area",
+      "title": "Capture Area",
+      "description": "...",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "screencapture",
+        "args": [
+          "-i", "-p"
+        ]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "capture-window",
+      "title": "Capture Window",
+      "description": "...",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "screencapture",
+        "args": [
+          "-w", "-p"
+        ]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "capture-to-clipboard",
+      "title": "Capture to Clipboard",
+      "description": "...",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "screencapture",
+        "args": [
+          "-i", "-c"
+        ]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "capture-Windows-to-clipboard",
+      "title": "Capture Window to Clipboard",
+      "description": "...",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "screencapture",
+        "args": [
+          "-w", "-p", "-c"
+        ]
+      },
+      "alias": "",
+      "enabled": true
+    }
+  ],
   "enabled": true
 }
+
