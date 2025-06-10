@@ -1,5 +1,5 @@
 {
-  "id": "Screenshot",
+  "id": "screenshot",
   "title": "Screenshot",
   "description": "...",
   "icon": "icon.png",
@@ -7,7 +7,7 @@
   "platforms": ["macos"],
   "commands": [
     {
-      "id": "capture-screen",
+      "id": "capture_screen",
       "title": "Capture Screen",
       "description": "...",
       "icon": "icon.png",
@@ -22,7 +22,7 @@
       "enabled": true
     },
     {
-      "id": "capture-area",
+      "id": "capture_area",
       "title": "Capture Area",
       "description": "...",
       "icon": "icon.png",
@@ -37,7 +37,7 @@
       "enabled": true
     },
     {
-      "id": "capture-window",
+      "id": "capture_window",
       "title": "Capture Window",
       "description": "...",
       "icon": "icon.png",
@@ -52,7 +52,7 @@
       "enabled": true
     },
     {
-      "id": "capture-to-clipboard",
+      "id": "capture_to_clipboard",
       "title": "Capture to Clipboard",
       "description": "...",
       "icon": "icon.png",
@@ -67,7 +67,7 @@
       "enabled": true
     },
     {
-      "id": "capture-Windows-to-clipboard",
+      "id": "capture_windows_to_clipboard",
       "title": "Capture Window to Clipboard",
       "description": "...",
       "icon": "icon.png",

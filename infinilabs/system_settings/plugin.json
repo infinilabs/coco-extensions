@@ -1,5 +1,5 @@
 {
-  "id": "SystemSettings",
+  "id": "system_settings",
   "title": "System Settings",
   "platforms": [
     "macos"
@@ -9,7 +9,7 @@
   "type": "extension",
   "commands": [
     {
-      "id": "General",
+      "id": "general",
       "title": "General",
       "description": "...",
       "icon": "icon_settings.png",

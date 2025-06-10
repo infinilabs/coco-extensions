@@ -1,5 +1,5 @@
 {
-  "id": "UUIDGenerator",
+  "id": "uuid_generator",
   "title": "UUID Generator",
   "platforms": [
     "macos"
