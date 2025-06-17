@@ -1,0 +1,77 @@
+{
+  "id": "spotify_controls",
+  "title": "Spotify Controls",
+  "author": null,
+  "platforms": [
+    "macos"
+  ],
+  "description": "...",
+  "icon": "icon.png",
+  "type": "extension",
+  "commands": [
+    {
+      "id": "toggle_play_pause",
+      "title": "Toggle Play/Pause",
+      "author": null,
+      "description": "...",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Spotify\" to playpause' -e 'end try'"
+        ]
+      },
+      "commands": null,
+      "scripts": null,
+      "quicklinks": null,
+      "alias": "",
+      "hotkey": "Command+P",
+      "enabled": true
+    },
+    {
+      "id": "next_track",
+      "title": "Next track",
+      "author": null,
+      "description": "...",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Spotify\" to next track' -e 'end try'"
+        ]
+      },
+      "commands": null,
+      "scripts": null,
+      "quicklinks": null,
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "previous_track",
+      "title": "Previous track",
+      "author": null,
+      "description": "...",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Spotify\" to previous track' -e 'end try'"
+        ]
+      },
+      "commands": null,
+      "scripts": null,
+      "quicklinks": null,
+      "alias": "",
+      "enabled": true
+    }
+  ],
+  "scripts": null,
+  "quicklinks": null,
+  "enabled": true
+}
