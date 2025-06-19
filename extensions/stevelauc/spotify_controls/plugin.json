@@ -1,7 +1,5 @@
 {
-  "id": "spotify_controls",
   "name": "Spotify Controls",
-  "developer": null,
   "platforms": [
     "macos"
   ],
@@ -12,7 +10,6 @@
     {
       "id": "toggle_play_pause",
       "name": "Toggle Play/Pause",
-      "developer": null,
       "description": "...",
       "icon": "icon.png",
       "type": "command",
@@ -23,16 +20,12 @@
           "osascript -e 'try' -e 'tell application \"Spotify\" to playpause' -e 'end try'"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "next_track",
       "name": "Next track",
-      "developer": null,
       "description": "...",
       "icon": "icon.png",
       "type": "command",
@@ -43,16 +36,12 @@
           "osascript -e 'try' -e 'tell application \"Spotify\" to next track' -e 'end try'"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "previous_track",
       "name": "Previous track",
-      "developer": null,
       "description": "...",
       "icon": "icon.png",
       "type": "command",
@@ -63,14 +52,9 @@
           "osascript -e 'try' -e 'tell application \"Spotify\" to previous track' -e 'end try'"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     }
   ],
-  "scripts": null,
-  "quicklinks": null,
   "enabled": true
 }

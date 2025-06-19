@@ -11,9 +11,6 @@
       "osascript -e 'try' -e 'tell application \"Finder\" to empty' -e 'end try'"
     ]
   },
-  "commands": null,
-  "scripts": null,
-  "quicklinks": null,
   "alias": "",
   "enabled": true
 }
