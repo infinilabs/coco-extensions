@@ -63,7 +63,7 @@ and configuration needed to run the extension.
 
 ### Extension JSON specification
 
-* `title`: Extension display name
+* `name`: Extension display name
   
   type: string  
 
