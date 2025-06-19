@@ -1,6 +1,5 @@
 {
-  "id": "system_settings",
-  "title": "System Settings",
+  "name": "System Settings",
   "platforms": [
     "macos"
   ],
@@ -10,7 +9,7 @@
   "commands": [
     {
       "id": "general",
-      "title": "General",
+      "name": "General",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -20,15 +19,12 @@
           "x-apple.systempreferences:com.apple.preferences.general"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "wifi",
-      "title": "Wi-Fi",
+      "name": "Wi-Fi",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -38,15 +34,12 @@
           "x-apple.systempreferences:com.apple.wifi-settings-extension"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "storage",
-      "title": "Storage",
+      "name": "Storage",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -56,15 +49,12 @@
           "x-apple.systempreferences:com.apple.settings.Storage"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "wallpaper",
-      "title": "Wallpaper",
+      "name": "Wallpaper",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -74,15 +64,12 @@
           "x-apple.systempreferences:com.apple.Wallpaper-Settings.extension"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "trackpad",
-      "title": "Trackpad",
+      "name": "Trackpad",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -92,15 +79,12 @@
           "x-apple.systempreferences:com.apple.preference.trackpad"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "keyboard",
-      "title": "Keyboard",
+      "name": "Keyboard",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -110,15 +94,12 @@
           "x-apple.systempreferences:com.apple.preference.keyboard"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "bluetooth",
-      "title": "Bluetooth",
+      "name": "Bluetooth",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -128,15 +109,12 @@
           "x-apple.systempreferences:com.apple.BluetoothSettings"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "displays",
-      "title": "Displays",
+      "name": "Displays",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -146,15 +124,12 @@
           "x-apple.systempreferences:com.apple.preference.displays"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "dock",
-      "title": "Dock",
+      "name": "Dock",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -164,15 +139,12 @@
           "x-apple.systempreferences:com.apple.preference.dock"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     },
     {
       "id": "sound",
-      "title": "Sound",
+      "name": "Sound",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -182,14 +154,9 @@
           "x-apple.systempreferences:com.apple.preference.sound"
         ]
       },
-      "commands": null,
-      "scripts": null,
-      "quicklinks": null,
       "alias": "",
       "enabled": true
     }
   ],
-  "scripts": null,
-  "quicklinks": null,
   "enabled": true
 }

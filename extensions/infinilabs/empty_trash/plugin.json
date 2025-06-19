@@ -1,6 +1,5 @@
 {
-  "id": "empty_trash",
-  "title": "Empty Trash",
+  "name": "Empty Trash",
   "description": "...",
   "icon": "icon.png",
   "type": "command",
@@ -12,9 +11,6 @@
       "osascript -e 'try' -e 'tell application \"Finder\" to empty' -e 'end try'"
     ]
   },
-  "commands": null,
-  "scripts": null,
-  "quicklinks": null,
   "alias": "",
   "enabled": true
 }

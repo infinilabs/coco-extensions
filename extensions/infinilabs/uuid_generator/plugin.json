@@ -1,6 +1,5 @@
 {
-  "id": "uuid_generator",
-  "title": "UUID Generator",
+  "name": "UUID Generator",
   "platforms": [
     "macos"
   ],
@@ -14,9 +13,6 @@
       "uuidgen | pbcopy"
     ]
   },
-  "commands": null,
-  "scripts": null,
-  "quicklinks": null,
   "alias": "",
   "enabled": true
 }

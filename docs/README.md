@@ -5,19 +5,19 @@ the Coco AI app.
 
 ## Extension Files Hierarchy
 
-The structure is straightforward. The top-level directory represents the extension author, 
-described by the `author.json` file. Authors can customize their profile picture, which 
+The structure is straightforward. The top-level directory represents the extension developer, 
+described by the `developer.json` file. Developers can customize their profile picture, which 
 should be placed in the `assets` directory.
 
-Extensions created by the author are also placed there. Each extension resides in its own 
-sub-directory, with a structure similar to the author directory: an `assets` folder for 
+Extensions created by the developer are also placed there. Each extension resides in its own 
+sub-directory, with a structure similar to the developer directory: an `assets` folder for 
 extension-specific resources and a `plugin.json` file that describes the extension.
 
 ```sh
 extensions/
-└── AUTHOR_ID/
+└── DEVELOPER_ID/
     ├── assets/
-    ├── author.json  
+    ├── developer.json  
     ├── EXTENSION_1/
     │   ├── assets/
     │   └── plugin.json
@@ -29,13 +29,12 @@ extensions/
     └── ...
 ```
 
-## Author Configuration (`author.json`)
+## developer Configuration (`developer.json`)
 
-Every author has a metadata file that describes their information:
+Every developer has a metadata file that describes their information:
 
 ```json
 {
-    "id": "infinilabs",
     "name": "INFINI Labs",
     "avatar": "avatar.png",
     "twitter_handle": "infinilabs",
@@ -49,13 +48,12 @@ Every author has a metadata file that describes their information:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `id` | string | **Yes** | Unique identifier for the author |
-| `name` | string | **Yes** | Display name of the author |
+| `name` | string | **Yes** | Display name of the developer |
 | `avatar` | string | **Yes** | **Relative** path to the profile picture under the `assets` directory |
 | `twitter_handle` | string | No | Twitter/X username |
 | `github_handle` | string | No | GitHub username |
-| `location` | string | No | Author's location |
-| `website` | string | No | Author's website URL |
+| `location` | string | No | developer's location |
+| `website` | string | No | developer's website URL |
 | `bio` | string | No | Short biography or description |
 
 ## Extension Configuration (`plugin.json`)
@@ -64,14 +62,6 @@ Each extension is defined by a `plugin.json` file that contains all the metadata
 and configuration needed to run the extension.
 
 ### Extension JSON specification
-
-
-* `id`: Extension ID. This ID doesn't uniquely identify an extension; its bundle 
-  ID (ID & author) does.
-  
-  type: string  
-
-  required: **Yes**
 
 * `title`: Extension display name
   
