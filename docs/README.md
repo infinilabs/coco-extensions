@@ -40,9 +40,9 @@ Every author has a metadata file that describes their information:
     "avatar": "avatar.png",
     "twitter_handle": "infinilabs",
     "github_handle": "infinilabs",
-    "location": "Beijing, China",
+    "location": "Global Distributed",
     "website": "https://www.infinilabs.com",
-    "bio": "Making search Easier and Smarter"
+    "bio": "Let's make search easier and smarter."
 }
 ```
 
