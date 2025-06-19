@@ -6,7 +6,7 @@ the Coco AI app.
 ## Extension Files Hierarchy
 
 The structure is straightforward. The top-level directory represents the extension developer, 
-described by the `developer.json` file. developers can customize their profile picture, which 
+described by the `developer.json` file. Developers can customize their profile picture, which 
 should be placed in the `assets` directory.
 
 Extensions created by the developer are also placed there. Each extension resides in its own 
@@ -15,7 +15,7 @@ extension-specific resources and a `plugin.json` file that describes the extensi
 
 ```sh
 extensions/
-└── developer_ID/
+└── DEVELOPER_ID/
     ├── assets/
     ├── developer.json  
     ├── EXTENSION_1/
