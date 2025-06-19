@@ -1,6 +1,6 @@
 {
   "id": "screenshot",
-  "title": "Screenshot",
+  "name": "Screenshot",
   "description": "...",
   "icon": "icon.png",
   "type": "extension",
@@ -8,7 +8,7 @@
   "commands": [
     {
       "id": "capture_screen",
-      "title": "Capture Screen",
+      "name": "Capture Screen",
       "description": "...",
       "icon": "icon.png",
       "type": "command",
@@ -23,7 +23,7 @@
     },
     {
       "id": "capture_area",
-      "title": "Capture Area",
+      "name": "Capture Area",
       "description": "...",
       "icon": "icon.png",
       "type": "command",
@@ -38,7 +38,7 @@
     },
     {
       "id": "capture_window",
-      "title": "Capture Window",
+      "name": "Capture Window",
       "description": "...",
       "icon": "icon.png",
       "type": "command",
@@ -53,7 +53,7 @@
     },
     {
       "id": "capture_to_clipboard",
-      "title": "Capture to Clipboard",
+      "name": "Capture to Clipboard",
       "description": "...",
       "icon": "icon.png",
       "type": "command",
@@ -68,7 +68,7 @@
     },
     {
       "id": "capture_windows_to_clipboard",
-      "title": "Capture Window to Clipboard",
+      "name": "Capture Window to Clipboard",
       "description": "...",
       "icon": "icon.png",
       "type": "command",

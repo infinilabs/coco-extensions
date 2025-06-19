@@ -1,6 +1,6 @@
 {
   "id": "empty_trash",
-  "title": "Empty Trash",
+  "name": "Empty Trash",
   "description": "...",
   "icon": "icon.png",
   "type": "command",

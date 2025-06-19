@@ -1,6 +1,6 @@
 {
   "id": "system_settings",
-  "title": "System Settings",
+  "name": "System Settings",
   "platforms": [
     "macos"
   ],
@@ -10,7 +10,7 @@
   "commands": [
     {
       "id": "general",
-      "title": "General",
+      "name": "General",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -28,7 +28,7 @@
     },
     {
       "id": "wifi",
-      "title": "Wi-Fi",
+      "name": "Wi-Fi",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -46,7 +46,7 @@
     },
     {
       "id": "storage",
-      "title": "Storage",
+      "name": "Storage",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -64,7 +64,7 @@
     },
     {
       "id": "wallpaper",
-      "title": "Wallpaper",
+      "name": "Wallpaper",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -82,7 +82,7 @@
     },
     {
       "id": "trackpad",
-      "title": "Trackpad",
+      "name": "Trackpad",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -100,7 +100,7 @@
     },
     {
       "id": "keyboard",
-      "title": "Keyboard",
+      "name": "Keyboard",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -118,7 +118,7 @@
     },
     {
       "id": "bluetooth",
-      "title": "Bluetooth",
+      "name": "Bluetooth",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -136,7 +136,7 @@
     },
     {
       "id": "displays",
-      "title": "Displays",
+      "name": "Displays",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -154,7 +154,7 @@
     },
     {
       "id": "dock",
-      "title": "Dock",
+      "name": "Dock",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
@@ -172,7 +172,7 @@
     },
     {
       "id": "sound",
-      "title": "Sound",
+      "name": "Sound",
       "description": "...",
       "icon": "icon_settings.png",
       "type": "command",
