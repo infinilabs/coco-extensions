@@ -4,6 +4,7 @@
   "icon": "icon.png",
   "type": "command",
   "platforms": ["macos"],
+  "snapshots": ["screenshot.png"],
   "action": {
     "exec": "zsh",
     "args": [

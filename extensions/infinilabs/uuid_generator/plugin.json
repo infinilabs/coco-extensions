@@ -5,6 +5,7 @@
   ],
   "description": "Copy generated UUIDs to the clipboard",
   "icon": "icon.png",
+  "screenshots": ["screenshot.png"],
   "type": "command",
   "action": {
     "exec": "zsh",

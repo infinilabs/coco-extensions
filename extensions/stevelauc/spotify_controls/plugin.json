@@ -6,6 +6,7 @@
   "description": "...",
   "icon": "icon.png",
   "type": "extension",
+  "screenshots": ["screenshot.png"],
   "commands": [
     {
       "id": "toggle_play_pause",

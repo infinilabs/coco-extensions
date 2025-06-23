@@ -4,6 +4,7 @@
   "icon": "icon.png",
   "type": "extension",
   "platforms": ["macos"],
+  "screenshots": ["screenshot.png"],
   "commands": [
     {
       "id": "capture_screen",

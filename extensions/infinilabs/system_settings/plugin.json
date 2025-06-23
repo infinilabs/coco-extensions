@@ -6,6 +6,7 @@
   "description": "...",
   "icon": "icon_settings.png",
   "type": "extension",
+  "screenshots": ["screenshot_1.png", "screenshot_2.png"],
   "commands": [
     {
       "id": "general",
