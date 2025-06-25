@@ -6,6 +6,8 @@
   "description": "...",
   "icon": "icon.png",
   "type": "extension",
+  "category": "Utilities",
+  "tags": ["Media", "Productivity"],
   "screenshots": [
       { "title": "", "url": "screenshot.png" }
   ],

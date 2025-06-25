@@ -10,6 +10,8 @@
       { "title": "", "url": "screenshot_1.png" },
       { "title": "", "url": "screenshot_2.png" }
   ],
+  "category": "Customization",
+  "tags": ["Productivity"],
   "commands": [
     {
       "id": "general",
