@@ -3,7 +3,7 @@
   "description": "...",
   "icon": "icon.png",
   "type": "extension",
-  "category": "",
+  "category": "Utilities",
   "tags": ["Productivity"],
   "platforms": ["macos"],
   "screenshots": [
