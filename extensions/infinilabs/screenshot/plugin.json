@@ -1,6 +1,6 @@
 {
   "name": "Screenshot",
-  "description": "...",
+  "description": "Provides various commands for taking screenshots on macOS.",
   "icon": "icon.png",
   "type": "extension",
   "category": "Utilities",
@@ -73,7 +73,7 @@
     {
       "id": "capture_windows_to_clipboard",
       "name": "Capture Window to Clipboard",
-      "description": "...",
+      "description": "Captures a specific application window and copies it to the clipboard.",
       "icon": "icon.png",
       "type": "command",
       "action": {

@@ -3,7 +3,7 @@
   "platforms": [
     "macos"
   ],
-  "description": "...",
+  "description": "Provides shortcuts to various system settings on macOS.",
   "icon": "icon_settings.png",
   "type": "extension",
   "screenshots": [
@@ -151,7 +151,7 @@
     {
       "id": "sound",
       "name": "Sound",
-      "description": "...",
+      "description": "Opens the Sound settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
