@@ -1,6 +1,6 @@
 {
   "name": "Empty Trash",
-  "description": "...",
+  "description": "Empties the trash on macOS.",
   "icon": "icon.png",
   "type": "command",
   "platforms": ["macos"],

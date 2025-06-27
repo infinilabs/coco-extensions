@@ -3,7 +3,7 @@
   "platforms": [
     "macos"
   ],
-  "description": "...",
+  "description": "Control Spotify playback with commands to play/pause, and skip to the next or previous track.",
   "icon": "icon.png",
   "type": "extension",
   "category": "Utilities",
@@ -15,7 +15,7 @@
     {
       "id": "toggle_play_pause",
       "name": "Toggle Play/Pause",
-      "description": "...",
+      "description": "Toggles play or pause of current track in Spotify.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -31,7 +31,7 @@
     {
       "id": "next_track",
       "name": "Next track",
-      "description": "...",
+      "description": "Skips to the next track in Spotify.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -47,7 +47,7 @@
     {
       "id": "previous_track",
       "name": "Previous track",
-      "description": "...",
+      "description": "Returns to the previous track in Spotify.",
       "icon": "icon.png",
       "type": "command",
       "action": {

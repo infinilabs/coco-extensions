@@ -1,6 +1,6 @@
 {
   "name": "Screenshot",
-  "description": "...",
+  "description": "Provides various commands for taking screenshots on macOS.",
   "icon": "icon.png",
   "type": "extension",
   "category": "Utilities",
@@ -13,7 +13,7 @@
     {
       "id": "capture_screen",
       "name": "Capture Screen",
-      "description": "...",
+      "description": "Captures the entire screen.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -28,7 +28,7 @@
     {
       "id": "capture_area",
       "name": "Capture Area",
-      "description": "...",
+      "description": "Captures a specific area.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -43,7 +43,7 @@
     {
       "id": "capture_window",
       "name": "Capture Window",
-      "description": "...",
+      "description": "Captures a specific application window.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -58,7 +58,7 @@
     {
       "id": "capture_to_clipboard",
       "name": "Capture to Clipboard",
-      "description": "...",
+      "description": "Captures the entire screen and copies it to the clipboard.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -73,7 +73,7 @@
     {
       "id": "capture_windows_to_clipboard",
       "name": "Capture Window to Clipboard",
-      "description": "...",
+      "description": "Captures a specific application window and copies it to the clipboard.",
       "icon": "icon.png",
       "type": "command",
       "action": {
