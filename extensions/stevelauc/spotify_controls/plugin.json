@@ -47,7 +47,7 @@
     {
       "id": "previous_track",
       "name": "Previous track",
-      "description": "Returns to the previous track in the Spotify playlist.",
+      "description": "Returns to the previous track in Spotify.",
       "icon": "icon.png",
       "type": "command",
       "action": {
