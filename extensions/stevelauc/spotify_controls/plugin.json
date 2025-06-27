@@ -15,7 +15,7 @@
     {
       "id": "toggle_play_pause",
       "name": "Toggle Play/Pause",
-      "description": "...",
+      "description": "Toggles play or pause of current track in Spotify.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -31,7 +31,7 @@
     {
       "id": "next_track",
       "name": "Next track",
-      "description": "...",
+      "description": "Skips to the next track in Spotify.",
       "icon": "icon.png",
       "type": "command",
       "action": {

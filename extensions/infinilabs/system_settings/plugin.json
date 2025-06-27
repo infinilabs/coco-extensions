@@ -16,7 +16,7 @@
     {
       "id": "general",
       "name": "General",
-      "description": "...",
+      "description": "Opens the General settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
@@ -31,7 +31,7 @@
     {
       "id": "wifi",
       "name": "Wi-Fi",
-      "description": "...",
+      "description": "Opens the Wi-Fi settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
@@ -46,7 +46,7 @@
     {
       "id": "storage",
       "name": "Storage",
-      "description": "...",
+      "description": "Opens the Storage settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
@@ -61,7 +61,7 @@
     {
       "id": "wallpaper",
       "name": "Wallpaper",
-      "description": "...",
+      "description": "Opens the Wallpaper settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
@@ -76,7 +76,7 @@
     {
       "id": "trackpad",
       "name": "Trackpad",
-      "description": "...",
+      "description": "Opens the Trackpad settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
@@ -91,7 +91,7 @@
     {
       "id": "keyboard",
       "name": "Keyboard",
-      "description": "...",
+      "description": "Opens the Keyboard settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
@@ -106,7 +106,7 @@
     {
       "id": "bluetooth",
       "name": "Bluetooth",
-      "description": "...",
+      "description": "Opens the Bluetooth settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
@@ -121,7 +121,7 @@
     {
       "id": "displays",
       "name": "Displays",
-      "description": "...",
+      "description": "Opens the Display settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {
@@ -136,7 +136,7 @@
     {
       "id": "dock",
       "name": "Dock",
-      "description": "...",
+      "description": "Opens the Dock settings pane in System Settings.",
       "icon": "icon_settings.png",
       "type": "command",
       "action": {

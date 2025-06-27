@@ -13,7 +13,7 @@
     {
       "id": "capture_screen",
       "name": "Capture Screen",
-      "description": "...",
+      "description": "Captures the entire screen.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -28,7 +28,7 @@
     {
       "id": "capture_area",
       "name": "Capture Area",
-      "description": "...",
+      "description": "Captures a specific area.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -43,7 +43,7 @@
     {
       "id": "capture_window",
       "name": "Capture Window",
-      "description": "...",
+      "description": "Captures a specific application window.",
       "icon": "icon.png",
       "type": "command",
       "action": {
@@ -58,7 +58,7 @@
     {
       "id": "capture_to_clipboard",
       "name": "Capture to Clipboard",
-      "description": "...",
+      "description": "Captures the entire screen and copies it to the clipboard.",
       "icon": "icon.png",
       "type": "command",
       "action": {
