@@ -1,0 +1,38 @@
+{
+  "id": "clipboard_json_formatter",
+  "name": "Clipboard JSON Formatter",
+  "platforms": [
+    "macos"
+  ],
+  "description": "Format JSON content directly from your clipboard and save the formatted result back. Ideal for quick inspection, editing, or sharing of JSON data.",
+  "icon": "icon.gif",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": [
+    "JSON",
+    "Clipboard",
+    "Developer",
+    "Formatter"
+  ],
+  "screenshots": [
+    {
+      "title": "Formatted clipboard JSON",
+      "url": "screenshot.png"
+    }
+  ],
+  "commands": [
+    {
+      "name": "Format JSON from Clipboard",
+      "description": "Reads JSON from clipboard, formats it using jq, and saves the pretty-printed result back to the clipboard.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "if formatted_json=$(pbpaste | jq); then echo \"$formatted_json\" | pbcopy; else osascript -e 'display dialog \"Invalid JSON in clipboard.\" buttons {\"OK\"} default button 1 with icon stop'; fi"
+        ]
+      }
+    }
+  ]
+}
