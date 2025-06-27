@@ -1,0 +1,204 @@
+{
+  "id": "sound_volume_controls",
+  "name": "Sound Volume Controls",
+  "platforms": ["macos"],
+  "description": "Quickly control your Mac's sound volume with simple, step-based commands. Includes mute toggle, stepped volume levels, and volume queries.",
+  "icon": "icon.gif",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": ["Media", "Productivity", "Volume", "Audio"],
+  "screenshots": [
+    {
+      "title": "Volume Control Commands",
+      "url": "screenshot.png"
+    }
+  ],
+  "commands": [
+   {
+  "id": "toggle_mute",
+  "name": "Toggle Mute (Volume)",
+  "description": "Mute or unmute the system audio based on the current state.",
+  "icon": "icon.gif",
+  "type": "command",
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "osascript -e 'set curState to output muted of (get volume settings)' -e 'if curState is true then' -e 'set volume without output muted' -e 'else' -e 'set volume with output muted' -e 'end if'"
+    ]
+  },
+  "alias": "",
+  "enabled": true
+},
+    {
+      "id": "mute",
+      "name": "Mute (Volume)",
+      "description": "Mute system audio.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume with output muted'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "unmute",
+      "name": "Unmute (Volume)",
+      "description": "Unmute system audio.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume without output muted'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_0",
+      "name": "Set Volume 0%",
+      "description": "Set volume to 0%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 0'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_10",
+      "name": "Set Volume 10%",
+      "description": "Set volume to 10%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 10'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_20",
+      "name": "Set Volume 20%",
+      "description": "Set volume to 20%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 20'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_30",
+      "name": "Set Volume 30%",
+      "description": "Set volume to 30%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 30'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_40",
+      "name": "Set Volume 40%",
+      "description": "Set volume to 40%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 40'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_50",
+      "name": "Set Volume 50%",
+      "description": "Set volume to 50%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 50'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_60",
+      "name": "Set Volume 60%",
+      "description": "Set volume to 60%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 60'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_70",
+      "name": "Set Volume 70%",
+      "description": "Set volume to 70%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 70'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_80",
+      "name": "Set Volume 80%",
+      "description": "Set volume to 80%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 80'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_90",
+      "name": "Set Volume 90%",
+      "description": "Set volume to 90%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 90'"]
+      },
+      "alias": "",
+      "enabled": true
+    },
+    {
+      "id": "volume_100",
+      "name": "Set Volume 100%",
+      "description": "Set volume to 100%.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": ["-c", "osascript -e 'set volume output volume 100'"]
+      },
+      "alias": "",
+      "enabled": true
+    }
+  ],
+  "enabled": true
+}
