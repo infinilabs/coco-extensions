@@ -10,7 +10,7 @@
   "action": {
     "exec": "zsh",
     "args": [
-      "-c",
+      "-ci",
       "osascript -e 'try' -e 'tell application \"Finder\" to empty' -e 'end try'"
     ]
   },

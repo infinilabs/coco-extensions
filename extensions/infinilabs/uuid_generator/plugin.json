@@ -14,7 +14,7 @@
   "action": {
     "exec": "zsh",
     "args": [
-      "-c",
+      "-ci",
       "uuidgen | pbcopy"
     ]
   },

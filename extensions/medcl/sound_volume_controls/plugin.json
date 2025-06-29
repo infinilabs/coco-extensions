@@ -23,7 +23,7 @@
   "action": {
     "exec": "zsh",
     "args": [
-      "-c",
+      "-ci",
       "osascript -e 'set curState to output muted of (get volume settings)' -e 'if curState is true then' -e 'set volume without output muted' -e 'else' -e 'set volume with output muted' -e 'end if'"
     ]
   },
@@ -38,7 +38,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume with output muted'"]
+        "args": ["-ci", "osascript -e 'set volume with output muted'"]
       },
       "alias": "",
       "enabled": true
@@ -51,7 +51,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume without output muted'"]
+        "args": ["-ci", "osascript -e 'set volume without output muted'"]
       },
       "alias": "",
       "enabled": true
@@ -64,7 +64,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 0'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 0'"]
       },
       "alias": "",
       "enabled": true
@@ -77,7 +77,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 10'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 10'"]
       },
       "alias": "",
       "enabled": true
@@ -90,7 +90,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 20'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 20'"]
       },
       "alias": "",
       "enabled": true
@@ -103,7 +103,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 30'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 30'"]
       },
       "alias": "",
       "enabled": true
@@ -116,7 +116,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 40'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 40'"]
       },
       "alias": "",
       "enabled": true
@@ -129,7 +129,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 50'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 50'"]
       },
       "alias": "",
       "enabled": true
@@ -142,7 +142,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 60'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 60'"]
       },
       "alias": "",
       "enabled": true
@@ -155,7 +155,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 70'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 70'"]
       },
       "alias": "",
       "enabled": true
@@ -168,7 +168,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 80'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 80'"]
       },
       "alias": "",
       "enabled": true
@@ -181,7 +181,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 90'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 90'"]
       },
       "alias": "",
       "enabled": true
@@ -194,7 +194,7 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 100'"]
+        "args": ["-ci", "osascript -e 'set volume output volume 100'"]
       },
       "alias": "",
       "enabled": true
