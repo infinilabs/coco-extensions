@@ -1,0 +1,214 @@
+{
+  "id": "qq_music_controls",
+  "name": "QQ Music Controls",
+  "platforms": ["macos"],
+  "description": "Control QQ Music playback and volume with quick commands via AppleScript. Supports play, pause, next, previous, volume up/down, mute toggle, like/unlike song, and more.",
+    "icon": "icon.png",
+  "type": "extension",
+  "category": "Media",
+  "tags": ["Music", "Media", "Playback", "Volume", "QQMusic", "Audio"],
+  "screenshots": [
+    {
+      "title": "QQ Music Playback and Volume Controls",
+      "url": "screenshot.jpeg"
+    }
+  ],
+  "commands": [
+    {
+      "id": "play_pause",
+      "name": "Play",
+      "description": "Play music in QQ Music.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item \"播放\"'"
+        ]
+      },
+      "enabled": true
+    },
+     {
+      "id": "play_or_pause",
+      "name": "Play/Pause",
+      "description": "Toggle play or pause in QQ Music.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item 1'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "next_track",
+      "name": "Next Track",
+      "description": "Play the next track.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item \"下一首\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "previous_track",
+      "name": "Previous Track",
+      "description": "Play the previous track.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item \"上一首\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "pause",
+      "name": "Pause",
+      "description": "Pause the current track.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item \"暂停\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "like_song",
+      "name": "Like Song",
+      "description": "Mark the current song as liked.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item \"喜欢歌曲\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "unlike_song",
+      "name": "Unlike Song",
+      "description": "Remove like mark from the current song.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item \"取消喜欢\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "volume_up",
+      "name": "Volume Up",
+      "description": "Increase the volume by one step.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item \"音量加\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "volume_down",
+      "name": "Volume Down",
+      "description": "Decrease the volume by one step.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"QQMusic\" to activate' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item \"音量减\"'"
+        ]
+      },
+      "enabled": true
+    },
+     {
+    "id": "qq_shuffle_mode",
+    "name": "Set Shuffle Mode",
+    "description": "Switch QQ Music to shuffle play mode.",
+    "icon": "icon.png",
+    "type": "command",
+    "action": {
+      "exec": "zsh",
+      "args": [
+        "-c",
+        "osascript -e 'tell application \"QQMusic\" to activate' -e 'delay 1' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item 1 of menu 1 of menu item 7'"
+      ]
+    },
+    "enabled": true
+  },
+  {
+    "id": "qq_repeat_mode",
+    "name": "Set Repeat Mode",
+    "description": "Switch QQ Music to repeat play mode.",
+    "icon": "icon.png",
+    "type": "command",
+    "action": {
+      "exec": "zsh",
+      "args": [
+        "-c",
+        "osascript -e 'tell application \"QQMusic\" to activate' -e 'delay 1' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item 2 of menu 1 of menu item 7'"
+      ]
+    },
+    "enabled": true
+  },
+  {
+    "id": "qq_sequential_mode",
+    "name": "Set Sequential Mode",
+    "description": "Switch QQ Music to sequential play mode.",
+    "icon": "icon.png",
+    "type": "command",
+    "action": {
+      "exec": "zsh",
+      "args": [
+        "-c",
+        "osascript -e 'tell application \"QQMusic\" to activate' -e 'delay 1' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item 3 of menu 1 of menu item 7'"
+      ]
+    },
+    "enabled": true
+  },
+  {
+    "id": "qq_toggle_lyrics",
+    "name": "Toggle Lyrics",
+    "description": "Toggle display of lyrics in QQ Music.",
+    "icon": "icon.png",
+    "type": "command",
+    "action": {
+      "exec": "zsh",
+      "args": [
+        "-c",
+        "osascript -e 'tell application \"QQMusic\" to activate' -e 'delay 1' -e 'tell application \"System Events\" to tell process \"QQMusic\" to tell menu bar 1 to tell menu bar item \"播放控制\" to tell menu \"播放控制\" to click menu item 8'"
+      ]
+    },
+    "enabled": true
+  }
+  ],
+  "enabled": true
+}
