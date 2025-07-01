@@ -1,0 +1,184 @@
+{
+  "id": "netease_music_controls_zh",
+  "name": "网易云音乐控制中文版",
+  "platforms": ["macos"],
+  "description": "通过 AppleScript 使用快速命令控制网易云音乐的播放和音量。支持播放、暂停、下一首、上一首、音量调高/调低、喜欢/不喜欢歌曲、退出等功能。",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Media",
+  "tags": ["音乐", "媒体", "播放", "音量", "网易云音乐", "音频"],
+  "screenshots": [
+    {
+      "title": "网易云音乐播放与音量控制",
+      "url": "screenshot.jpeg"
+    }
+  ],
+  "commands": [
+    {
+      "id": "netease_play",
+      "name": "网易云音乐-播放",
+      "description": "在网易云音乐中播放音乐。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"播放\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_pause",
+      "name": "网易云音乐-暂停",
+      "description": "暂停网易云音乐中的音乐。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"暂停\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_next_track",
+      "name": "网易云音乐-下一个",
+      "description": "播放下一首曲目。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"下一个\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_previous_track",
+      "name": "网易云音乐-上一个",
+      "description": "播放上一首曲目。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"上一个\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_increase_volume",
+      "name": "网易云音乐-升高音量",
+      "description": "将音量提高一格。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"升高音量\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_decrease_volume",
+      "name": "网易云音乐-降低音量",
+      "description": "将音量降低一格。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"降低音量\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_like_song",
+      "name": "网易云音乐-喜欢歌曲",
+      "description": "将当前歌曲标记为喜欢。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"喜欢歌曲\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_dislike_song",
+      "name": "网易云音乐-取消喜欢",
+      "description": "从当前歌曲中移除喜欢标记。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"取消喜欢\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_shuffle_mode",
+      "name": "网易云音乐-随机播放",
+      "description": "将网易云音乐切换到随机播放模式。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"随机播放\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_show_hide_lyrics",
+      "name": "网易云音乐-打开/关闭歌词",
+      "description": "切换网易云音乐中歌词的显示。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"控制\" to tell menu \"控制\" to click menu item \"打开/关闭歌词\"'"
+        ]
+      },
+      "enabled": true
+    },
+    {
+      "id": "netease_quit",
+      "name": "退出 网易云音乐",
+      "description": "退出网易云音乐。",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"网易云音乐\" to activate' -e 'tell application \"System Events\" to tell process \"网易云音乐\" to tell menu bar 1 to tell menu bar item \"网易云音乐\" to tell menu \"网易云音乐\" to click menu item \"退出 网易云音乐\"'"
+        ]
+      },
+      "enabled": true
+    }
+  ],
+  "enabled": true
+}
