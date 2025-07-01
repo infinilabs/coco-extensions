@@ -1,0 +1,25 @@
+{
+  "id": "open_trash",
+  "name": "Open Trash",
+  "description": "Open trash folder in Finder.",
+  "icon": "icon.png",
+  "type": "command",
+  "platforms": ["macos"],
+  "screenshots": [
+    {
+      "title": "Extension Store Screenshot",
+      "url": "screenshot_1.png"
+    },
+    {
+      "title": "Search Screenshot",
+      "url": "screenshot_2.png"
+    }
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": ["-c", "open ~/.Trash"]
+  },
+  "alias": "",
+  "category": "Utilities",
+  "enabled": true
+}
