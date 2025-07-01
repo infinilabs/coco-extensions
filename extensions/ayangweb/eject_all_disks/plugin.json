@@ -1,0 +1,27 @@
+{
+  "name": "Eject All Disks",
+  "description": "Ejects all mounted disk images.",
+  "icon": "icon.png",
+  "type": "command",
+  "platforms": ["macos"],
+  "screenshots": [
+    {
+      "title": "Extension Store Screenshot",
+      "url": "screenshot_1.png"
+    },
+    {
+      "title": "Search Screenshot",
+      "url": "screenshot_2.png"
+    }
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "diskutil list external | grep '^/dev/' | awk '{print $1}' | while read disk; do diskutil eject \"$disk\"; done"
+    ]
+  },
+  "alias": "",
+  "category": "Utilities",
+  "enabled": true
+}
