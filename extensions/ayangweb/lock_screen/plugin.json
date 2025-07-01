@@ -1,0 +1,27 @@
+{
+  "name": "Lock Screen",
+  "description": "Lock the screen of your macOS.",
+  "icon": "icon.png",
+  "type": "command",
+  "platforms": ["macos"],
+  "screenshots": [
+    {
+      "title": "Extension Store Screenshot",
+      "url": "screenshot_1.png"
+    },
+    {
+      "title": "Search Screenshot",
+      "url": "screenshot_2.png"
+    }
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "osascript -e 'tell application \"System Events\" to keystroke \"q\" using {control down, command down}'"
+    ]
+  },
+  "alias": "",
+  "category": "Utilities",
+  "enabled": true
+}
