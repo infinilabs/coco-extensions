@@ -3,9 +3,14 @@
   "description": "Empties the trash on macOS.",
   "icon": "icon.png",
   "type": "command",
-  "platforms": ["macos"],
+  "platforms": [
+    "macos"
+  ],
   "screenshots": [
-      { "title": "", "url": "screenshot.png" }
+    {
+      "title": "",
+      "url": "screenshot.png"
+    }
   ],
   "action": {
     "exec": "zsh",
@@ -15,5 +20,7 @@
     ]
   },
   "category": "Utilities",
-  "tags": ["Productivity"]
+  "tags": [
+    "Productivity"
+  ]
 }

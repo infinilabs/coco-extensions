@@ -1,11 +1,18 @@
 {
   "name": "Sound Volume Controls",
-  "platforms": ["macos"],
+  "platforms": [
+    "macos"
+  ],
   "description": "Quickly control your Mac's sound volume with simple, step-based commands. Includes mute toggle, stepped volume levels, and volume queries.",
   "icon": "icon.gif",
   "type": "extension",
   "category": "Utilities",
-  "tags": ["Media", "Productivity", "Volume", "Audio"],
+  "tags": [
+    "Media",
+    "Productivity",
+    "Volume",
+    "Audio"
+  ],
   "screenshots": [
     {
       "title": "Volume Control Commands",
@@ -13,19 +20,19 @@
     }
   ],
   "commands": [
-   {
-  "name": "Toggle Mute (Volume)",
-  "description": "Mute or unmute the system audio based on the current state.",
-  "icon": "icon.gif",
-  "type": "command",
-  "action": {
-    "exec": "zsh",
-    "args": [
-      "-c",
-      "osascript -e 'set curState to output muted of (get volume settings)' -e 'if curState is true then' -e 'set volume without output muted' -e 'else' -e 'set volume with output muted' -e 'end if'"
-    ]
-  }
-},
+    {
+      "name": "Toggle Mute (Volume)",
+      "description": "Mute or unmute the system audio based on the current state.",
+      "icon": "icon.gif",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'set curState to output muted of (get volume settings)' -e 'if curState is true then' -e 'set volume without output muted' -e 'else' -e 'set volume with output muted' -e 'end if'"
+        ]
+      }
+    },
     {
       "name": "Mute (Volume)",
       "description": "Mute system audio.",
@@ -33,7 +40,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume with output muted'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume with output muted'"
+        ]
       }
     },
     {
@@ -43,7 +53,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume without output muted'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume without output muted'"
+        ]
       }
     },
     {
@@ -53,7 +66,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 0'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 0'"
+        ]
       }
     },
     {
@@ -63,7 +79,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 10'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 10'"
+        ]
       }
     },
     {
@@ -73,7 +92,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 20'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 20'"
+        ]
       }
     },
     {
@@ -83,7 +105,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 30'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 30'"
+        ]
       }
     },
     {
@@ -93,7 +118,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 40'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 40'"
+        ]
       }
     },
     {
@@ -103,7 +131,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 50'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 50'"
+        ]
       }
     },
     {
@@ -113,7 +144,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 60'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 60'"
+        ]
       }
     },
     {
@@ -123,7 +157,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 70'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 70'"
+        ]
       }
     },
     {
@@ -133,7 +170,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 80'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 80'"
+        ]
       }
     },
     {
@@ -143,7 +183,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 90'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 90'"
+        ]
       }
     },
     {
@@ -153,7 +196,10 @@
       "type": "command",
       "action": {
         "exec": "zsh",
-        "args": ["-c", "osascript -e 'set volume output volume 100'"]
+        "args": [
+          "-c",
+          "osascript -e 'set volume output volume 100'"
+        ]
       }
     }
   ]

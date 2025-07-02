@@ -1,11 +1,20 @@
 {
   "name": "NetEaseMusic Controls English Version",
-  "platforms": ["macos"],
+  "platforms": [
+    "macos"
+  ],
   "description": "Control NetEaseMusic playback and volume with quick commands via AppleScript. Supports play, pause, next, previous, volume up/down, mute toggle, like/unlike song, and more.",
   "icon": "icon.png",
   "type": "extension",
   "category": "Media",
-  "tags": ["Music", "Media", "Playback", "Volume", "NetEaseMusic", "Audio"],
+  "tags": [
+    "Music",
+    "Media",
+    "Playback",
+    "Volume",
+    "NetEaseMusic",
+    "Audio"
+  ],
   "screenshots": [
     {
       "title": "NetEaseMusic Playback and Volume Controls",
