@@ -7,14 +7,19 @@
   "icon": "icon_settings.png",
   "type": "extension",
   "screenshots": [
-      { "title": "", "url": "screenshot_1.png" },
-      { "title": "", "url": "screenshot_2.png" }
+    {
+      "title": "",
+      "url": "screenshot_1.png"
+    },
+    {
+      "title": "",
+      "url": "screenshot_2.png"
+    }
   ],
   "category": "Customization",
   "tags": ["Productivity"],
   "commands": [
     {
-      "id": "general",
       "name": "General",
       "description": "Opens the General settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -24,12 +29,9 @@
         "args": [
           "x-apple.systempreferences:com.apple.preferences.general"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "wifi",
       "name": "Wi-Fi",
       "description": "Opens the Wi-Fi settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -39,12 +41,9 @@
         "args": [
           "x-apple.systempreferences:com.apple.wifi-settings-extension"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "storage",
       "name": "Storage",
       "description": "Opens the Storage settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -54,12 +53,9 @@
         "args": [
           "x-apple.systempreferences:com.apple.settings.Storage"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "wallpaper",
       "name": "Wallpaper",
       "description": "Opens the Wallpaper settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -69,12 +65,9 @@
         "args": [
           "x-apple.systempreferences:com.apple.Wallpaper-Settings.extension"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "trackpad",
       "name": "Trackpad",
       "description": "Opens the Trackpad settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -84,12 +77,9 @@
         "args": [
           "x-apple.systempreferences:com.apple.preference.trackpad"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "keyboard",
       "name": "Keyboard",
       "description": "Opens the Keyboard settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -99,12 +89,9 @@
         "args": [
           "x-apple.systempreferences:com.apple.preference.keyboard"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "bluetooth",
       "name": "Bluetooth",
       "description": "Opens the Bluetooth settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -114,12 +101,9 @@
         "args": [
           "x-apple.systempreferences:com.apple.BluetoothSettings"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "displays",
       "name": "Displays",
       "description": "Opens the Display settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -129,27 +113,9 @@
         "args": [
           "x-apple.systempreferences:com.apple.preference.displays"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "dock",
-      "name": "Dock",
-      "description": "Opens the Dock settings pane in System Settings.",
-      "icon": "icon_settings.png",
-      "type": "command",
-      "action": {
-        "exec": "open",
-        "args": [
-          "x-apple.systempreferences:com.apple.preference.dock"
-        ]
-      },
-      "alias": "",
-      "enabled": true
-    },
-    {
-      "id": "sound",
       "name": "Sound",
       "description": "Opens the Sound settings pane in System Settings.",
       "icon": "icon_settings.png",
@@ -159,9 +125,403 @@
         "args": [
           "x-apple.systempreferences:com.apple.preference.sound"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
+    },
+    {
+      "name": "Accessibility",
+      "description": "Opens the Accessibility settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Accessibility-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "AirDrop & Handoff",
+      "description": "Opens the AirDrop & Handoff settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.AirDrop-Handoff-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Apple ID",
+      "description": "Opens the Apple ID settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.preferences.AppleIDPrefPane"
+        ]
+      }
+    },
+    {
+      "name": "Battery",
+      "description": "Opens the Battery settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Battery-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Class Room",
+      "description": "Opens the Control Center settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "/System/Library/PreferencePanes/Classroom.prefPane"
+        ]
+      }
+    },
+    {
+      "name": "Control Center",
+      "description": "Opens the Control Center settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.ControlCenter-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Date & Time",
+      "description": "Opens the Date & Time settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Date-Time-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Desktop & Dock",
+      "description": "Opens the Desktop & Dock settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Desktop-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Extensions",
+      "description": "Opens the Extensions settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.ExtensionsPreferences"
+        ]
+      }
+    },
+    {
+      "name": "Family",
+      "description": "Opens the Family settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Family-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Family Sharing",
+      "description": "Opens the Family Sharing settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.preferences.FamilySharingPrefPane"
+        ]
+      }
+    },
+    {
+      "name": "Focus",
+      "description": "Opens the Focus settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Focus-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Game Center",
+      "description": "Opens the Game Center settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Game-Center-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Internet Accounts",
+      "description": "Opens the Internet Accounts settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Internet-Accounts-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Language & Region",
+      "description": "Opens the Language & Region settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Localization-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Lock Screen",
+      "description": "Opens the Lock Screen settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Lock-Screen-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Login Items",
+      "description": "Opens the Login Items settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Network",
+      "description": "Opens the Network settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Network-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Notifications",
+      "description": "Opens the Notifications settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Notifications-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Passwords",
+      "description": "Opens the Passwords settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Passwords-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Printers & Scanners",
+      "description": "Opens the Printers & Scanners settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Print-Scan-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Screen Time",
+      "description": "Opens the Screen Time settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Screen-Time-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Security & Privacy",
+      "description": "Opens the Security & Privacy settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.preference.security"
+        ]
+      }
+    },
+    {
+      "name": "Sharing",
+      "description": "Opens the Sharing settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Sharing-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Siri",
+      "description": "Opens the Siri settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Siri-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Software Update",
+      "description": "Opens the Software Update settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Software-Update-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Spotlight",
+      "description": "Opens the Spotlight settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.preference.spotlight"
+        ]
+      }
+    },
+    {
+      "name": "Startup Disk",
+      "description": "Opens the Startup Disk settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Startup-Disk-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Time Machine",
+      "description": "Opens the Time Machine settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Time-Machine-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Touch ID & Passcode",
+      "description": "Opens the Touch ID & Passcode settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Touch-ID-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Transfer or Reset",
+      "description": "Opens the Transfer or Reset settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Transfer-Reset-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Users & Groups",
+      "description": "Opens the Users & Groups settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.Users-Groups-Settings.extension"
+        ]
+      }
+    },
+    {
+      "name": "Wallet & Apple Pay",
+      "description": "Opens the Wallet & Apple Pay settings pane in System Settings.",
+      "icon": "icon_settings.png",
+      "type": "command",
+      "action": {
+        "exec": "open",
+        "args": [
+          "x-apple.systempreferences:com.apple.WalletSettingsExtension"
+        ]
+      }
     }
   ],
   "enabled": true
