@@ -11,7 +11,6 @@
   ],
   "commands": [
     {
-      "id": "capture_screen",
       "name": "Capture Screen",
       "description": "Captures the entire screen.",
       "icon": "icon.png",
@@ -21,12 +20,9 @@
         "args": [
           "-p"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "capture_area",
       "name": "Capture Area",
       "description": "Captures a specific area.",
       "icon": "icon.png",
@@ -36,12 +32,9 @@
         "args": [
           "-i", "-p"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "capture_window",
       "name": "Capture Window",
       "description": "Captures a specific application window.",
       "icon": "icon.png",
@@ -51,12 +44,9 @@
         "args": [
           "-w", "-p"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "capture_to_clipboard",
       "name": "Capture to Clipboard",
       "description": "Captures the entire screen and copies it to the clipboard.",
       "icon": "icon.png",
@@ -66,12 +56,9 @@
         "args": [
           "-i", "-c"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "capture_windows_to_clipboard",
       "name": "Capture Window to Clipboard",
       "description": "Captures a specific application window and copies it to the clipboard.",
       "icon": "icon.png",
@@ -81,11 +68,8 @@
         "args": [
           "-w", "-p", "-c"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     }
-  ],
-  "enabled": true
+  ]
 }
 

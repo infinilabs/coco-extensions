@@ -13,7 +13,6 @@
   ],
   "commands": [
     {
-      "id": "toggle_play_pause",
       "name": "Toggle Play/Pause",
       "description": "Toggles play or pause of current track in Spotify.",
       "icon": "icon.png",
@@ -24,12 +23,9 @@
           "-c",
           "osascript -e 'try' -e 'tell application \"Spotify\" to playpause' -e 'end try'"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "next_track",
       "name": "Next track",
       "description": "Skips to the next track in Spotify.",
       "icon": "icon.png",
@@ -40,12 +36,9 @@
           "-c",
           "osascript -e 'try' -e 'tell application \"Spotify\" to next track' -e 'end try'"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     },
     {
-      "id": "previous_track",
       "name": "Previous track",
       "description": "Returns to the previous track in Spotify.",
       "icon": "icon.png",
@@ -56,10 +49,7 @@
           "-c",
           "osascript -e 'try' -e 'tell application \"Spotify\" to previous track' -e 'end try'"
         ]
-      },
-      "alias": "",
-      "enabled": true
+      }
     }
-  ],
-  "enabled": true
+  ]
 }
