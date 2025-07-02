@@ -6,6 +6,9 @@
   "description": "Provides shortcuts to various system settings on macOS.",
   "icon": "icon_settings.png",
   "type": "extension",
+  "version": {
+    "number": "0.1.1"
+  },
   "screenshots": [
     {
       "title": "",
