@@ -1,5 +1,4 @@
 {
-  "id": "clipboard_json_formatter",
   "name": "Clipboard JSON Formatter",
   "platforms": [
     "macos"

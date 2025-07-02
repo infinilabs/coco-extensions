@@ -21,7 +21,5 @@
       "diskutil list external | grep '^/dev/' | awk '{print $1}' | while read disk; do diskutil eject \"$disk\"; done"
     ]
   },
-  "alias": "",
-  "category": "Utilities",
-  "enabled": true
+  "category": "Utilities"
 }

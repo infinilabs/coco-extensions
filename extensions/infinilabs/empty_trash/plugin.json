@@ -14,8 +14,6 @@
       "osascript -e 'try' -e 'tell application \"Finder\" to empty' -e 'end try'"
     ]
   },
-  "alias": "",
   "category": "Utilities",
-  "tags": ["Productivity"],
-  "enabled": true
+  "tags": ["Productivity"]
 }

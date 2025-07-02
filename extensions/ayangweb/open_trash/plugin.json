@@ -18,7 +18,5 @@
     "exec": "zsh",
     "args": ["-c", "open ~/.Trash"]
   },
-  "alias": "",
-  "category": "Utilities",
-  "enabled": true
+  "category": "Utilities"
 }
