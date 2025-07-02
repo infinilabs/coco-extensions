@@ -1,5 +1,4 @@
 {
-  "id": "netease_music_controls_en",
   "name": "NetEaseMusic Controls English Version",
   "platforms": ["macos"],
   "description": "Control NetEaseMusic playback and volume with quick commands via AppleScript. Supports play, pause, next, previous, volume up/down, mute toggle, like/unlike song, and more.",
@@ -15,7 +14,6 @@
   ],
   "commands": [
     {
-      "id": "netease_play",
       "name": "NetEase Play",
       "description": "Play music in NetEaseMusic.",
       "icon": "icon.png",
@@ -26,11 +24,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Play\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_pause",
       "name": "NetEase Pause",
       "description": "Pause music in NetEaseMusic.",
       "icon": "icon.png",
@@ -41,11 +37,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Pause\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_next_track",
       "name": "NetEase Next Track",
       "description": "Play the next track.",
       "icon": "icon.png",
@@ -56,11 +50,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Next\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_previous_track",
       "name": "NetEase Previous Track",
       "description": "Play the previous track.",
       "icon": "icon.png",
@@ -71,11 +63,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Previous\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_increase_volume",
       "name": "NetEase Increase Volume",
       "description": "Increase the volume by one step.",
       "icon": "icon.png",
@@ -86,11 +76,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Increase Volume\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_decrease_volume",
       "name": "NetEase Decrease Volume",
       "description": "Decrease the volume by one step.",
       "icon": "icon.png",
@@ -101,11 +89,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Decrease Volume\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_like_song",
       "name": "NetEase Like Song",
       "description": "Mark the current song as liked.",
       "icon": "icon.png",
@@ -116,11 +102,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Like\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_dislike_song",
       "name": "NetEase Dislike Song",
       "description": "Remove like mark from the current song.",
       "icon": "icon.png",
@@ -131,11 +115,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Dislike\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_shuffle_mode",
       "name": "NetEase Set Shuffle Mode",
       "description": "Switch NetEaseMusic to shuffle play mode.",
       "icon": "icon.png",
@@ -146,11 +128,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Shuffle\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_show_hide_lyrics",
       "name": "NetEase Show/Hide Lyrics",
       "description": "Toggle display of lyrics in NetEaseMusic.",
       "icon": "icon.png",
@@ -161,11 +141,9 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"Controls\" to tell menu \"Controls\" to click menu item \"Show/Hide Lyrics\"'"
         ]
-      },
-      "enabled": true
+      }
     },
     {
-      "id": "netease_quit",
       "name": "NetEase Quit NeteaseMusic",
       "description": "Quit NeteaseMusic.",
       "icon": "icon.png",
@@ -176,9 +154,7 @@
           "-c",
           "osascript -e 'tell application \"NeteaseMusic\" to activate' -e 'tell application \"System Events\" to tell process \"NeteaseMusic\" to tell menu bar 1 to tell menu bar item \"NetEaseMusic\" to tell menu \"NetEaseMusic\" to click menu item \"Quit NeteaseMusic\"'"
         ]
-      },
-      "enabled": true
+      }
     }
-  ],
-  "enabled": true
+  ]
 }
