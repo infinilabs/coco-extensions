@@ -3,7 +3,9 @@
   "description": "Open trash folder in Finder.",
   "icon": "icon.png",
   "type": "command",
-  "platforms": ["macos"],
+  "platforms": [
+    "macos"
+  ],
   "screenshots": [
     {
       "title": "Extension Store Screenshot",
@@ -16,7 +18,10 @@
   ],
   "action": {
     "exec": "zsh",
-    "args": ["-c", "open ~/.Trash"]
+    "args": [
+      "-c",
+      "open ~/.Trash"
+    ]
   },
   "category": "Utilities"
 }

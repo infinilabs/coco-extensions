@@ -3,7 +3,9 @@
   "description": "Lock the screen of your macOS.",
   "icon": "icon.png",
   "type": "command",
-  "platforms": ["macos"],
+  "platforms": [
+    "macos"
+  ],
   "screenshots": [
     {
       "title": "Extension Store Screenshot",

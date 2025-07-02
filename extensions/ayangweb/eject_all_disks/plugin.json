@@ -3,7 +3,9 @@
   "description": "Ejects all mounted disk images.",
   "icon": "icon.png",
   "type": "command",
-  "platforms": ["macos"],
+  "platforms": [
+    "macos"
+  ],
   "screenshots": [
     {
       "title": "Extension Store Screenshot",

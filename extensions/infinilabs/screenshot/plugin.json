@@ -4,10 +4,17 @@
   "icon": "icon.png",
   "type": "extension",
   "category": "Utilities",
-  "tags": ["Productivity"],
-  "platforms": ["macos"],
+  "tags": [
+    "Productivity"
+  ],
+  "platforms": [
+    "macos"
+  ],
   "screenshots": [
-      { "title": "", "url": "screenshot.png" }
+    {
+      "title": "",
+      "url": "screenshot.png"
+    }
   ],
   "commands": [
     {
@@ -30,7 +37,8 @@
       "action": {
         "exec": "screencapture",
         "args": [
-          "-i", "-p"
+          "-i",
+          "-p"
         ]
       }
     },
@@ -42,7 +50,8 @@
       "action": {
         "exec": "screencapture",
         "args": [
-          "-w", "-p"
+          "-w",
+          "-p"
         ]
       }
     },
@@ -54,7 +63,8 @@
       "action": {
         "exec": "screencapture",
         "args": [
-          "-i", "-c"
+          "-i",
+          "-c"
         ]
       }
     },
@@ -66,10 +76,11 @@
       "action": {
         "exec": "screencapture",
         "args": [
-          "-w", "-p", "-c"
+          "-w",
+          "-p",
+          "-c"
         ]
       }
     }
   ]
 }
-

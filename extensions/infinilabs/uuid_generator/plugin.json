@@ -6,9 +6,14 @@
   "description": "Copy generated UUIDs to the clipboard",
   "icon": "icon.png",
   "category": "Utilities",
-  "tags": ["Utility"],
+  "tags": [
+    "Utility"
+  ],
   "screenshots": [
-      { "title": "", "url": "screenshot.png" }
+    {
+      "title": "",
+      "url": "screenshot.png"
+    }
   ],
   "type": "command",
   "action": {

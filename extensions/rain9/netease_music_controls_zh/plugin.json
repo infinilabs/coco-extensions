@@ -1,11 +1,20 @@
 {
   "name": "网易云音乐控制中文版",
-  "platforms": ["macos"],
+  "platforms": [
+    "macos"
+  ],
   "description": "通过 AppleScript 使用快速命令控制网易云音乐的播放和音量。支持播放、暂停、下一首、上一首、音量调高/调低、喜欢/不喜欢歌曲、退出等功能。",
   "icon": "icon.png",
   "type": "extension",
   "category": "Media",
-  "tags": ["音乐", "媒体", "播放", "音量", "网易云音乐", "音频"],
+  "tags": [
+    "音乐",
+    "媒体",
+    "播放",
+    "音量",
+    "网易云音乐",
+    "音频"
+  ],
   "screenshots": [
     {
       "title": "网易云音乐播放与音量控制",
