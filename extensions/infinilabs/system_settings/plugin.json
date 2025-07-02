@@ -20,7 +20,9 @@
     }
   ],
   "category": "Customization",
-  "tags": ["Productivity"],
+  "tags": [
+    "Productivity"
+  ],
   "commands": [
     {
       "name": "General",

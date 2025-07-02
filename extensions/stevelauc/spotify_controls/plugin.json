@@ -7,9 +7,15 @@
   "icon": "icon.png",
   "type": "extension",
   "category": "Utilities",
-  "tags": ["Media", "Productivity"],
+  "tags": [
+    "Media",
+    "Productivity"
+  ],
   "screenshots": [
-      { "title": "", "url": "screenshot.png" }
+    {
+      "title": "",
+      "url": "screenshot.png"
+    }
   ],
   "commands": [
     {
