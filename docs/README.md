@@ -9,9 +9,10 @@ The structure is straightforward. The top-level directory represents the extensi
 described by the `developer.json` file. Developers can customize their profile picture, which 
 should be placed in the `assets` directory.
 
-Extensions created by the developer are also placed there. Each extension resides in its own 
-sub-directory, with a structure similar to the developer directory: an `assets` folder for 
-extension-specific resources and a `plugin.json` file that describes the extension.
+Extensions created by a developer are placed under the developer directory. Each 
+extension resides in its own sub-directory, with a structure similar to the 
+developer directory: an `assets` folder for extension-specific resources and a 
+`plugin.json` file that describes the extension.
 
 ```sh
 extensions/
@@ -70,8 +71,15 @@ and configuration needed to run the extension.
   required: **Yes**
 
 * `platforms`: Specify the OSes that this extension is compatible with. Coco AI 
-  supports 3 major OSes, macOS/Linux, and Windows. If this field is not set, then 
-  it is compatible with all the 3 OSes. Valid values: `["macos", "linux", "windows"]`
+  supports 3 major OSes, macOS, Linux, and Windows. so valid values are: 
+  `["macos", "linux", "windows"]`
+
+  If this field is not set:
+
+  * For [main extension](#glossary): it is compatible with all the platforms 
+    supported by Coco
+
+  * For [sub-extension](#glossary): it uses the value used by its main extension.
   
   type: Array of string  
 
@@ -95,8 +103,8 @@ and configuration needed to run the extension.
 * `type`: Extension type. For third-party extension, the following types are 
   currently supported: 
 
-  * `extension`: An extension of type `extension` behaves like a folder, i.e., a 
-    container for sub-extensions.
+  * `group` or `extension`: An extension of such types behaves like a folder, 
+    i.e., a container for sub-extensions.
 
     Currently, sub-extensions should be of type `command`, which should be set in
     the `commands` field. 
@@ -129,3 +137,35 @@ and configuration needed to run the extension.
   type: Array of extension
 
   required: No
+
+### Glossary
+
+* Main Extension and Sub-Extension
+
+  Coco's extension file, "plugin.json," supports a two-level structure. This is 
+  applicable when the first-level extension functions as a container, meaning 
+  its type is either group or extension. The first-level is referred to as the 
+  Main Extension, and the nested second-level is called a Sub-Extension.
+
+  Below is an example with irrelevant fields omitted for clarity:
+
+  ```json
+  {
+    "name": "Main Extension",
+    "platforms": [
+      "macos"
+    ],
+    "type": "extension",
+    "commands": [
+      {
+        "name": "Sub-extension",
+        "platforms": ["macos"],
+        "type": "command",
+      }
+    ]
+  }
+  ```
+
+
+
+
