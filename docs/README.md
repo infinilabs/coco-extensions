@@ -165,7 +165,3 @@ and configuration needed to run the extension.
     ]
   }
   ```
-
-
-
-
