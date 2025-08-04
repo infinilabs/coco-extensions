@@ -119,7 +119,7 @@ and configuration needed to run the extension.
 * `action`: Only for `command` extensions. This field defines the operation to 
   execute when it is triggered.
 
-  type: Json
+  type: object
 
   required: **Yes** for `command` extensions
 
@@ -137,6 +137,23 @@ and configuration needed to run the extension.
   type: Array of extension
 
   required: No
+
+* `settings`: Extension settings.  Currently, only non-Group/Extension extensions
+  can set this field.
+
+  type: object
+
+  required: No
+
+  Setting entry list:
+
+  * `hide_before_open`: If set for an extension, Coco would hide the main window 
+    before opening or executing the extension.
+    
+    type: bool
+
+    required: No
+
 
 ### Glossary
 
