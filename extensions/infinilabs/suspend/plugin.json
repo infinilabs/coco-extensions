@@ -33,22 +33,6 @@
       "name": "Suspend",
       "description": "Suspend your machine.",
       "platforms": [
-        "windows"
-      ],
-      "icon": "icon.png",
-      "type": "command",
-      "action": {
-        "exec": "rundll32.exe",
-        "args": [
-          "powrprof.dll,SetSuspendState",
-          "0,1,0"
-        ]
-      }
-    },
-    {
-      "name": "Suspend",
-      "description": "Suspend your machine.",
-      "platforms": [
         "linux"
       ],
       "icon": "icon.png",
