@@ -1,0 +1,206 @@
+{
+  "name": "Google Chrome Controls",
+  "platforms": [
+    "macos"
+  ],
+  "description": "Control Google Chrome with quick commands via AppleScript. Support new windows,new incognito windows, new tabs, search history, search tabs, search online, and more.",
+  "icon": "icon.png",
+  "type": "extension", 
+  "category": "Media",
+  "tags": [
+    "Google",
+    "Chrome",
+    "Website",
+    "Tab",
+    "Bookmark",
+    "History",
+    "Incognito"
+  ],
+  "screenshots": [
+    {
+      "title": "Google Chrome Controls",
+      "url": "screenshot.png"
+    }
+  ],
+  "commands": [
+    {
+      "name": "New Tab",
+      "description": "Open empty tab",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Google Chrome\" to tell front window to make new tab at end of tabs'"
+        ]
+      }
+    },
+    {
+      "name": "New Incognito Window",
+      "description": "Open a new incognito window in Google Chrome.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "open -na \"Google Chrome\" --args --incognito"
+        ]
+      }
+    },
+    {
+      "name": "New Window",
+      "description": "Open a new Google Chrome window.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Google Chrome\" to make new window'"
+        ]
+      }
+    },
+    {
+      "name": "Search Bookmarks",
+      "description": "Search Chrome bookmarks for a query provided by the user and open results in a new window.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "osascript",
+        "args": [
+          "-e",
+          "set query to text returned of (display dialog \"Enter text to search in Bookmarks:\" default answer \"\")",
+          "-e",
+          "tell application \"Google Chrome\"",
+          "-e",
+          "set newWindow to make new window",
+          "-e",
+          "set URL of active tab of newWindow to \"chrome://bookmarks/?q=\" & query",
+          "-e",
+          "end tell"
+        ]
+      }
+    },
+    {
+      "name": "Search History",
+      "description": "Search Chrome browsing history for a query provided by the user and open results in a new window.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "osascript",
+        "args": [
+          "-e",
+          "set query to text returned of (display dialog \"Enter text to search in History:\" default answer \"\")",
+          "-e",
+          "tell application \"Google Chrome\"",
+          "-e",
+          "set newWindow to make new window",
+          "-e",
+          "set URL of active tab of newWindow to \"chrome://history/?q=\" & query",
+          "-e",
+          "end tell"
+        ]
+      }
+    },
+    {
+      "name": "Search tab",
+      "description": "Activate the first Chrome tab containing user-provided text.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "osascript",
+        "args": [
+          "-e",
+          "set query to text returned of (display dialog \"Enter search text:\" default answer \"\")",
+          "-e",
+          "tell application \"Google Chrome\"",
+          "-e",
+          "    set matches to {}",
+          "-e",
+          "    repeat with w in windows",
+          "-e",
+          "        repeat with t in tabs of w",
+          "-e",
+          "            set theTitle to title of t",
+          "-e",
+          "            set theURL to URL of t",
+          "-e",
+          "            if (theTitle contains query or theURL contains query) then",
+          "-e",
+          "                set end of matches to theURL",
+          "-e",
+          "            end if",
+          "-e",
+          "        end repeat",
+          "-e",
+          "    end repeat",
+          "-e",
+          "    if (count of matches) is 0 then",
+          "-e",
+          "        display dialog \"No matching tabs found.\" buttons {\"OK\"} default button 1",
+          "-e",
+          "        return",
+          "-e",
+          "    end if",
+          "-e",
+          "    set newWindow to make new window",
+          "-e",
+          "    set newWinID to id of newWindow",
+          "-e",
+          "    repeat with u in matches",
+          "-e",
+          "        make new tab at end of tabs of window id newWinID with properties {URL:(contents of u)}",
+          "-e",
+          "    end repeat",
+          "-e",
+          "    tell window id newWinID",
+          "-e",
+          "        if (count of tabs) > 1 then",
+          "-e",
+          "            try",
+          "-e",
+          "                if URL of tab 1 is \"\" then close tab 1",
+          "-e",
+          "            on error",
+          "-e",
+          "                close tab 1",
+          "-e",
+          "            end try",
+          "-e",
+          "        end if",
+          "-e",
+          "        set index to 1",
+          "-e",
+          "    end tell",
+          "-e",
+          "end tell"
+        ]
+      }
+    },
+    {
+      "name": "Search all",
+      "description": "Search the web for a query provided by the user (Google search).",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "osascript",
+        "args": [
+          "-e",
+          "set query to text returned of (display dialog \"Enter text to search in Google:\" default answer \"\")",
+          "-e",
+          "tell application \"Google Chrome\"",
+          "-e",
+          "set searchURL to \"https://www.google.com/search?q=\" & (do shell script \"python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1]))'\" & space & quoted form of query)",
+          "-e",
+          "set newWindow to make new window",
+          "-e",
+          "set URL of active tab of newWindow to searchURL",
+          "-e",
+          "end tell"
+        ]
+      }
+    }
+  ]
+}
