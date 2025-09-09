@@ -1,0 +1,179 @@
+{
+  "name": "Spotify Controls 2",
+  "platforms": [
+    "macos"
+  ],
+  "description": "Quickly control Spotify via AppleScript. Supports playback, navigation, shuffle, repeat, seeking, and track info.",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Media",
+  "tags": [
+    "Spotify",
+    "Music",
+    "Media"
+  ],
+  "screenshots": [
+    {
+      "title": "Spotify Controls",
+      "url": "screenshot.png"
+    }
+  ],
+  "commands": [
+    {
+      "name": "Backward to Beginning",
+      "description": "Restart the current track.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set player position to 0'"
+        ]
+      }
+    },
+    {
+      "name": "Copy URL",
+      "description": "Copy the Spotify URL of the current track.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set theUrl to spotify url of current track' -e 'set the clipboard to theUrl'"
+        ]
+      }
+    },
+    {
+      "name": "Next Track",
+      "description": "Skip to the next track.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to next track'"
+        ]
+      }
+    },
+    {
+      "name": "Play/Pause",
+      "description": "Toggle between play and pause.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to playpause'"
+        ]
+      }
+    },
+    {
+      "name": "Previous Track",
+      "description": "Go back to the previous track.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to previous track'"
+        ]
+      }
+    },
+    {
+      "name": "Repeat",
+      "description": "Toggle repeat mode.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set repeating to not repeating'"
+        ]
+      }
+    },
+    {
+      "name": "Skip 15 Seconds",
+      "description": "Jump forward 15 seconds.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set player position to (player position + 15)'"
+        ]
+      }
+    },
+    {
+      "name": "Back 15 Seconds",
+      "description": "Jump back 15 seconds.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set player position to (player position - 15)'"
+        ]
+      }
+    },
+    {
+      "name": "Toggle Shuffle",
+      "description": "Toggle shuffle mode.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set shuffling to not shuffling'"
+        ]
+      }
+    },
+    {
+      "name": "Copy Artist and Title",
+      "description": "Copy the artist and title of the current song.",
+      "icon": "spotify.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set trackName to name of current track' -e 'tell application \"Spotify\" to set trackArtist to artist of current track' -e 'set the clipboard to trackArtist & \" — \" & trackName'"
+        ]
+      }
+    },
+    {
+      "name": "Volume up",
+      "description": "Increase Spotify volume by 10%.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set sound volume to (sound volume + 10)'"
+        ]
+      }
+    },
+    {
+      "name": "Volume down",
+      "description": "Decrease Spotify volume by 10%.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Spotify\" to set sound volume to (sound volume - 10)'"
+        ]
+      }
+    }
+  ]
+}
