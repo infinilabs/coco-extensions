@@ -1,0 +1,73 @@
+{
+  "name": "Visual Studio Code Controls",
+  "platforms": [
+    "macos"
+  ],
+  "description": "Quickly control Visual Studio Code via AppleScript and CLI commands. Supports opening new windows, opening selected files or folders from Finder, and managing and installing extensions.",
+  "icon": "icon.png",
+  "type": "extension", 
+  "category": "Media",
+  "tags": [
+    "Vscode"
+  ],
+  "screenshots": [
+    {
+      "title": "Vscode Controls",
+      "url": "screenshot.png"
+    }
+  ],
+  "commands": [
+    {
+      "name": "Open New Window",
+      "description": "Open a new Visual Studio Code window.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "code --new-window"
+        ]
+      }
+    },
+    {
+      "name": "Show Installed Extensions",
+      "description": "Manage installed extensions in Visual Studio Code.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Visual Studio Code\" to activate' -e 'tell application \"System Events\" to keystroke \"x\" using {command down, shift down}'"
+        ]
+      }
+    },
+    {
+      "name": "Open with Visual Studio Code",
+      "description": "Open the currently selected Finder item with VS Code.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Finder\" to activate' -e 'set theFile to POSIX path of (choose file with prompt \"Select a file to open in VS Code:\")' -e 'do shell script \"code --new-window \\\"\" & theFile & \"\\\"\"'"
+        ]
+      }
+    },
+    {
+      "name": "Search Recent Projects",
+      "description": "Search recent projects from VS Code",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Visual Studio Code\" to activate' -e 'delay 0.3' -e 'tell application \"System Events\" to keystroke \"r\" using control down'"
+        ]
+      }
+    }
+  ]
+}
