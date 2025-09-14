@@ -1,0 +1,67 @@
+{
+  "name": "Zoom Controls",
+  "platforms": [
+    "macos"
+  ],
+  "description": "Quickly control Zoom meetings on macOS via AppleScript keystroke shortcuts. Supports scheduling, starting, and joining meetings.",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Media",
+  "tags": [
+    "Zoom",
+    "Meetings"
+  ],
+  "screenshots": [
+    {
+      "title": "Zoom Controls",
+      "url": "screenshot.png"
+    }
+  ],
+  "commands": [
+    {
+      "name": "Schedule Meeting",
+      "description": "Schedule a new Zoom meeting (⌘D).",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "osascript",
+        "args": [
+          "-e",
+          "tell application \"zoom.us\" to activate",
+          "-e",
+          "tell application \"System Events\" to keystroke \"d\" using {command down}"
+        ]
+      }
+    },
+    {
+      "name": "Start Meeting",
+      "description": "Start a new Zoom meeting instantly (⌘⌃V).",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "osascript",
+        "args": [
+          "-e",
+          "tell application \"zoom.us\" to activate",
+          "-e",
+          "tell application \"System Events\" to keystroke \"v\" using {command down, control down}"
+        ]
+      }
+    },
+    {
+      "name": "Join Meeting",
+      "description": "Join a Zoom meeting (⌘J).",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "osascript",
+        "args": [
+          "-e",
+          "tell application \"zoom.us\" to activate",
+          "-e",
+          "tell application \"System Events\" to keystroke \"j\" using {command down}"
+        ]
+      }
+    }
+  ]
+}

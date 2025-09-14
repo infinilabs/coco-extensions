@@ -1,0 +1,156 @@
+{
+  "name": "Apple Music Controls",
+  "platforms": [
+    "macos"
+  ],
+  "description": "Control Apple Music playback and manage tracks. Includes playback toggles, navigation, and track managements.",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Media",
+  "tags": [
+    "Apple",
+    "Music",
+    "Playback",
+    "Tracks",
+    "Playlist",
+    "Library"
+  ],
+  "screenshots": [
+    {
+      "title": "Apple Music Controls",
+      "url": "screenshot.png"
+    }
+  ],
+  "commands": [
+    {
+      "name": "Toggle Repeat",
+      "description": "Toggle repeat mode in Apple Music.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to set song repeat to (if song repeat is off then all else off)'"
+        ]
+      }
+    },
+    {
+      "name": "Toggle Shuffle",
+      "description": "Toggle shuffle mode in Apple Music.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to set shuffle enabled to not shuffle enabled'"
+        ]
+      }
+    },
+    {
+      "name": "Toggle Play or Pause",
+      "description": "Toggle between playing and pausing the current track.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to playpause'"
+        ]
+      }
+    },
+    {
+      "name": "Next Track",
+      "description": "Skip to the next track.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to next track'"
+        ]
+      }
+    },
+    {
+      "name": "Previous Track",
+      "description": "Go back to the previous track.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to previous track'"
+        ]
+      }
+    },
+    {
+      "name": "Reveal Current Track",
+      "description": "Reveal the currently playing track inside the Music app.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to reveal current track'"
+        ]
+      }
+    },
+    {
+      "name": "Get Track Info",
+      "description": "Get information about the currently playing track (name, artist, album).",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to get {name, artist, album} of current track'"
+        ]
+      }
+    },
+    {
+      "name": "Remove from Playlist",
+      "description": "Remove the currently playing track from the current playlist and skip to the next track.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to delete current track' -e 'tell application \"Music\" to next track'"
+        ]
+      }
+    },
+    {
+      "name": "Dislike Track",
+      "description": "Mark the currently playing track as loved.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to set disliked of current track to true'"
+        ]
+      }
+    },
+    {
+      "name": "Add to Library",
+      "description": "Add the currently playing track to your library.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Music\" to add current track to library playlist 1'"
+        ]
+      }
+    }
+  ]
+}
