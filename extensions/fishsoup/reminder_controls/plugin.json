@@ -1,0 +1,62 @@
+{
+  "name": "Apple Reminders Controls",
+  "platforms": [
+    "macos"
+  ],
+  "description": "Quickly manage Apple Reminders. View, create, and delete completed reminders.",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Productivity",
+  "tags": [
+    "Reminders",
+    "Tasks",
+    "Lists"
+  ],
+  "screenshots": [
+    {
+      "title": "Apple Reminders Controls",
+      "url": "screenshot.png"
+    }
+  ],
+  "commands": [
+    {
+      "name": "My Reminders",
+      "description": "Open Reminders app to view and complete reminders.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Reminders\" to activate'"
+        ]
+      }
+    },
+    {
+      "name": "Create Reminder",
+      "description": "Open Reminders app and open the new reminder page.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Reminders\" to activate' -e 'tell application \"System Events\" to keystroke \"n\" using {command down}'"
+        ]
+      }
+    },
+    {
+      "name": "Clear Completed Reminders",
+      "description": "Remove all reminders marked as completed in all lists.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'tell application \"Reminders\" to repeat with lst in lists' -e 'tell lst to delete (reminders whose completed is true)' -e 'end repeat'"
+        ]
+      }
+    }
+  ]
+}
