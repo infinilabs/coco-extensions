@@ -22,7 +22,7 @@
     {
       "name": "Backward to Beginning",
       "description": "Restart the current track.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -35,7 +35,7 @@
     {
       "name": "Copy URL",
       "description": "Copy the Spotify URL of the current track.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -48,7 +48,7 @@
     {
       "name": "Next Track",
       "description": "Skip to the next track.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -61,7 +61,7 @@
     {
       "name": "Play/Pause",
       "description": "Toggle between play and pause.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -74,7 +74,7 @@
     {
       "name": "Previous Track",
       "description": "Go back to the previous track.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -87,7 +87,7 @@
     {
       "name": "Repeat",
       "description": "Toggle repeat mode.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -100,7 +100,7 @@
     {
       "name": "Skip 15 Seconds",
       "description": "Jump forward 15 seconds.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -113,7 +113,7 @@
     {
       "name": "Back 15 Seconds",
       "description": "Jump back 15 seconds.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -126,7 +126,7 @@
     {
       "name": "Toggle Shuffle",
       "description": "Toggle shuffle mode.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
@@ -139,7 +139,7 @@
     {
       "name": "Copy Artist and Title",
       "description": "Copy the artist and title of the current song.",
-      "icon": "spotify.png",
+      "icon": "icon.png",
       "type": "command",
       "action": {
         "exec": "zsh",
