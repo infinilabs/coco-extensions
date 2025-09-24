@@ -112,6 +112,9 @@ and configuration needed to run the extension.
   * `command`: `command` executes a command when being executed. This action 
     will be specified by the `action` field.
 
+  * `view`: `view` extensions load the HTML page specified in `page`, developers
+    can put whatever they want there.
+
   type: enum
 
   required: **Yes**
@@ -121,7 +124,7 @@ and configuration needed to run the extension.
 
   type: object
 
-  required: **Yes** for `command` extensions
+  required: **Yes** for `command` extensions. Otherwise, no.
 
   example: 
   
@@ -134,7 +137,13 @@ and configuration needed to run the extension.
 
 * `commands`: Only for `extension` extensions.
 
-  type: Array of extension
+  type: Array of `command` extension
+
+  required: No
+
+* `views`: Only for `extension` extensions.
+
+  type: Array of `view` extension
 
   required: No
 
@@ -154,6 +163,40 @@ and configuration needed to run the extension.
 
     required: No
 
+* `page`: Only for `view` extensions. Path to the HTML page that this `view` 
+  extension should load.
+
+  It can be a relative path, which will be interpreted relative to the extension
+  root directory.
+
+  type: string
+
+  required: **Yes** for `view` extensions. Otherwise, no.
+
+* `permission`: Developers specify the permission needed by the extension there.
+
+  NOTE: Currently, this only applies to `view` extensions.
+
+  Its structure is straightforward. In the below example, the extension 
+  could access the "Downloads" directory in read and write mode, the "Documents"
+  directory is read-only. It could also make HTTP requests to "api.github.com".
+  Coco provides APIs for extensions, this extension can use the `read_dir` function
+  to read directories.
+
+  ```json
+  "permissions": {
+    "fs": [
+      { "path": "/Users/foo/Downloads", "access": ["read", "write"] },
+      { "path": "/Users/foo/Documents", "access": ["read"] }
+    ],
+    "http": [
+      { "host": "api.github.com" }
+    ],
+    "api": ["fs:read_dir"]
+  }
+  ```
+
+  type: object
 
 ### Glossary
 
