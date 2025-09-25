@@ -6,7 +6,7 @@
    "icon": "logo.png",
    "category": "utility",
    "tags": ["repl", "DuckDB"],
-   "screenshots": [],
+   "screenshots": ["screenshot1.png", "screenshot2.png"],
    "page": "index.html",
    "permission": {}
 }
