@@ -1,0 +1,12 @@
+{
+   "name": "DuckDB WASM shell", 
+   "platforms": ["macos", "windows", "linux"],
+   "description": "Run DuckDB WASM within Coco",
+   "type": "view",
+   "icon": "logo.png",
+   "category": "utility",
+   "tags": ["repl", "DuckDB"],
+   "screenshots": [],
+   "page": "index.html",
+   "permission": {}
+}
