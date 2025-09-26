@@ -1,0 +1,24 @@
+{
+  "name": "2048",
+  "description": "Play 2048 game within Coco",
+  "icon": "logo.png",
+  "type": "view",
+  "category": "game",
+  "tags": [
+    "game",
+    "2048"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "screenshots": [
+    {
+      "title": "",
+      "url": "screenshot.png"
+    }
+  ],
+  "page": "dist/index.html",
+  "permission": {}
+}
