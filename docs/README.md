@@ -173,6 +173,22 @@ and configuration needed to run the extension.
 
   required: **Yes** for `view` extensions. Otherwise, no.
 
+* `screenshots`: Only for main extension. Path to the extension screenshots.
+  These screenshots will be displayed in the Extension Store.
+
+  type: An array of JSON objects
+
+  ```json
+  "screenshots": [
+    {
+      "title": "main",
+      "url": "main_screenshot.png"
+    }
+  ]
+  ```
+
+  required: No
+
 * `permission`: Developers specify the permission needed by the extension there.
 
   NOTE: Currently, this only applies to `view` extensions.
@@ -225,3 +241,7 @@ and configuration needed to run the extension.
     ]
   }
   ```
+
+# Develop your extensions
+
+See [Development](./development/)
