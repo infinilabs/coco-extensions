@@ -1,0 +1,23 @@
+{
+  "name": "React Tic-Tac-Toe",
+  "description": "A small Tic-Tac-Toe game introduced in the React tutorial",
+  "icon": "logo.jpg",
+  "type": "view",
+  "category": "game",
+  "tags": [
+    "game"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "screenshots": [
+    {
+      "title": "",
+      "url": "screenshot.png"
+    }
+  ],
+  "page": "build/index.html",
+  "permission": {}
+}
