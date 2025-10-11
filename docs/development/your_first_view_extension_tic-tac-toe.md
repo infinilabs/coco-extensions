@@ -1,5 +1,13 @@
 # Your first View extension - A small tic-tac-toe game
 
+This tutorial will show you how to build your first View extension, a game 
+that you can play right in the Coco AI app.
+
+Still Curious? Here’s a preview of the extension. You can even [install][install_link] 
+it from the Extension Store and try it out for real!
+
+![preview](../assets/tic_tac_toe_game_screenshot.png)
+
 View, as its name implies, displays a custom user interface.
 Think of it like a canvas where you are free to draw anything you want!
 
@@ -62,3 +70,4 @@ And that's it! create a web project, build it, and add a `plugin.json` file to
 describe it. It's that simple.
 
 [cmd_ext_tutorial]: ./your_first_command_extension_Spotify_Control.md
+[install_link]: https://coco.rs/en/integration/extensions/detail?id=399ba003cba2de349bce608f48dfd725
