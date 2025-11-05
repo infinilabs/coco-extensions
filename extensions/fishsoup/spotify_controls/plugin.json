@@ -3,6 +3,10 @@
   "platforms": [
     "macos"
   ],
+  "version": {
+    "number": "0.2.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
   "description": "Quickly control Spotify via AppleScript. Supports playback, navigation, shuffle, repeat, seeking, and track info.",
   "icon": "icon.png",
   "type": "extension",

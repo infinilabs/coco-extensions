@@ -3,6 +3,10 @@
   "description": "Empties the trash on macOS.",
   "icon": "icon.png",
   "type": "command",
+  "version": {
+    "number": "0.2.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
   "platforms": [
     "macos"
   ],

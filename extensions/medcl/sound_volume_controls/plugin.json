@@ -5,6 +5,10 @@
   ],
   "description": "Quickly control your Mac's sound volume with simple, step-based commands. Includes mute toggle, stepped volume levels, and volume queries.",
   "icon": "icon.gif",
+  "version": {
+    "number": "0.2.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
   "type": "extension",
   "category": "Utilities",
   "tags": [
