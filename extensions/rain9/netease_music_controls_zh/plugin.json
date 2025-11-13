@@ -4,6 +4,10 @@
     "macos"
   ],
   "description": "通过 AppleScript 使用快速命令控制网易云音乐的播放和音量。支持播放、暂停、下一首、上一首、音量调高/调低、喜欢/不喜欢歌曲、退出等功能。",
+  "version": {
+    "number": "0.2.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
   "icon": "icon.png",
   "type": "extension",
   "category": "Media",

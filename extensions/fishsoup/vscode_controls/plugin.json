@@ -3,6 +3,10 @@
   "platforms": [
     "macos"
   ],
+  "version": {
+    "number": "0.2.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
   "description": "Quickly control Visual Studio Code via AppleScript and CLI commands. Supports opening new windows, opening selected files or folders from Finder, and managing and installing extensions.",
   "icon": "icon.png",
   "type": "extension", 

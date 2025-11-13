@@ -4,6 +4,10 @@
     "macos"
   ],
   "description": "Format JSON content directly from your clipboard and save the formatted result back. Ideal for quick inspection, editing, or sharing of JSON data.",
+  "version": {
+    "number": "0.2.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
   "icon": "icon.gif",
   "type": "extension",
   "category": "Utilities",

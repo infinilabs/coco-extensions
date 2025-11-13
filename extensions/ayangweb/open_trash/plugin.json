@@ -23,5 +23,9 @@
       "open ~/.Trash"
     ]
   },
-  "category": "Utilities"
+  "category": "Utilities",
+  "version": {
+    "number": "0.2.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560"
 }

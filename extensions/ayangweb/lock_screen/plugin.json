@@ -23,5 +23,9 @@
       "osascript -e 'tell application \"System Events\" to keystroke \"q\" using {control down, command down}'"
     ]
   },
-  "category": "Utilities"
+  "category": "Utilities",
+  "version": {
+    "number": "0.2.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560"
 }
