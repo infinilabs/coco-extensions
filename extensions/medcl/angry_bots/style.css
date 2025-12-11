@@ -1,0 +1,56 @@
+
+/****************************************
+  ==== RESETS
+****************************************/
+
+html,body,div,canvas { margin: 0; padding: 0; }
+::-moz-selection { background: #333; color: #fff; text-shadow: none; }
+::selection { background: #333; color: #fff; text-shadow: none; }
+.clear:after { visibility: hidden; display: block; font-size: 0; content: " "; clear: both; height: 0; }
+.clear { display: inline-table; clear: both; }
+/* Hides from IE-mac \*/ * html .clear { height: 1%; } .clear { display: block; } /* End hide from IE-mac */
+
+/****************************************
+  ==== LAYOUT
+****************************************/
+
+html, body { width: 100%; height: 100%; }
+body { background-color: #222; background-size: cover; -moz-background-size: cover; background-repeat: no-repeat; background-position: 50% 50%; }
+p.header, p.footer { display: none; }
+div.logo { width: 196px; height: 38px; float: left; background: url(logo.png) 0 0 no-repeat; position: relative; z-index: 10; }
+div.title { height: 38px; line-height: 38px; padding: 0 10px; margin: 0 1px 0 0; float: right; color: #fff; text-align: right; font-size: 18px; position: relative; z-index: 10; background: rgba(255,255,255,0.2); }
+.demo-wrap { position: absolute; top: 50%; left: 50%; }
+.demo-wrap canvas { margin: 0 0 10px 0; position: relative; z-index: 9; box-shadow: 0 10px 30px rgba(0,0,0,0.6); -moz-box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+.fullscreen { float: right; position: relative; z-index: 10; }
+
+/****************************************
+  ==== 2D DEMO
+****************************************/
+
+body.demo-2d { background-image: url(html_resources/2d-cover.jpg); }
+.demo-2d .demo-wrap { width: 960px; height: 648px; margin: -324px 0 0 -460px; }
+.demo-2d .demo-wrap canvas { width: 960px; height: 600px; }
+
+/****************************************
+  ==== DEAD TRIGGER 2 DEMO
+****************************************/
+
+body.demo-deadtrigger2 { background-image: url(deadtrigger2-cover.jpg); }
+.demo-deadtrigger2 .demo-wrap { width: 1024px; height: 816px; margin: -408px 0 0 -512px; }
+.demo-deadtrigger2 .demo-wrap canvas { width: 1024px; height: 768px; }
+
+/****************************************
+  ==== STEALTH DEMO
+****************************************/
+
+body.demo-stealth { background-image: url(stealth-cover.jpg); }
+.demo-stealth .demo-wrap { width: 1000px; height: 688px; margin: -344px 0 0 -500px; }
+.demo-stealth .demo-wrap canvas { width: 1000px; height: 640px; }
+
+/****************************************
+  ==== STEALTH DEMO
+****************************************/
+
+body.demo-angrybots { background-image: url(default-cover.jpg); }
+.demo-angrybots .demo-wrap { width: 1280px; height: 768px; margin: -384px 0 0 -640px; }
+.demo-angrybots .demo-wrap canvas { width: 1280px; height: 720px; }
