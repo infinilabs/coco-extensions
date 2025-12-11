@@ -1,0 +1,32 @@
+{
+  "name": "Angry Bots",
+  "description": "Play Angry Bots within Coco",
+  "icon": "logo.jpeg",
+  "type": "view",
+  "category": "game",
+  "tags": [
+    "game"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "screenshots": [
+    {
+      "title": "",
+      "url": "screenshot1.png"
+    }
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

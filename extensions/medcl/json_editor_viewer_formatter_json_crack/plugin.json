@@ -1,0 +1,33 @@
+{
+  "name": "JSON Editor/Viewer/Formatter (JSON Crack)",
+  "description": "JSON Editor/Viewer/Formatter, powered by JSON Crack",
+  "icon": "logo.jpeg",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "utility",
+    "json"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "screenshots": [
+    {
+      "title": "",
+      "url": "screenshot1.png"
+    }
+  ],
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false
+  },
+  "page": "index.html",
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

@@ -1,0 +1,2 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[3337],{95187:function(n,u,t){(window.__NEXT_P=window.__NEXT_P||[]).push(["/type/json-to-rust",function(){return t(13075)}])},13075:function(n,u,t){"use strict";t.r(u);var _=t(52676);t(75271);var o=t(47542),s=t(28075);u.default=()=>(0,_.jsx)(s.p,{from:o.dO.JSON,to:o.u4.Rust})}},function(n){n.O(0,[6951,8314,2678,2386,9357,6999,7141,4239,8075,2888,9774,179],function(){return n(n.s=95187)}),_N_E=n.O()}]);
+//# sourceMappingURL=json-to-rust-d20f6764ee1e402a.js.map

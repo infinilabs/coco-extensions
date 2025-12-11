@@ -1,0 +1,2 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[207],{96489:function(n,u,o){(window.__NEXT_P=window.__NEXT_P||[]).push(["/type/json-to-go",function(){return o(3422)}])},3422:function(n,u,o){"use strict";o.r(u);var t=o(52676);o(75271);var _=o(47542),e=o(28075);u.default=()=>(0,t.jsx)(e.p,{from:_.dO.JSON,to:_.u4.Go})}},function(n){n.O(0,[6951,8314,2678,2386,9357,6999,7141,4239,8075,2888,9774,179],function(){return n(n.s=96489)}),_N_E=n.O()}]);
+//# sourceMappingURL=json-to-go-9dfa65caf71282ad.js.map

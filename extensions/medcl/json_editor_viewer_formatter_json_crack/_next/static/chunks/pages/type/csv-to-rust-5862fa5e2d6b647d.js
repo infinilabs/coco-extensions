@@ -1,0 +1,2 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[8838],{84880:function(n,u,t){(window.__NEXT_P=window.__NEXT_P||[]).push(["/type/csv-to-rust",function(){return t(95719)}])},95719:function(n,u,t){"use strict";t.r(u);var _=t(52676);t(75271);var s=t(47542),o=t(28075);u.default=()=>(0,_.jsx)(o.p,{from:s.dO.CSV,to:s.u4.Rust})}},function(n){n.O(0,[6951,8314,2678,2386,9357,6999,7141,4239,8075,2888,9774,179],function(){return n(n.s=84880)}),_N_E=n.O()}]);
+//# sourceMappingURL=csv-to-rust-5862fa5e2d6b647d.js.map
