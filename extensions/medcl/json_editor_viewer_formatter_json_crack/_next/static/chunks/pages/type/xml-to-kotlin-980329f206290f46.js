@@ -1,0 +1,2 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[9181],{99151:function(n,t,u){(window.__NEXT_P=window.__NEXT_P||[]).push(["/type/xml-to-kotlin",function(){return u(93720)}])},93720:function(n,t,u){"use strict";u.r(t);var o=u(52676);u(75271);var _=u(47542),i=u(28075);t.default=()=>(0,o.jsx)(i.p,{from:_.dO.XML,to:_.u4.Kotlin})}},function(n){n.O(0,[6951,8314,2678,2386,9357,6999,7141,4239,8075,2888,9774,179],function(){return n(n.s=99151)}),_N_E=n.O()}]);
+//# sourceMappingURL=xml-to-kotlin-980329f206290f46.js.map

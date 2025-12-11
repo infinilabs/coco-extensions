@@ -1,0 +1,2 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[6237],{67777:function(n,t,u){(window.__NEXT_P=window.__NEXT_P||[]).push(["/type/json-to-kotlin",function(){return u(65341)}])},65341:function(n,t,u){"use strict";u.r(t);var o=u(52676);u(75271);var _=u(47542),i=u(28075);t.default=()=>(0,o.jsx)(i.p,{from:_.dO.JSON,to:_.u4.Kotlin})}},function(n){n.O(0,[6951,8314,2678,2386,9357,6999,7141,4239,8075,2888,9774,179],function(){return n(n.s=67777)}),_N_E=n.O()}]);
+//# sourceMappingURL=json-to-kotlin-a793ff362ae3a812.js.map

@@ -1,0 +1,2 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[5853],{3164:function(n,u,t){(window.__NEXT_P=window.__NEXT_P||[]).push(["/type/yaml-to-go",function(){return t(81625)}])},81625:function(n,u,t){"use strict";t.r(u);var o=t(52676);t(75271);var _=t(47542),e=t(28075);u.default=()=>(0,o.jsx)(e.p,{from:_.dO.YAML,to:_.u4.Go})}},function(n){n.O(0,[6951,8314,2678,2386,9357,6999,7141,4239,8075,2888,9774,179],function(){return n(n.s=3164)}),_N_E=n.O()}]);
+//# sourceMappingURL=yaml-to-go-5d2fa209bdb45cf8.js.map
