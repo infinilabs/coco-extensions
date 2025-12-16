@@ -1,0 +1,127 @@
+:root {
+  /* Light Theme */
+  --color-light-bg: #ffffff;
+  --color-light-text: #000000;
+  --color-light-textarea-bg: #f0f0f0;
+  --color-light-textarea-border: #ccc;
+  --color-light-footer-text: #555;
+
+  /* Dark Theme */
+  --color-dark-bg: #121212;
+  --color-dark-text: #ffffff;
+  --color-dark-textarea-bg: #1e1e1e;
+  --color-dark-textarea-border: #444;
+
+  /* Links */
+  --color-link: #007bff;
+  --color-link-hover: #0056b3;
+
+  /* Transitions */
+  --transition-fade: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+/* Layout */
+.app,
+.container {
+  min-height: 100vh;
+  padding: 0.8rem;
+  transition: var(--transition-fade);
+}
+
+/* Light Theme */
+.app {
+  background-color: var(--color-light-bg);
+  color: var(--color-light-text);
+}
+
+.container.light {
+  background-color: #f4f4f4;
+  color: var(--color-light-text);
+}
+
+/* Dark Theme */
+.app.dark {
+  background-color: var(--color-dark-bg);
+  color: var(--color-dark-text);
+}
+
+.container.dark {
+  background-color: #222;
+  color: var(--color-dark-text);
+}
+
+/* Textareas */
+textarea,
+.textarea {
+  width: 100%;
+  height: 200px;
+  padding: 0.4rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--color-light-textarea-border);
+  background-color: var(--color-light-textarea-bg);
+  color: var(--color-light-text);
+  transition: var(--transition-fade), border-color 0.3s ease;
+  width: 99%;
+}
+
+/* Dark Mode Textareas */
+.app.dark textarea,
+.textarea.dark {
+  background-color: var(--color-dark-textarea-bg);
+  border-color: var(--color-dark-textarea-border);
+  color: var(--color-dark-text);
+}
+
+.textarea.light {
+  background-color: #fff;
+  border-color: var(--color-light-textarea-border);
+  color: var(--color-light-text);
+}
+
+/* Buttons and File Button */
+button,
+.file-button {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  margin: 0.2rem;
+  cursor: pointer;
+  border-radius: 6px;
+  background-color: #e0e0e0;
+  color: #000;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.container.dark .file-button {
+  background-color: #333;
+  color: #fff;
+}
+
+.file-button:hover {
+  background-color: #ccc;
+}
+
+.container.dark .file-button:hover {
+  background-color: #444;
+}
+
+/* Button Layout */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
