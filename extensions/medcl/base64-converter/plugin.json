@@ -1,0 +1,36 @@
+{
+  "name": "Base64 Converter",
+  "description": "A simple web-based tool to encode or decode Base64 strings or files. Supports text and file conversion with instant results, dark mode, and downloads.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "base64",
+    "encode",
+    "decode",
+    "converter",
+    "developer-tools"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "screenshots": [
+    {
+      "title": "Base64 Encode / Decode",
+      "url": "screenshot1.png"
+    }
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}
