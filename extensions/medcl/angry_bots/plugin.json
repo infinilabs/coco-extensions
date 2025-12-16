@@ -22,10 +22,14 @@
   "ui": {
     "search_bar": false,
     "filter_bar": false,
-    "footer": false
+    "footer": false,
+    "resizable":true,
+    "detachable":true,
+    "width":1284,
+    "height":720
   },
   "version": {
-    "number": "0.1.0"
+    "number": "0.1.1"
   },
   "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
   "permission": {}
