@@ -197,6 +197,41 @@ and configuration needed to run the extension.
 
   since: 0.8.0
 
+* `ui`: Only for `view` extensions. Extension UI settings.
+
+  type: object
+
+  required: No
+
+  since: 0.9.1-2602
+
+  fields:
+
+  * `search_bar`: if the search bar should be visible
+
+    type: bool
+
+    required: No
+
+    since: 0.9.1-2602
+
+  * `filter_bar`: if the filter bar should be visible
+
+    type: bool
+
+    required: No
+
+    since: 0.9.1-2602
+
+  * `footer`: if the footer should be visible
+
+    type: bool
+
+    required: No
+
+    since: 0.9.1-2602
+    
+
 * `screenshots`: Only for main extension. Path to the extension screenshots.
   These screenshots will be displayed in the Extension Store.
 
