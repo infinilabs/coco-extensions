@@ -23,7 +23,7 @@
     "search_bar": false,
     "filter_bar": false,
     "footer": false,
-       "resizable":true,
+    "resizable":true,
     "detachable":true,
     "width":1000,
     "height":650
