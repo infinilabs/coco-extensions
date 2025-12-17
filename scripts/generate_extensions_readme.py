@@ -95,35 +95,60 @@ def collect_extensions():
             })
     return items
 
-def render_card(e, dev_name_display=None):
-    # If dev_name_display is passed, use it, otherwise use e['developer']
-    dev_name = dev_name_display if dev_name_display else e['developer']
+def truncate_text(text, max_width=32):
+    w = 0
+    for i, c in enumerate(text):
+        cw = 2 if ord(c) > 255 else 1
+        if w + cw > max_width:
+            return text[:i] + "..."
+        w += cw
+    return text
+
+def render_table_grid(entries, items_per_row=5):
+    html = ['<table>']
     
-    # tooltip 使用 title 属性，添加 Emoji 美化
-    tooltip = f'📦 {e["name"]}&#10;👤 By {dev_name}&#10;&#10;📝 {e["description"]}'.strip().replace('"', '&quot;')
-    
-    # 图标样式：圆角矩形
-    img_html = f'<img src="{e["icon"]}" alt="{e["name"]}" width="60" height="60" style="border-radius:14px;object-fit:cover;display:block;" />' if e["icon"] else ""
-    
-    # 卡片整体样式
-    # iOS App Icon style: Icon is the main visual element with shadow/border. Text is below.
-    # Outer container: Simple wrapper for layout, no border/bg
-    card_html = (
-        f'<a href="{e["extension_dir"]}" title="{tooltip}" '
-        'style="text-decoration:none;color:inherit;">'
-        '<div style="width:120px; height:150px; display:flex; flex-direction:column; align-items: center; justify-content:center; gap:12px; padding:10px; box-sizing:border-box;">'
-            # 图标容器 - The "Card"
-            '<div style="width:72px;height:72px;background:#21262d;border:1px solid rgba(255,255,255,0.1);border-radius:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(0,0,0,0.3); transition: transform 0.2s;">'
-                f'{img_html}'
-            '</div>'
-            # 名称
-            '<div style="height: 40px; font-size:13px;color:#c9d1d9;text-align:center;font-weight:600;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;width:100%;max-height:36px;">'
-                f'{e["name"]}'
-            '</div>'
-        '</div>'
-        '</a>'
-    )
-    return card_html
+    # Calculate rows
+    for i in range(0, len(entries), items_per_row):
+        row_items = entries[i:i + items_per_row]
+        html.append('<tr>')
+        
+        for e in row_items:
+            # Prepare data
+            # Use double &#10; to simulate paragraph spacing in native browser tooltips
+            tooltip = f'📦 {e["name"]}&#10;👤 {e["developer"]}&#10;&#10;📝 {e["description"]}'.replace('"', '&quot;')
+            icon_url = e["icon"] if e["icon"] else ""
+            # iOS style: Rounded corners (approx 22%), subtle shadow, and 1px subtle border for white icon contrast
+            img_tag = f'<img src="{icon_url}" alt="{e["name"]}" width="60" height="60" style="border-radius: 14px; object-fit:cover; display:block; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);" />'
+            
+            truncated_name = truncate_text(e["name"])
+            
+            # Use align="center" for GitHub compatibility
+            # Use width="120px" to simulate card width
+            # Use valign="top" to ensure icons aligned at top
+            # Add padding-bottom for row spacing
+            cell = (
+                f'<td align="center" valign="top" width="120px" style="padding: 30px 0;">'
+                f'<a href="{e["extension_dir"]}" title="{tooltip}">'
+                f'{img_tag}'
+                f'</a>'
+                f'<br/>'
+                f'<a href="{e["extension_dir"]}" title="{tooltip}" style="color:inherit;">'
+                f'<div style="font-size:12px;line-height:1.4;height:34px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;padding:0 8px;">{truncated_name}</div>'
+                f'</a>'
+                f'</td>'
+            )
+            html.append(cell)
+            
+        # Fill empty cells if last row is incomplete
+        remaining = items_per_row - len(row_items)
+        if remaining > 0:
+            for _ in range(remaining):
+                html.append('<td align="center" width="120px" style="padding-bottom: 30px;"></td>')
+                
+        html.append('</tr>')
+        
+    html.append('</table>')
+    return "\n".join(html)
 
 def get_nav_html(current_view):
     # current_view: 'author', 'category'
@@ -147,9 +172,6 @@ def render_view(items, view_type):
     lines.append("## Extensions List")
     lines.append(get_nav_html(view_type))
     
-    # Increased gap from 20px to 30px for better spacing
-    container_style = '<div style="display:flex;flex-wrap:wrap;gap:24px;margin-bottom:24px;">'
-    
     if view_type == 'author':
         # Group by Developer
         grouped = {}
@@ -159,10 +181,8 @@ def render_view(items, view_type):
         for dev_name in sorted(grouped.keys()):
             entries = grouped[dev_name]
             lines.append(f"### {dev_name}")
-            lines.append(container_style)
-            for e in entries:
-                lines.append(render_card(e, dev_name))
-            lines.append('</div>\n')
+            lines.append(render_table_grid(entries))
+            lines.append('\n')
             
     elif view_type == 'category':
         # Group by Category
@@ -173,10 +193,8 @@ def render_view(items, view_type):
         for cat in sorted(grouped.keys()):
             entries = grouped[cat]
             lines.append(f"### {cat}")
-            lines.append(container_style)
-            for e in entries:
-                lines.append(render_card(e))
-            lines.append('</div>\n')
+            lines.append(render_table_grid(entries))
+            lines.append('\n')
         
     return "\n".join(lines).strip() + "\n"
 
