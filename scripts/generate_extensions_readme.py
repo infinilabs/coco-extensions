@@ -104,50 +104,32 @@ def truncate_text(text, max_width=32):
         w += cw
     return text
 
-def render_table_grid(entries, items_per_row=5):
-    html = ['<table>']
+def render_grid(entries):
+    # Use inline-block divs to avoid GitHub table borders
+    html = []
     
-    # Calculate rows
-    for i in range(0, len(entries), items_per_row):
-        row_items = entries[i:i + items_per_row]
-        html.append('<tr>')
+    for e in entries:
+        tooltip = f'📦 {e["name"]}&#10;👤 {e["developer"]}&#10;&#10;📝 {e["description"]}'.replace('"', '&quot;')
+        icon_url = e["icon"] if e["icon"] else ""
         
-        for e in row_items:
-            # Prepare data
-            # Use double &#10; to simulate paragraph spacing in native browser tooltips
-            tooltip = f'📦 {e["name"]}&#10;👤 {e["developer"]}&#10;&#10;📝 {e["description"]}'.replace('"', '&quot;')
-            icon_url = e["icon"] if e["icon"] else ""
-            # iOS style: Rounded corners (approx 22%), subtle shadow, and 1px subtle border for white icon contrast
-            img_tag = f'<img src="{icon_url}" alt="{e["name"]}" width="60" height="60" style="border-radius: 14px; object-fit:cover; display:block; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);" />'
-            
-            truncated_name = truncate_text(e["name"])
-            
-            # Use align="center" for GitHub compatibility
-            # Use width="120px" to simulate card width
-            # Use valign="top" to ensure icons aligned at top
-            # Add padding-bottom for row spacing
-            cell = (
-                f'<td align="center" valign="top" width="120px" style="padding: 30px 0;">'
-                f'<a href="{e["extension_dir"]}" title="{tooltip}">'
-                f'{img_tag}'
-                f'</a>'
-                f'<br/>'
-                f'<a href="{e["extension_dir"]}" title="{tooltip}" style="color:inherit;">'
-                f'<div style="font-size:12px;line-height:1.4;height:34px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;padding:0 8px;">{truncated_name}</div>'
-                f'</a>'
-                f'</td>'
-            )
-            html.append(cell)
-            
-        # Fill empty cells if last row is incomplete
-        remaining = items_per_row - len(row_items)
-        if remaining > 0:
-            for _ in range(remaining):
-                html.append('<td align="center" width="120px" style="padding-bottom: 30px;"></td>')
-                
-        html.append('</tr>')
+        # Item style:
+        # display: inline-block -> flows naturally like a grid
+        # width: 120px -> fixed width for alignment
+        # vertical-align: top -> ensures items in a row align at the top
+        # margin: nice spacing (horizontal 12px, vertical 24px)
+        item = (
+            f'<div style="display: inline-block; width: 120px; vertical-align: top; margin: 0 12px 24px 12px; text-align: center;">'
+            f'<a href="{e["extension_dir"]}" title="{tooltip}">'
+            f'<img src="{icon_url}" alt="{e["name"]}" width="60" height="60" style="border-radius: 14px; object-fit:cover; display:block; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);" />'
+            f'</a>'
+            f'<br/>'
+            f'<a href="{e["extension_dir"]}" title="{tooltip}" style="color:inherit; text-decoration: none;">'
+            f'<div style="font-size:12px; line-height:1.4; margin-top: 8px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; text-decoration: none">{truncate_text(e["name"])}</div>'
+            f'</a>'
+            f'</div>'
+        )
+        html.append(item)
         
-    html.append('</table>')
     return "\n".join(html)
 
 def get_nav_html(current_view):
@@ -181,7 +163,7 @@ def render_view(items, view_type):
         for dev_name in sorted(grouped.keys()):
             entries = grouped[dev_name]
             lines.append(f"### {dev_name}")
-            lines.append(render_table_grid(entries))
+            lines.append(render_grid(entries))
             lines.append('\n')
             
     elif view_type == 'category':
@@ -193,7 +175,7 @@ def render_view(items, view_type):
         for cat in sorted(grouped.keys()):
             entries = grouped[cat]
             lines.append(f"### {cat}")
-            lines.append(render_table_grid(entries))
+            lines.append(render_grid(entries))
             lines.append('\n')
         
     return "\n".join(lines).strip() + "\n"
