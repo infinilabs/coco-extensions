@@ -277,8 +277,9 @@ and configuration needed to run the extension.
 
   since: 0.8.0
 
-* `minimum_coco_version`: The version of Coco app that your extension requires. 
-  If not set, then this extension is compatible with all versions of Coco app.
+* `minimum_coco_version`: For the main extension only. The version of Coco
+  app that your extension requires. If not set, then this extension is 
+  compatible with all versions of Coco app.
 
   type: string
 
