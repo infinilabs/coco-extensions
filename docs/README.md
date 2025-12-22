@@ -237,25 +237,25 @@ and configuration needed to run the extension.
 
     since: 0.9.1-2602
   
-  * `width`: When coco launches this view extension, it sets window width to
+  * `width`: When Coco launches this view extension, it sets window width to
     this value.
 
     type: unsigned, 32-bit integer
 
     required: No.
 
-    default: coco's default window width
+    default: Coco's default window width
 
     since: 0.10.0-2619
 
-  * `height`: When coco launches this view extension, it sets window height to
+  * `height`: When Coco launches this view extension, it sets window height to
     this value.
 
     type: unsigned, 32-bit integer
 
     required: No.
 
-    default: coco's default window height
+    default: Coco's default window height
 
     since: 0.10.0-2619
 
