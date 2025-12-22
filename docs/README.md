@@ -213,6 +213,8 @@ and configuration needed to run the extension.
 
     required: No
 
+    default: false
+
     since: 0.9.1-2602
 
   * `filter_bar`: if the filter bar should be visible
@@ -220,6 +222,8 @@ and configuration needed to run the extension.
     type: bool
 
     required: No
+
+    default: false
 
     since: 0.9.1-2602
 
@@ -229,8 +233,53 @@ and configuration needed to run the extension.
 
     required: No
 
+    default: false
+
     since: 0.9.1-2602
-    
+  
+  * `width`: When Coco launches this view extension, it sets window width to
+    this value.
+
+    type: unsigned, 32-bit integer
+
+    required: No.
+
+    default: Coco's default window width
+
+    since: 0.10.0-2619
+
+  * `height`: When Coco launches this view extension, it sets window height to
+    this value.
+
+    type: unsigned, 32-bit integer
+
+    required: No.
+
+    default: Coco's default window height
+
+    since: 0.10.0-2619
+
+  * `resizable`: Is the app window size adjustable?
+
+    type: bool
+
+    required: No
+
+    default: false
+
+    since: 0.10.0-2619
+  
+  * `detachable`: Detch the extension window from Coco's main window.
+    If true, user can click the detach button to open this extension 
+    in a seprate window.
+
+    type: bool
+
+    required: No
+
+    default: false
+
+    since: 0.10.0-2619
 
 * `screenshots`: Only for main extension. Path to the extension screenshots.
   These screenshots will be displayed in the Extension Store.
