@@ -20,7 +20,7 @@
     "exec": "zsh",
     "args": [
       "-c",
-      "osascript -e 'try' -e 'tell application \"Finder\" to empty' -e 'end try'"
+      "osascript -e 'tell application \"Finder\" to if (count items in trash) > 0 then empty trash'"
     ]
   },
   "category": "Utilities",
