@@ -1,0 +1,19 @@
+{
+  "name": "youdao Translate",
+  "description": "Translate words via youdao.com, with support for setting the target language.",
+  "icon": "icon.png",
+  "type": "quicklink",
+  "category": "Utilities",
+  "tags": [
+    "Productivity"
+  ],
+  "screenshots": [
+    {
+      "title": "",
+      "url": "screenshot.png"
+    }
+  ],
+  "quicklink": {
+    "link": "https://www.youdao.com/result?word={word}&lang={argument_name: \"lang\", default: \"en\"}"
+  }
+}
