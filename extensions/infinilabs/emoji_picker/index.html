@@ -719,7 +719,7 @@
     };
 
     // Frequently used emojis - stored in localStorage
-    const STORAGE_KEY = "coco_emoji_frequent";
+    const STORAGE_KEY = "infinilabs_emoji_picker_frequent";
     const MAX_FREQUENT = 24;
 
     function getFrequentEmojis() {
@@ -775,7 +775,7 @@
           renderEmojis();
         }
       }).catch(function() {
-        // Fallback for older browsers
+        // Deprecated execCommand fallback for older browsers without Clipboard API
         var textArea = document.createElement("textarea");
         textArea.value = emoji;
         textArea.style.position = "fixed";
