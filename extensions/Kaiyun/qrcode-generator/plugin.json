@@ -1,0 +1,34 @@
+{
+  "name": "QR Code Generator",
+  "description": "Generate a QR code from any text or URL using a fully embedded, dependency-free implementation. Ported from the Raycast QR Code Generator extension by Kaiyun (MIT).",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "qr",
+    "qrcode",
+    "generator",
+    "url",
+    "developer-tools"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 480,
+    "height": 560
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}
