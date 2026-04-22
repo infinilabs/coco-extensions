@@ -11,6 +11,12 @@
     "reference",
     "productivity"
   ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
   "platforms": [
     "macos",
     "windows",

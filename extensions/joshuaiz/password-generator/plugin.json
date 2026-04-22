@@ -11,6 +11,12 @@
     "security",
     "developer-tools"
   ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
   "platforms": [
     "macos",
     "windows",

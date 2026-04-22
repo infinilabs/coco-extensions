@@ -11,6 +11,12 @@
     "time",
     "focus"
   ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
   "platforms": [
     "macos",
     "windows",

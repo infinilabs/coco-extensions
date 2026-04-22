@@ -11,6 +11,12 @@
     "random",
     "crypto"
   ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
   "platforms": [
     "macos",
     "windows",
