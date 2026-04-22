@@ -1,0 +1,34 @@
+{
+  "name": "Cron Parser",
+  "description": "Parse cron expressions and see the next scheduled run times.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "developer",
+  "tags": [
+    "cron",
+    "schedule",
+    "time",
+    "jobs",
+    "developer"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 460,
+    "height": 520
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

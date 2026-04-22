@@ -1,0 +1,35 @@
+{
+  "name": "JWT Decoder",
+  "description": "Decode and inspect JWT tokens. View header, payload, expiration, and signature status.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "developer",
+  "tags": [
+    "jwt",
+    "json",
+    "token",
+    "decode",
+    "auth",
+    "developer"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 520,
+    "height": 550
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}
