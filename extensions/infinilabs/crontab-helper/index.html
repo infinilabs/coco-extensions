@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crontab Helper</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 14px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .cron-display {
+      background: var(--bg-elev); border-radius: 8px; padding: 16px;
+      text-align: center;
+    }
+    .cron-value {
+      font: 600 24px "SF Mono", Monaco, Consolas, monospace;
+      color: var(--accent); margin-bottom: 8px;
+    }
+    .cron-description { font-size: 13px; color: var(--muted); }
+    .cron-fields {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+    }
+    .field {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .field-label {
+      font-size: 10px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; text-align: center;
+    }
+    select {
+      font: inherit; font-size: 12px;
+      padding: 8px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); text-align: center;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+    .presets {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .preset {
+      font: inherit; font-size: 10px;
+      padding: 5px 8px; border-radius: 4px;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .preset:hover { border-color: var(--accent); }
+    .next-runs {
+      background: var(--bg-elev); border-radius: 8px; padding: 12px;
+    }
+    .next-runs-title {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    .run-time { font-size: 12px; padding: 4px 0; font-family: "SF Mono", Monaco, Consolas, monospace; }
+    .actions { display: flex; gap: 8px; }
+    button {
+      font: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 16px; cursor: pointer; flex: 1;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .status { font-size: 11px; color: var(--success); text-align: center; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <h1>⏰ Crontab Helper</h1>
+
+  <div class="cron-display">
+    <div class="cron-value" id="cronValue">* * * * *</div>
+    <div class="cron-description" id="cronDesc">Every minute</div>
+  </div>
+
+  <div class="cron-fields">
+    <div class="field">
+      <label class="field-label">Minute</label>
+      <select id="minute"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">Hour</label>
+      <select id="hour"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">Day</label>
+      <select id="day"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">Month</label>
+      <select id="month"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">Weekday</label>
+      <select id="weekday"></select>
+    </div>
+  </div>
+
+  <div>
+    <div class="field-label" style="margin-bottom: 6px;">Quick Presets</div>
+    <div class="presets">
+      <button class="preset" data-cron="* * * * *">Every minute</button>
+      <button class="preset" data-cron="0 * * * *">Every hour</button>
+      <button class="preset" data-cron="0 0 * * *">Daily midnight</button>
+      <button class="preset" data-cron="0 9 * * *">Daily 9 AM</button>
+      <button class="preset" data-cron="0 0 * * 0">Weekly Sunday</button>
+      <button class="preset" data-cron="0 0 1 * *">Monthly 1st</button>
+      <button class="preset" data-cron="0 0 * * 1-5">Weekdays</button>
+      <button class="preset" data-cron="*/5 * * * *">Every 5 min</button>
+      <button class="preset" data-cron="*/15 * * * *">Every 15 min</button>
+      <button class="preset" data-cron="0 */2 * * *">Every 2 hours</button>
+    </div>
+  </div>
+
+  <div class="next-runs">
+    <div class="next-runs-title">Next 5 Runs</div>
+    <div id="nextRuns"></div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="copyCron()">Copy Expression</button>
+  </div>
+  <div class="status" id="status"></div>
+
+  <footer>Crontab Helper · Build cron expressions visually</footer>
+
+  <script>
+    "use strict";
+
+    const $minute = document.getElementById("minute");
+    const $hour = document.getElementById("hour");
+    const $day = document.getElementById("day");
+    const $month = document.getElementById("month");
+    const $weekday = document.getElementById("weekday");
+    const $cronValue = document.getElementById("cronValue");
+    const $cronDesc = document.getElementById("cronDesc");
+    const $nextRuns = document.getElementById("nextRuns");
+    const $status = document.getElementById("status");
+
+    // Populate selects
+    function addOption(select, value, text) {
+      const opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent = text;
+      select.appendChild(opt);
+    }
+
+    addOption($minute, "*", "*");
+    addOption($minute, "*/5", "*/5");
+    addOption($minute, "*/10", "*/10");
+    addOption($minute, "*/15", "*/15");
+    addOption($minute, "*/30", "*/30");
+    for (let i = 0; i < 60; i++) addOption($minute, i, i);
+
+    addOption($hour, "*", "*");
+    addOption($hour, "*/2", "*/2");
+    addOption($hour, "*/4", "*/4");
+    addOption($hour, "*/6", "*/6");
+    for (let i = 0; i < 24; i++) addOption($hour, i, i);
+
+    addOption($day, "*", "*");
+    for (let i = 1; i <= 31; i++) addOption($day, i, i);
+
+    addOption($month, "*", "*");
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    months.forEach((m, i) => addOption($month, i + 1, `${i + 1} (${m})`));
+
+    addOption($weekday, "*", "*");
+    addOption($weekday, "1-5", "1-5 (Mon-Fri)");
+    addOption($weekday, "0,6", "0,6 (Sat-Sun)");
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    days.forEach((d, i) => addOption($weekday, i, `${i} (${d})`));
+
+    function update() {
+      const cron = `${$minute.value} ${$hour.value} ${$day.value} ${$month.value} ${$weekday.value}`;
+      $cronValue.textContent = cron;
+      $cronDesc.textContent = describeCron(cron);
+      calculateNextRuns();
+    }
+
+    function describeCron(cron) {
+      const [min, hour, day, month, weekday] = cron.split(" ");
+      let desc = [];
+
+      if (min === "*" && hour === "*" && day === "*" && month === "*" && weekday === "*") return "Every minute";
+      if (min === "0" && hour === "*" && day === "*" && month === "*" && weekday === "*") return "Every hour at minute 0";
+      if (min === "0" && hour === "0" && day === "*" && month === "*" && weekday === "*") return "Every day at midnight";
+      if (min.startsWith("*/")) desc.push(`Every ${min.slice(2)} minutes`);
+      else if (min !== "*") desc.push(`At minute ${min}`);
+      
+      if (hour.startsWith("*/")) desc.push(`every ${hour.slice(2)} hours`);
+      else if (hour !== "*") desc.push(`at hour ${hour}`);
+      
+      if (day !== "*") desc.push(`on day ${day}`);
+      if (month !== "*") desc.push(`in ${months[parseInt(month) - 1] || month}`);
+      if (weekday === "1-5") desc.push("on weekdays");
+      else if (weekday === "0,6") desc.push("on weekends");
+      else if (weekday !== "*") desc.push(`on ${days[parseInt(weekday)] || weekday}`);
+
+      return desc.join(", ") || "Custom schedule";
+    }
+
+    function calculateNextRuns() {
+      const [min, hour, day, month, weekday] = [
+        $minute.value, $hour.value, $day.value, $month.value, $weekday.value
+      ];
+      
+      const runs = [];
+      const now = new Date();
+      let check = new Date(now);
+      check.setSeconds(0, 0);
+      
+      for (let i = 0; i < 1000 && runs.length < 5; i++) {
+        check = new Date(check.getTime() + 60000);
+        if (matches(check, min, hour, day, month, weekday)) {
+          runs.push(check.toLocaleString());
+        }
+      }
+      
+      $nextRuns.innerHTML = runs.map(r => `<div class="run-time">${r}</div>`).join("");
+    }
+
+    function matches(date, min, hour, day, month, weekday) {
+      const m = date.getMinutes();
+      const h = date.getHours();
+      const d = date.getDate();
+      const mo = date.getMonth() + 1;
+      const w = date.getDay();
+
+      return matchField(min, m) && matchField(hour, h) && 
+             matchField(day, d) && matchField(month, mo) && matchField(weekday, w);
+    }
+
+    function matchField(field, value) {
+      if (field === "*") return true;
+      if (field.includes("/")) {
+        const step = parseInt(field.split("/")[1]);
+        return value % step === 0;
+      }
+      if (field.includes("-")) {
+        const [start, end] = field.split("-").map(Number);
+        return value >= start && value <= end;
+      }
+      if (field.includes(",")) {
+        return field.split(",").map(Number).includes(value);
+      }
+      return parseInt(field) === value;
+    }
+
+    function setFromCron(cron) {
+      const [min, hour, day, month, weekday] = cron.split(" ");
+      $minute.value = min;
+      $hour.value = hour;
+      $day.value = day;
+      $month.value = month;
+      $weekday.value = weekday;
+      update();
+    }
+
+    async function copyCron() {
+      const cron = $cronValue.textContent;
+      try {
+        await navigator.clipboard.writeText(cron);
+        showStatus("Copied!");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = cron;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied!");
+      }
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ""; }, 2000);
+    }
+
+    [$minute, $hour, $day, $month, $weekday].forEach(el => el.addEventListener("change", update));
+
+    document.querySelectorAll(".preset").forEach(btn => {
+      btn.addEventListener("click", () => setFromCron(btn.dataset.cron));
+    });
+
+    update();
+  </script>
+</body>
+</html>

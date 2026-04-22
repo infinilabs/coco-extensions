@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Network Port Reference</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .search-box {
+      display: flex; gap: 8px;
+    }
+    input[type="text"] {
+      flex: 1; font: inherit; font-size: 13px;
+      padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    .filter-tabs {
+      display: flex; gap: 4px;
+    }
+    .tab {
+      font: inherit; font-size: 11px; padding: 6px 10px;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); border-radius: 4px;
+      cursor: pointer;
+    }
+    .tab:hover { border-color: var(--accent); }
+    .tab.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .port-list {
+      flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+    }
+    .port-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      cursor: pointer;
+    }
+    .port-item:hover { border-color: var(--accent); }
+    .port-num {
+      font: 600 14px "SF Mono", Monaco, Consolas, monospace;
+      color: var(--accent); min-width: 60px;
+    }
+    .port-proto {
+      font-size: 10px; padding: 2px 6px;
+      background: var(--border); border-radius: 3px;
+      text-transform: uppercase; min-width: 36px; text-align: center;
+    }
+    .port-info { flex: 1; }
+    .port-name { font-weight: 500; font-size: 13px; }
+    .port-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .count { font-size: 11px; color: var(--muted); text-align: center; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <h1>🔌 Network Port Reference</h1>
+  
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search ports or services...">
+  </div>
+
+  <div class="filter-tabs">
+    <button class="tab active" data-filter="all">All</button>
+    <button class="tab" data-filter="tcp">TCP</button>
+    <button class="tab" data-filter="udp">UDP</button>
+    <button class="tab" data-filter="web">Web</button>
+    <button class="tab" data-filter="mail">Mail</button>
+    <button class="tab" data-filter="db">Database</button>
+  </div>
+
+  <div class="port-list" id="portList"></div>
+  <div class="count" id="count">0 ports</div>
+
+  <footer>Click port to copy · Network Port Reference</footer>
+
+  <script>
+    "use strict";
+
+    const ports = [
+      { port: 20, proto: "TCP", name: "FTP Data", desc: "File Transfer Protocol (data)", cat: "file" },
+      { port: 21, proto: "TCP", name: "FTP Control", desc: "File Transfer Protocol (control)", cat: "file" },
+      { port: 22, proto: "TCP", name: "SSH", desc: "Secure Shell", cat: "remote" },
+      { port: 23, proto: "TCP", name: "Telnet", desc: "Unencrypted remote login", cat: "remote" },
+      { port: 25, proto: "TCP", name: "SMTP", desc: "Simple Mail Transfer Protocol", cat: "mail" },
+      { port: 53, proto: "TCP/UDP", name: "DNS", desc: "Domain Name System", cat: "network" },
+      { port: 67, proto: "UDP", name: "DHCP Server", desc: "Dynamic Host Configuration", cat: "network" },
+      { port: 68, proto: "UDP", name: "DHCP Client", desc: "Dynamic Host Configuration", cat: "network" },
+      { port: 69, proto: "UDP", name: "TFTP", desc: "Trivial File Transfer Protocol", cat: "file" },
+      { port: 80, proto: "TCP", name: "HTTP", desc: "Hypertext Transfer Protocol", cat: "web" },
+      { port: 110, proto: "TCP", name: "POP3", desc: "Post Office Protocol v3", cat: "mail" },
+      { port: 119, proto: "TCP", name: "NNTP", desc: "Network News Transfer Protocol", cat: "news" },
+      { port: 123, proto: "UDP", name: "NTP", desc: "Network Time Protocol", cat: "network" },
+      { port: 143, proto: "TCP", name: "IMAP", desc: "Internet Message Access Protocol", cat: "mail" },
+      { port: 161, proto: "UDP", name: "SNMP", desc: "Simple Network Management Protocol", cat: "network" },
+      { port: 194, proto: "TCP", name: "IRC", desc: "Internet Relay Chat", cat: "chat" },
+      { port: 443, proto: "TCP", name: "HTTPS", desc: "HTTP over TLS/SSL", cat: "web" },
+      { port: 445, proto: "TCP", name: "SMB", desc: "Server Message Block (Windows shares)", cat: "file" },
+      { port: 465, proto: "TCP", name: "SMTPS", desc: "SMTP over TLS", cat: "mail" },
+      { port: 514, proto: "UDP", name: "Syslog", desc: "System Logging Protocol", cat: "network" },
+      { port: 587, proto: "TCP", name: "SMTP Submission", desc: "Mail submission", cat: "mail" },
+      { port: 993, proto: "TCP", name: "IMAPS", desc: "IMAP over TLS", cat: "mail" },
+      { port: 995, proto: "TCP", name: "POP3S", desc: "POP3 over TLS", cat: "mail" },
+      { port: 1080, proto: "TCP", name: "SOCKS Proxy", desc: "SOCKS proxy server", cat: "network" },
+      { port: 1433, proto: "TCP", name: "MS SQL", desc: "Microsoft SQL Server", cat: "db" },
+      { port: 1434, proto: "UDP", name: "MS SQL Browser", desc: "SQL Server Browser", cat: "db" },
+      { port: 1521, proto: "TCP", name: "Oracle DB", desc: "Oracle Database", cat: "db" },
+      { port: 2049, proto: "TCP/UDP", name: "NFS", desc: "Network File System", cat: "file" },
+      { port: 3000, proto: "TCP", name: "Dev Server", desc: "Common development server", cat: "web" },
+      { port: 3306, proto: "TCP", name: "MySQL", desc: "MySQL Database", cat: "db" },
+      { port: 3389, proto: "TCP", name: "RDP", desc: "Remote Desktop Protocol", cat: "remote" },
+      { port: 5432, proto: "TCP", name: "PostgreSQL", desc: "PostgreSQL Database", cat: "db" },
+      { port: 5672, proto: "TCP", name: "AMQP", desc: "Advanced Message Queuing", cat: "message" },
+      { port: 5900, proto: "TCP", name: "VNC", desc: "Virtual Network Computing", cat: "remote" },
+      { port: 6379, proto: "TCP", name: "Redis", desc: "Redis key-value store", cat: "db" },
+      { port: 6443, proto: "TCP", name: "Kubernetes API", desc: "Kubernetes API server", cat: "web" },
+      { port: 8080, proto: "TCP", name: "HTTP Alt", desc: "Alternative HTTP port", cat: "web" },
+      { port: 8443, proto: "TCP", name: "HTTPS Alt", desc: "Alternative HTTPS port", cat: "web" },
+      { port: 9000, proto: "TCP", name: "SonarQube", desc: "Code quality platform", cat: "web" },
+      { port: 9092, proto: "TCP", name: "Kafka", desc: "Apache Kafka broker", cat: "message" },
+      { port: 9200, proto: "TCP", name: "Elasticsearch", desc: "Elasticsearch HTTP", cat: "db" },
+      { port: 9300, proto: "TCP", name: "ES Transport", desc: "Elasticsearch transport", cat: "db" },
+      { port: 11211, proto: "TCP/UDP", name: "Memcached", desc: "Memcached caching", cat: "db" },
+      { port: 27017, proto: "TCP", name: "MongoDB", desc: "MongoDB Database", cat: "db" }
+    ];
+
+    const $search = document.getElementById("search");
+    const $portList = document.getElementById("portList");
+    const $count = document.getElementById("count");
+    let currentFilter = "all";
+
+    function render() {
+      const query = $search.value.toLowerCase();
+      let filtered = ports.filter(p => {
+        const matchSearch = !query || 
+          p.port.toString().includes(query) ||
+          p.name.toLowerCase().includes(query) ||
+          p.desc.toLowerCase().includes(query);
+        
+        let matchFilter = true;
+        if (currentFilter === "tcp") matchFilter = p.proto.includes("TCP");
+        else if (currentFilter === "udp") matchFilter = p.proto.includes("UDP");
+        else if (currentFilter === "web") matchFilter = p.cat === "web";
+        else if (currentFilter === "mail") matchFilter = p.cat === "mail";
+        else if (currentFilter === "db") matchFilter = p.cat === "db";
+        
+        return matchSearch && matchFilter;
+      });
+
+      $portList.innerHTML = "";
+      filtered.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "port-item";
+        item.innerHTML = `
+          <span class="port-num">${p.port}</span>
+          <span class="port-proto">${p.proto}</span>
+          <div class="port-info">
+            <div class="port-name">${p.name}</div>
+            <div class="port-desc">${p.desc}</div>
+          </div>
+        `;
+        item.addEventListener("click", () => copyPort(p.port));
+        $portList.appendChild(item);
+      });
+
+      $count.textContent = `${filtered.length} ports`;
+    }
+
+    async function copyPort(port) {
+      try {
+        await navigator.clipboard.writeText(port.toString());
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = port.toString();
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentFilter = tab.dataset.filter;
+        render();
+      });
+    });
+
+    $search.addEventListener("input", render);
+    $search.focus();
+    render();
+  </script>
+</body>
+</html>

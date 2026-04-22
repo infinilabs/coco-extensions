@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keyboard Shortcuts</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .controls {
+      display: flex; gap: 8px;
+    }
+    input[type="text"] {
+      flex: 1; font: inherit; font-size: 13px;
+      padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    select {
+      font: inherit; font-size: 12px;
+      padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    .app-tabs {
+      display: flex; gap: 4px; flex-wrap: wrap;
+    }
+    .tab {
+      font: inherit; font-size: 11px; padding: 5px 10px;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); border-radius: 4px;
+      cursor: pointer;
+    }
+    .tab:hover { border-color: var(--accent); }
+    .tab.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .shortcut-list {
+      flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+    }
+    .shortcut-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 12px; background: var(--bg-elev);
+      border-radius: 6px;
+    }
+    .shortcut-desc { font-size: 13px; }
+    .shortcut-keys {
+      display: flex; gap: 4px;
+    }
+    .key {
+      font: 11px "SF Mono", Monaco, Consolas, monospace;
+      padding: 4px 8px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 4px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .count { font-size: 11px; color: var(--muted); text-align: center; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <h1>⌨️ Keyboard Shortcuts</h1>
+  
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search shortcuts...">
+    <select id="platform">
+      <option value="mac">macOS</option>
+      <option value="win">Windows</option>
+    </select>
+  </div>
+
+  <div class="app-tabs">
+    <button class="tab active" data-app="general">General</button>
+    <button class="tab" data-app="browser">Browser</button>
+    <button class="tab" data-app="vscode">VS Code</button>
+    <button class="tab" data-app="terminal">Terminal</button>
+    <button class="tab" data-app="finder">Finder</button>
+  </div>
+
+  <div class="shortcut-list" id="shortcutList"></div>
+  <div class="count" id="count">0 shortcuts</div>
+
+  <footer>Keyboard Shortcuts Reference</footer>
+
+  <script>
+    "use strict";
+
+    const shortcuts = {
+      general: [
+        { desc: "Copy", mac: ["⌘", "C"], win: ["Ctrl", "C"] },
+        { desc: "Cut", mac: ["⌘", "X"], win: ["Ctrl", "X"] },
+        { desc: "Paste", mac: ["⌘", "V"], win: ["Ctrl", "V"] },
+        { desc: "Undo", mac: ["⌘", "Z"], win: ["Ctrl", "Z"] },
+        { desc: "Redo", mac: ["⌘", "⇧", "Z"], win: ["Ctrl", "Y"] },
+        { desc: "Select All", mac: ["⌘", "A"], win: ["Ctrl", "A"] },
+        { desc: "Find", mac: ["⌘", "F"], win: ["Ctrl", "F"] },
+        { desc: "Save", mac: ["⌘", "S"], win: ["Ctrl", "S"] },
+        { desc: "Print", mac: ["⌘", "P"], win: ["Ctrl", "P"] },
+        { desc: "New", mac: ["⌘", "N"], win: ["Ctrl", "N"] },
+        { desc: "Open", mac: ["⌘", "O"], win: ["Ctrl", "O"] },
+        { desc: "Close Window", mac: ["⌘", "W"], win: ["Ctrl", "W"] },
+        { desc: "Quit App", mac: ["⌘", "Q"], win: ["Alt", "F4"] },
+        { desc: "Switch Apps", mac: ["⌘", "Tab"], win: ["Alt", "Tab"] },
+        { desc: "Screenshot", mac: ["⌘", "⇧", "3"], win: ["Win", "⇧", "S"] },
+        { desc: "Lock Screen", mac: ["⌘", "⌃", "Q"], win: ["Win", "L"] }
+      ],
+      browser: [
+        { desc: "New Tab", mac: ["⌘", "T"], win: ["Ctrl", "T"] },
+        { desc: "Close Tab", mac: ["⌘", "W"], win: ["Ctrl", "W"] },
+        { desc: "Reopen Tab", mac: ["⌘", "⇧", "T"], win: ["Ctrl", "⇧", "T"] },
+        { desc: "Next Tab", mac: ["⌘", "⌥", "→"], win: ["Ctrl", "Tab"] },
+        { desc: "Prev Tab", mac: ["⌘", "⌥", "←"], win: ["Ctrl", "⇧", "Tab"] },
+        { desc: "Refresh", mac: ["⌘", "R"], win: ["Ctrl", "R"] },
+        { desc: "Hard Refresh", mac: ["⌘", "⇧", "R"], win: ["Ctrl", "⇧", "R"] },
+        { desc: "Address Bar", mac: ["⌘", "L"], win: ["Ctrl", "L"] },
+        { desc: "Bookmarks", mac: ["⌘", "⇧", "B"], win: ["Ctrl", "⇧", "B"] },
+        { desc: "History", mac: ["⌘", "Y"], win: ["Ctrl", "H"] },
+        { desc: "Dev Tools", mac: ["⌘", "⌥", "I"], win: ["Ctrl", "⇧", "I"] },
+        { desc: "Zoom In", mac: ["⌘", "+"], win: ["Ctrl", "+"] },
+        { desc: "Zoom Out", mac: ["⌘", "-"], win: ["Ctrl", "-"] },
+        { desc: "Reset Zoom", mac: ["⌘", "0"], win: ["Ctrl", "0"] }
+      ],
+      vscode: [
+        { desc: "Command Palette", mac: ["⌘", "⇧", "P"], win: ["Ctrl", "⇧", "P"] },
+        { desc: "Quick Open", mac: ["⌘", "P"], win: ["Ctrl", "P"] },
+        { desc: "Toggle Sidebar", mac: ["⌘", "B"], win: ["Ctrl", "B"] },
+        { desc: "Toggle Terminal", mac: ["⌘", "`"], win: ["Ctrl", "`"] },
+        { desc: "Go to Line", mac: ["⌘", "G"], win: ["Ctrl", "G"] },
+        { desc: "Go to Definition", mac: ["F12"], win: ["F12"] },
+        { desc: "Find in Files", mac: ["⌘", "⇧", "F"], win: ["Ctrl", "⇧", "F"] },
+        { desc: "Replace", mac: ["⌘", "⌥", "F"], win: ["Ctrl", "H"] },
+        { desc: "Multi-Cursor", mac: ["⌘", "D"], win: ["Ctrl", "D"] },
+        { desc: "Comment Line", mac: ["⌘", "/"], win: ["Ctrl", "/"] },
+        { desc: "Move Line Up", mac: ["⌥", "↑"], win: ["Alt", "↑"] },
+        { desc: "Move Line Down", mac: ["⌥", "↓"], win: ["Alt", "↓"] },
+        { desc: "Duplicate Line", mac: ["⌘", "⇧", "D"], win: ["Ctrl", "⇧", "D"] },
+        { desc: "Format Document", mac: ["⌘", "⇧", "F"], win: ["Ctrl", "⇧", "F"] },
+        { desc: "Split Editor", mac: ["⌘", "\\"], win: ["Ctrl", "\\"] }
+      ],
+      terminal: [
+        { desc: "Clear Screen", mac: ["⌘", "K"], win: ["Ctrl", "L"] },
+        { desc: "Interrupt", mac: ["⌃", "C"], win: ["Ctrl", "C"] },
+        { desc: "End of File", mac: ["⌃", "D"], win: ["Ctrl", "D"] },
+        { desc: "Search History", mac: ["⌃", "R"], win: ["Ctrl", "R"] },
+        { desc: "Previous Command", mac: ["↑"], win: ["↑"] },
+        { desc: "Next Command", mac: ["↓"], win: ["↓"] },
+        { desc: "Beginning of Line", mac: ["⌃", "A"], win: ["Home"] },
+        { desc: "End of Line", mac: ["⌃", "E"], win: ["End"] },
+        { desc: "Delete Word", mac: ["⌃", "W"], win: ["Ctrl", "W"] },
+        { desc: "Clear Line", mac: ["⌃", "U"], win: ["Ctrl", "U"] },
+        { desc: "New Tab", mac: ["⌘", "T"], win: ["Ctrl", "⇧", "T"] },
+        { desc: "Close Tab", mac: ["⌘", "W"], win: ["Ctrl", "⇧", "W"] }
+      ],
+      finder: [
+        { desc: "New Folder", mac: ["⌘", "⇧", "N"], win: ["Ctrl", "⇧", "N"] },
+        { desc: "Delete", mac: ["⌘", "⌫"], win: ["Del"] },
+        { desc: "Get Info", mac: ["⌘", "I"], win: ["Alt", "Enter"] },
+        { desc: "Rename", mac: ["Enter"], win: ["F2"] },
+        { desc: "Quick Look", mac: ["Space"], win: [""] },
+        { desc: "Go to Folder", mac: ["⌘", "⇧", "G"], win: [""] },
+        { desc: "Show Hidden", mac: ["⌘", "⇧", "."], win: [""] },
+        { desc: "Back", mac: ["⌘", "["], win: ["Alt", "←"] },
+        { desc: "Forward", mac: ["⌘", "]"], win: ["Alt", "→"] },
+        { desc: "Up Directory", mac: ["⌘", "↑"], win: ["Alt", "↑"] },
+        { desc: "Open", mac: ["⌘", "↓"], win: ["Enter"] },
+        { desc: "Home Folder", mac: ["⌘", "⇧", "H"], win: [""] }
+      ]
+    };
+
+    const $search = document.getElementById("search");
+    const $platform = document.getElementById("platform");
+    const $shortcutList = document.getElementById("shortcutList");
+    const $count = document.getElementById("count");
+    let currentApp = "general";
+
+    // Detect platform
+    if (!navigator.platform.toLowerCase().includes("mac")) {
+      $platform.value = "win";
+    }
+
+    function render() {
+      const query = $search.value.toLowerCase();
+      const platform = $platform.value;
+      const appShortcuts = shortcuts[currentApp] || [];
+      
+      let filtered = appShortcuts.filter(s => 
+        !query || s.desc.toLowerCase().includes(query)
+      );
+
+      $shortcutList.innerHTML = "";
+      filtered.forEach(s => {
+        const keys = platform === "mac" ? s.mac : s.win;
+        if (keys.length === 0 || (keys.length === 1 && keys[0] === "")) return;
+        
+        const item = document.createElement("div");
+        item.className = "shortcut-item";
+        item.innerHTML = `
+          <span class="shortcut-desc">${s.desc}</span>
+          <div class="shortcut-keys">
+            ${keys.map(k => `<span class="key">${k}</span>`).join("")}
+          </div>
+        `;
+        $shortcutList.appendChild(item);
+      });
+
+      $count.textContent = `${$shortcutList.children.length} shortcuts`;
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentApp = tab.dataset.app;
+        render();
+      });
+    });
+
+    $search.addEventListener("input", render);
+    $platform.addEventListener("change", render);
+    render();
+  </script>
+</body>
+</html>

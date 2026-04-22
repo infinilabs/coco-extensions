@@ -1,0 +1,35 @@
+{
+  "name": "Network Port Reference",
+  "description": "Searchable reference of common network ports and services.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "developer",
+  "tags": [
+    "port",
+    "network",
+    "tcp",
+    "udp",
+    "reference",
+    "developer"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 500,
+    "height": 520
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

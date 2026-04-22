@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTTP Status Codes</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1;
+      --info: #3b82f6; --success: #22c55e; --redirect: #f59e0b; --client-err: #ef4444; --server-err: #dc2626;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8;
+              --info: #60a5fa; --success: #4ade80; --redirect: #fbbf24; --client-err: #f87171; --server-err: #ef4444; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    input[type="text"] {
+      font: inherit; font-size: 13px;
+      padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); width: 100%;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    .filter-tabs {
+      display: flex; gap: 4px; flex-wrap: wrap;
+    }
+    .tab {
+      font: inherit; font-size: 10px; padding: 5px 8px;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); border-radius: 4px;
+      cursor: pointer;
+    }
+    .tab:hover { border-color: var(--accent); }
+    .tab.active { border-width: 2px; }
+    .tab[data-cat="1xx"] { border-color: var(--info); }
+    .tab[data-cat="2xx"] { border-color: var(--success); }
+    .tab[data-cat="3xx"] { border-color: var(--redirect); }
+    .tab[data-cat="4xx"] { border-color: var(--client-err); }
+    .tab[data-cat="5xx"] { border-color: var(--server-err); }
+    .status-list {
+      flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+    }
+    .status-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 12px; background: var(--bg-elev);
+      border-left: 3px solid var(--border); border-radius: 4px;
+    }
+    .status-item.cat-1xx { border-left-color: var(--info); }
+    .status-item.cat-2xx { border-left-color: var(--success); }
+    .status-item.cat-3xx { border-left-color: var(--redirect); }
+    .status-item.cat-4xx { border-left-color: var(--client-err); }
+    .status-item.cat-5xx { border-left-color: var(--server-err); }
+    .status-code {
+      font: 700 16px "SF Mono", Monaco, Consolas, monospace;
+      min-width: 40px;
+    }
+    .status-info { flex: 1; }
+    .status-name { font-weight: 600; font-size: 13px; }
+    .status-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .count { font-size: 11px; color: var(--muted); text-align: center; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <h1>🌐 HTTP Status Codes</h1>
+  
+  <input type="text" id="search" placeholder="Search codes or descriptions...">
+
+  <div class="filter-tabs">
+    <button class="tab active" data-cat="all">All</button>
+    <button class="tab" data-cat="1xx">1xx Info</button>
+    <button class="tab" data-cat="2xx">2xx Success</button>
+    <button class="tab" data-cat="3xx">3xx Redirect</button>
+    <button class="tab" data-cat="4xx">4xx Client</button>
+    <button class="tab" data-cat="5xx">5xx Server</button>
+  </div>
+
+  <div class="status-list" id="statusList"></div>
+  <div class="count" id="count">0 codes</div>
+
+  <footer>HTTP Status Codes Reference</footer>
+
+  <script>
+    "use strict";
+
+    const codes = [
+      // 1xx Informational
+      { code: 100, name: "Continue", desc: "Server received request headers, client should proceed", cat: "1xx" },
+      { code: 101, name: "Switching Protocols", desc: "Server is switching protocols as requested", cat: "1xx" },
+      { code: 102, name: "Processing", desc: "Server is processing the request (WebDAV)", cat: "1xx" },
+      { code: 103, name: "Early Hints", desc: "Used to return response headers before final response", cat: "1xx" },
+      
+      // 2xx Success
+      { code: 200, name: "OK", desc: "Standard successful response", cat: "2xx" },
+      { code: 201, name: "Created", desc: "Request succeeded and a new resource was created", cat: "2xx" },
+      { code: 202, name: "Accepted", desc: "Request accepted for processing but not completed", cat: "2xx" },
+      { code: 203, name: "Non-Authoritative Information", desc: "Returned metadata from a third-party", cat: "2xx" },
+      { code: 204, name: "No Content", desc: "Success with no content to return", cat: "2xx" },
+      { code: 205, name: "Reset Content", desc: "Request successful, reset document view", cat: "2xx" },
+      { code: 206, name: "Partial Content", desc: "Partial resource returned (range request)", cat: "2xx" },
+      { code: 207, name: "Multi-Status", desc: "Multiple status codes (WebDAV)", cat: "2xx" },
+      
+      // 3xx Redirection
+      { code: 300, name: "Multiple Choices", desc: "Multiple options for the resource", cat: "3xx" },
+      { code: 301, name: "Moved Permanently", desc: "Resource moved permanently to new URL", cat: "3xx" },
+      { code: 302, name: "Found", desc: "Resource temporarily at different URL", cat: "3xx" },
+      { code: 303, name: "See Other", desc: "Response at another URI via GET", cat: "3xx" },
+      { code: 304, name: "Not Modified", desc: "Resource not modified since last request", cat: "3xx" },
+      { code: 307, name: "Temporary Redirect", desc: "Temporarily moved, same method must be used", cat: "3xx" },
+      { code: 308, name: "Permanent Redirect", desc: "Permanently moved, same method must be used", cat: "3xx" },
+      
+      // 4xx Client Errors
+      { code: 400, name: "Bad Request", desc: "Server cannot process malformed request", cat: "4xx" },
+      { code: 401, name: "Unauthorized", desc: "Authentication required", cat: "4xx" },
+      { code: 402, name: "Payment Required", desc: "Reserved for future use", cat: "4xx" },
+      { code: 403, name: "Forbidden", desc: "Server refuses to authorize request", cat: "4xx" },
+      { code: 404, name: "Not Found", desc: "Requested resource not found", cat: "4xx" },
+      { code: 405, name: "Method Not Allowed", desc: "HTTP method not allowed for resource", cat: "4xx" },
+      { code: 406, name: "Not Acceptable", desc: "No content matching Accept headers", cat: "4xx" },
+      { code: 407, name: "Proxy Authentication Required", desc: "Must authenticate with proxy", cat: "4xx" },
+      { code: 408, name: "Request Timeout", desc: "Server timed out waiting for request", cat: "4xx" },
+      { code: 409, name: "Conflict", desc: "Request conflicts with current state", cat: "4xx" },
+      { code: 410, name: "Gone", desc: "Resource permanently removed", cat: "4xx" },
+      { code: 411, name: "Length Required", desc: "Content-Length header required", cat: "4xx" },
+      { code: 412, name: "Precondition Failed", desc: "Precondition in headers not met", cat: "4xx" },
+      { code: 413, name: "Payload Too Large", desc: "Request entity too large", cat: "4xx" },
+      { code: 414, name: "URI Too Long", desc: "Request URI too long", cat: "4xx" },
+      { code: 415, name: "Unsupported Media Type", desc: "Media type not supported", cat: "4xx" },
+      { code: 416, name: "Range Not Satisfiable", desc: "Cannot satisfy range request", cat: "4xx" },
+      { code: 417, name: "Expectation Failed", desc: "Expect header cannot be met", cat: "4xx" },
+      { code: 418, name: "I'm a Teapot", desc: "Server refuses to brew coffee (RFC 2324)", cat: "4xx" },
+      { code: 422, name: "Unprocessable Entity", desc: "Request well-formed but semantically wrong", cat: "4xx" },
+      { code: 423, name: "Locked", desc: "Resource is locked (WebDAV)", cat: "4xx" },
+      { code: 429, name: "Too Many Requests", desc: "Rate limit exceeded", cat: "4xx" },
+      { code: 451, name: "Unavailable For Legal Reasons", desc: "Blocked for legal reasons", cat: "4xx" },
+      
+      // 5xx Server Errors
+      { code: 500, name: "Internal Server Error", desc: "Generic server error", cat: "5xx" },
+      { code: 501, name: "Not Implemented", desc: "Server doesn't support functionality", cat: "5xx" },
+      { code: 502, name: "Bad Gateway", desc: "Invalid response from upstream server", cat: "5xx" },
+      { code: 503, name: "Service Unavailable", desc: "Server temporarily unavailable", cat: "5xx" },
+      { code: 504, name: "Gateway Timeout", desc: "Upstream server timed out", cat: "5xx" },
+      { code: 505, name: "HTTP Version Not Supported", desc: "HTTP version not supported", cat: "5xx" },
+      { code: 507, name: "Insufficient Storage", desc: "Server cannot store representation", cat: "5xx" },
+      { code: 508, name: "Loop Detected", desc: "Infinite loop detected (WebDAV)", cat: "5xx" },
+      { code: 511, name: "Network Authentication Required", desc: "Network authentication needed", cat: "5xx" }
+    ];
+
+    const $search = document.getElementById("search");
+    const $statusList = document.getElementById("statusList");
+    const $count = document.getElementById("count");
+    let currentCat = "all";
+
+    function render() {
+      const query = $search.value.toLowerCase();
+      let filtered = codes.filter(c => {
+        const matchSearch = !query || 
+          c.code.toString().includes(query) ||
+          c.name.toLowerCase().includes(query) ||
+          c.desc.toLowerCase().includes(query);
+        const matchCat = currentCat === "all" || c.cat === currentCat;
+        return matchSearch && matchCat;
+      });
+
+      $statusList.innerHTML = "";
+      filtered.forEach(c => {
+        const item = document.createElement("div");
+        item.className = `status-item cat-${c.cat}`;
+        item.innerHTML = `
+          <span class="status-code">${c.code}</span>
+          <div class="status-info">
+            <div class="status-name">${c.name}</div>
+            <div class="status-desc">${c.desc}</div>
+          </div>
+        `;
+        $statusList.appendChild(item);
+      });
+
+      $count.textContent = `${filtered.length} codes`;
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        currentCat = tab.dataset.cat;
+        render();
+      });
+    });
+
+    $search.addEventListener("input", render);
+    $search.focus();
+    render();
+  </script>
+</body>
+</html>
