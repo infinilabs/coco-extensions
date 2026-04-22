@@ -21,7 +21,7 @@
     "search_bar": false,
     "filter_bar": false,
     "footer": false,
-    "resizable": false,
+    "resizable": true,
     "detachable": false
   },
   "version": {
