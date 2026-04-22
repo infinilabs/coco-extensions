@@ -21,10 +21,8 @@
     "search_bar": false,
     "filter_bar": false,
     "footer": false,
-    "resizable": true,
-    "detachable": true,
-    "width": 700,
-    "height": 600
+    "resizable": false,
+    "detachable": false
   },
   "version": {
     "number": "0.1.0"
