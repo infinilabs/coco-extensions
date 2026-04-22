@@ -1,0 +1,34 @@
+{
+  "name": "Data URL Generator",
+  "description": "Create data URLs from text, images, or files.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "developer",
+  "tags": [
+    "data-url",
+    "base64",
+    "image",
+    "encode",
+    "developer"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 500,
+    "height": 520
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Unit Converter</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 14px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .settings {
+      display: flex; gap: 16px; flex-wrap: wrap;
+    }
+    .setting {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .setting-label { font-size: 11px; color: var(--muted); }
+    .setting-row { display: flex; align-items: center; gap: 6px; }
+    input[type="number"] {
+      font: inherit; font-size: 13px;
+      width: 80px; padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    .unit-label { font-size: 12px; color: var(--muted); }
+    .converter {
+      background: var(--bg-elev); border-radius: 8px; padding: 16px;
+    }
+    .input-row {
+      display: flex; gap: 8px; align-items: center; margin-bottom: 12px;
+    }
+    .input-row input {
+      flex: 1; font-size: 18px; font-weight: 600;
+    }
+    select {
+      font: inherit; font-size: 13px;
+      padding: 8px 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg);
+      color: var(--text);
+    }
+    .results {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+    }
+    .result-item {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 10px 12px;
+      background: var(--bg); border-radius: 6px;
+      cursor: pointer;
+    }
+    .result-item:hover { outline: 1px solid var(--accent); }
+    .result-unit { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+    .result-value { font: 600 14px "SF Mono", Monaco, Consolas, monospace; color: var(--accent); }
+    .common-sizes {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .size-btn {
+      font: inherit; font-size: 11px;
+      padding: 6px 10px; border-radius: 4px;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .size-btn:hover { border-color: var(--accent); }
+    .status { font-size: 11px; color: var(--success); text-align: center; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); margin-top: auto; }
+  </style>
+</head>
+<body>
+  <h1>📐 CSS Unit Converter</h1>
+
+  <div class="settings">
+    <div class="setting">
+      <span class="setting-label">Root Font Size</span>
+      <div class="setting-row">
+        <input type="number" id="rootFontSize" value="16" min="1">
+        <span class="unit-label">px</span>
+      </div>
+    </div>
+    <div class="setting">
+      <span class="setting-label">Viewport Width</span>
+      <div class="setting-row">
+        <input type="number" id="viewportWidth" value="1920" min="1">
+        <span class="unit-label">px</span>
+      </div>
+    </div>
+    <div class="setting">
+      <span class="setting-label">Viewport Height</span>
+      <div class="setting-row">
+        <input type="number" id="viewportHeight" value="1080" min="1">
+        <span class="unit-label">px</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="converter">
+    <div class="input-row">
+      <input type="number" id="inputValue" value="16" step="any">
+      <select id="inputUnit">
+        <option value="px">px</option>
+        <option value="rem">rem</option>
+        <option value="em">em</option>
+        <option value="pt">pt</option>
+        <option value="vw">vw</option>
+        <option value="vh">vh</option>
+        <option value="%">%</option>
+      </select>
+    </div>
+    <div class="results" id="results"></div>
+  </div>
+
+  <div>
+    <span class="setting-label">Common Sizes</span>
+    <div class="common-sizes">
+      <button class="size-btn" data-value="8" data-unit="px">8px</button>
+      <button class="size-btn" data-value="12" data-unit="px">12px</button>
+      <button class="size-btn" data-value="14" data-unit="px">14px</button>
+      <button class="size-btn" data-value="16" data-unit="px">16px</button>
+      <button class="size-btn" data-value="18" data-unit="px">18px</button>
+      <button class="size-btn" data-value="24" data-unit="px">24px</button>
+      <button class="size-btn" data-value="32" data-unit="px">32px</button>
+      <button class="size-btn" data-value="1" data-unit="rem">1rem</button>
+      <button class="size-btn" data-value="1.5" data-unit="rem">1.5rem</button>
+      <button class="size-btn" data-value="2" data-unit="rem">2rem</button>
+    </div>
+  </div>
+
+  <div class="status" id="status"></div>
+
+  <footer>CSS Unit Converter · Click any result to copy</footer>
+
+  <script>
+    "use strict";
+
+    const $inputValue = document.getElementById("inputValue");
+    const $inputUnit = document.getElementById("inputUnit");
+    const $rootFontSize = document.getElementById("rootFontSize");
+    const $viewportWidth = document.getElementById("viewportWidth");
+    const $viewportHeight = document.getElementById("viewportHeight");
+    const $results = document.getElementById("results");
+    const $status = document.getElementById("status");
+
+    const units = ['px', 'rem', 'em', 'pt', 'vw', 'vh', '%'];
+
+    function toPx(value, unit) {
+      const root = parseFloat($rootFontSize.value) || 16;
+      const vw = parseFloat($viewportWidth.value) || 1920;
+      const vh = parseFloat($viewportHeight.value) || 1080;
+      
+      switch (unit) {
+        case 'px': return value;
+        case 'rem': return value * root;
+        case 'em': return value * root;
+        case 'pt': return value * (96 / 72);
+        case 'vw': return value * (vw / 100);
+        case 'vh': return value * (vh / 100);
+        case '%': return value * (root / 100);
+        default: return value;
+      }
+    }
+
+    function fromPx(px, unit) {
+      const root = parseFloat($rootFontSize.value) || 16;
+      const vw = parseFloat($viewportWidth.value) || 1920;
+      const vh = parseFloat($viewportHeight.value) || 1080;
+      
+      switch (unit) {
+        case 'px': return px;
+        case 'rem': return px / root;
+        case 'em': return px / root;
+        case 'pt': return px / (96 / 72);
+        case 'vw': return px / (vw / 100);
+        case 'vh': return px / (vh / 100);
+        case '%': return px / (root / 100);
+        default: return px;
+      }
+    }
+
+    function convert() {
+      const value = parseFloat($inputValue.value) || 0;
+      const unit = $inputUnit.value;
+      const px = toPx(value, unit);
+
+      $results.innerHTML = '';
+      units.forEach(u => {
+        const converted = fromPx(px, u);
+        const formatted = Number.isInteger(converted) ? converted : converted.toFixed(4).replace(/\.?0+$/, '');
+        
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `
+          <span class="result-unit">${u}</span>
+          <span class="result-value">${formatted}</span>
+        `;
+        item.addEventListener('click', () => copyValue(formatted + u));
+        $results.appendChild(item);
+      });
+    }
+
+    async function copyValue(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showStatus("Copied: " + text);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied: " + text);
+      }
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ''; }, 2000);
+    }
+
+    // Event listeners
+    [$inputValue, $inputUnit, $rootFontSize, $viewportWidth, $viewportHeight].forEach(el => {
+      el.addEventListener('input', convert);
+      el.addEventListener('change', convert);
+    });
+
+    // Quick size buttons
+    document.querySelectorAll('.size-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $inputValue.value = btn.dataset.value;
+        $inputUnit.value = btn.dataset.unit;
+        convert();
+      });
+    });
+
+    $inputValue.focus();
+    convert();
+  </script>
+</body>
+</html>
