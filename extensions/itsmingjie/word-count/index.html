@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Count</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 14px;
+    }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .row label { color: var(--muted); font-size: 13px; }
+    button {
+      font: inherit; color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px;
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(1.1); }
+    textarea {
+      flex: 1; width: 100%; min-height: 150px; resize: vertical;
+      font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6; color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 8px; padding: 12px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .stat {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stat .value {
+      font-size: 28px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+    }
+    .stat .label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .reading-time {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .reading-time .label { color: var(--muted); font-size: 13px; }
+    .reading-time .value { font-weight: 500; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; margin-top: auto; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <label for="input">Text</label>
+    <button id="paste">Paste</button>
+    <button id="clear">Clear</button>
+  </div>
+  <textarea id="input" placeholder="Type or paste text to count words, characters, sentences, and paragraphs…" spellcheck="false"></textarea>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="value" id="words">0</span>
+      <span class="label">Words</span>
+    </div>
+    <div class="stat">
+      <span class="value" id="chars">0</span>
+      <span class="label">Characters</span>
+    </div>
+    <div class="stat">
+      <span class="value" id="sentences">0</span>
+      <span class="label">Sentences</span>
+    </div>
+    <div class="stat">
+      <span class="value" id="paragraphs">0</span>
+      <span class="label">Paragraphs</span>
+    </div>
+  </div>
+
+  <div class="reading-time">
+    <span class="label">Estimated reading time</span>
+    <span class="value" id="readingTime">0 min</span>
+  </div>
+
+  <footer>
+    Ported from the Raycast <a href="https://github.com/raycast/extensions/tree/main/extensions/word-count" target="_blank" rel="noopener">Word Count</a> extension by itsmingjie · MIT
+  </footer>
+
+  <script>
+    "use strict";
+
+    const $input = document.getElementById("input");
+    const $words = document.getElementById("words");
+    const $chars = document.getElementById("chars");
+    const $sentences = document.getElementById("sentences");
+    const $paragraphs = document.getElementById("paragraphs");
+    const $readingTime = document.getElementById("readingTime");
+
+    function countWords(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return 0;
+      // Split on whitespace, filter out empty strings
+      return trimmed.split(/\s+/).filter(w => w.length > 0).length;
+    }
+
+    function countCharacters(text) {
+      return text.length;
+    }
+
+    function countSentences(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return 0;
+      // Count sentence-ending punctuation followed by space or end
+      const matches = trimmed.match(/[.!?]+(?:\s|$)/g);
+      return matches ? matches.length : (trimmed.length > 0 ? 1 : 0);
+    }
+
+    function countParagraphs(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return 0;
+      // Paragraphs are separated by one or more blank lines
+      const paras = trimmed.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+      return paras.length || (trimmed.length > 0 ? 1 : 0);
+    }
+
+    function estimateReadingTime(wordCount) {
+      // Average reading speed: 200-250 words per minute, use 200 for estimates
+      const minutes = Math.ceil(wordCount / 200);
+      if (minutes === 0) return "< 1 min";
+      if (minutes === 1) return "1 min";
+      return `${minutes} min`;
+    }
+
+    function update() {
+      const text = $input.value;
+      const words = countWords(text);
+      
+      $words.textContent = words.toLocaleString();
+      $chars.textContent = countCharacters(text).toLocaleString();
+      $sentences.textContent = countSentences(text).toLocaleString();
+      $paragraphs.textContent = countParagraphs(text).toLocaleString();
+      $readingTime.textContent = estimateReadingTime(words);
+    }
+
+    $input.addEventListener("input", update);
+
+    document.getElementById("paste").addEventListener("click", async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        $input.value = text;
+        update();
+      } catch (e) {
+        console.error("Failed to read clipboard:", e);
+      }
+    });
+
+    document.getElementById("clear").addEventListener("click", () => {
+      $input.value = "";
+      update();
+    });
+
+    update();
+  </script>
+</body>
+</html>

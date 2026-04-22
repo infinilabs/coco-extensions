@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unix Timestamp Converter</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --toast-bg: #333; --toast-text: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a; --toast-bg: #555; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 14px;
+    }
+    h3 { margin: 0 0 8px 0; font-size: 14px; font-weight: 600; color: var(--muted); }
+    .section {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    label { color: var(--muted); font-size: 12px; }
+    input[type="text"], input[type="number"], input[type="datetime-local"] {
+      font: inherit; color: var(--text); background: var(--bg);
+      border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;
+      width: 100%;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, input[type="datetime-local"]:focus {
+      outline: 2px solid var(--accent); outline-offset: -1px;
+    }
+    button {
+      font: inherit; color: var(--text); background: var(--bg);
+      border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px;
+      cursor: pointer; white-space: nowrap;
+    }
+    button:hover { filter: brightness(1.05); }
+    button.primary {
+      background: var(--accent); color: var(--accent-text);
+      border-color: var(--accent); font-weight: 600;
+    }
+    .result {
+      margin-top: 10px;
+      padding: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      word-break: break-all;
+      cursor: pointer;
+    }
+    .result:hover { background: var(--border); }
+    .result-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .toast {
+      position: fixed; bottom: 16px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--toast-bg); color: var(--toast-text);
+      padding: 8px 14px; border-radius: 6px; font-size: 13px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .now-btn { font-size: 12px; padding: 4px 8px; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; margin-top: auto; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <h3>Timestamp → Date/Time</h3>
+    <div class="row">
+      <input type="text" id="timestampInput" placeholder="Enter Unix timestamp (e.g., 1703980800)" style="flex:1;" />
+      <button class="now-btn" id="nowTs">Now</button>
+    </div>
+    <div class="result" id="dateResult" title="Click to copy">
+      <div class="result-label">Local Date/Time</div>
+      <div id="dateOutput">—</div>
+    </div>
+    <div class="result" id="isoResult" title="Click to copy">
+      <div class="result-label">ISO 8601</div>
+      <div id="isoOutput">—</div>
+    </div>
+    <div class="result" id="utcResult" title="Click to copy">
+      <div class="result-label">UTC</div>
+      <div id="utcOutput">—</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>Date/Time → Timestamp</h3>
+    <div class="row">
+      <input type="datetime-local" id="dateInput" style="flex:1;" />
+      <button class="now-btn" id="nowDt">Now</button>
+    </div>
+    <div class="result" id="tsResult" title="Click to copy">
+      <div class="result-label">Unix Timestamp (seconds)</div>
+      <div id="tsOutput">—</div>
+    </div>
+    <div class="result" id="tsmsResult" title="Click to copy">
+      <div class="result-label">Unix Timestamp (milliseconds)</div>
+      <div id="tsmsOutput">—</div>
+    </div>
+  </div>
+
+  <footer>
+    Ported from the Raycast <a href="https://github.com/raycast/extensions/tree/main/extensions/unix-timestamp-converter" target="_blank" rel="noopener">Unix Timestamp Converter</a> extension by ride-space · MIT
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    const $tsInput = document.getElementById("timestampInput");
+    const $dateOutput = document.getElementById("dateOutput");
+    const $isoOutput = document.getElementById("isoOutput");
+    const $utcOutput = document.getElementById("utcOutput");
+    const $dateInput = document.getElementById("dateInput");
+    const $tsOutput = document.getElementById("tsOutput");
+    const $tsmsOutput = document.getElementById("tsmsOutput");
+    const $toast = document.getElementById("toast");
+
+    function showToast(msg) {
+      $toast.textContent = msg;
+      $toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => $toast.classList.remove("show"), 1200);
+    }
+
+    async function copyText(text) {
+      if (!text || text === "—") return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Copied to clipboard");
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        showToast("Copied to clipboard");
+      }
+    }
+
+    function formatLocalDate(date) {
+      const opts = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      };
+      return date.toLocaleString(undefined, opts);
+    }
+
+    function parseTimestamp(input) {
+      const trimmed = input.trim();
+      if (!trimmed) return null;
+      
+      const num = Number(trimmed);
+      if (isNaN(num)) return null;
+      
+      // If it looks like milliseconds (> year 3000 in seconds), treat as ms
+      // Otherwise treat as seconds
+      if (num > 32503680000) {
+        return new Date(num);
+      }
+      return new Date(num * 1000);
+    }
+
+    function updateTimestampToDate() {
+      const date = parseTimestamp($tsInput.value);
+      if (!date || isNaN(date.getTime())) {
+        $dateOutput.textContent = "—";
+        $isoOutput.textContent = "—";
+        $utcOutput.textContent = "—";
+        return;
+      }
+      
+      $dateOutput.textContent = formatLocalDate(date);
+      $isoOutput.textContent = date.toISOString();
+      $utcOutput.textContent = date.toUTCString();
+    }
+
+    function updateDateToTimestamp() {
+      const val = $dateInput.value;
+      if (!val) {
+        $tsOutput.textContent = "—";
+        $tsmsOutput.textContent = "—";
+        return;
+      }
+      
+      const date = new Date(val);
+      if (isNaN(date.getTime())) {
+        $tsOutput.textContent = "Invalid date";
+        $tsmsOutput.textContent = "—";
+        return;
+      }
+      
+      const ms = date.getTime();
+      $tsOutput.textContent = Math.floor(ms / 1000).toString();
+      $tsmsOutput.textContent = ms.toString();
+    }
+
+    function setNowTimestamp() {
+      const now = Math.floor(Date.now() / 1000);
+      $tsInput.value = now.toString();
+      updateTimestampToDate();
+    }
+
+    function setNowDatetime() {
+      const now = new Date();
+      // Format for datetime-local input: YYYY-MM-DDTHH:mm
+      const offset = now.getTimezoneOffset();
+      const local = new Date(now.getTime() - offset * 60 * 1000);
+      $dateInput.value = local.toISOString().slice(0, 16);
+      updateDateToTimestamp();
+    }
+
+    $tsInput.addEventListener("input", updateTimestampToDate);
+    $dateInput.addEventListener("input", updateDateToTimestamp);
+    document.getElementById("nowTs").addEventListener("click", setNowTimestamp);
+    document.getElementById("nowDt").addEventListener("click", setNowDatetime);
+
+    // Click to copy handlers
+    document.getElementById("dateResult").addEventListener("click", () => copyText($dateOutput.textContent));
+    document.getElementById("isoResult").addEventListener("click", () => copyText($isoOutput.textContent));
+    document.getElementById("utcResult").addEventListener("click", () => copyText($utcOutput.textContent));
+    document.getElementById("tsResult").addEventListener("click", () => copyText($tsOutput.textContent));
+    document.getElementById("tsmsResult").addEventListener("click", () => copyText($tsmsOutput.textContent));
+
+    // Initialize with current time
+    setNowTimestamp();
+    setNowDatetime();
+  </script>
+</body>
+</html>

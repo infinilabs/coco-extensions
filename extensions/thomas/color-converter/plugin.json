@@ -1,0 +1,35 @@
+{
+  "name": "Color Converter",
+  "description": "Convert colors between HEX, RGB, HSL, and other formats. Ported from the Raycast Color Picker extension by thomas (MIT).",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "color",
+    "converter",
+    "hex",
+    "rgb",
+    "hsl",
+    "design-tools"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 480,
+    "height": 560
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}
