@@ -1,0 +1,34 @@
+{
+  "name": "Change Case",
+  "description": "Transform a string between camelCase, snake_case, CONSTANT_CASE, kebab-case, PascalCase, Title Case, and 8 more — see all transformations at once and click any to copy. Ported from the Raycast Change Case extension by erics118 (MIT).",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "case",
+    "convert",
+    "camelcase",
+    "snake-case",
+    "developer-tools"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 720,
+    "height": 640
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

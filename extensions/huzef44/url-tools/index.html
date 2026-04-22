@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Tools</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --toast-bg: #333; --toast-text: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a; --toast-bg: #555; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: grid;
+      grid-template-rows: auto 1fr 1fr auto;
+      gap: 10px; padding: 16px;
+    }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .toolbar label { color: var(--muted); font-size: 13px; }
+    select, button {
+      font: inherit; color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;
+    }
+    button { cursor: pointer; }
+    button.primary {
+      background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 600;
+    }
+    button:hover { filter: brightness(1.1); }
+    .pane {
+      display: flex; flex-direction: column; min-height: 0;
+    }
+    .pane > .head {
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--muted); font-size: 12px; margin-bottom: 4px;
+    }
+    textarea {
+      flex: 1; width: 100%; resize: none;
+      font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      line-height: 1.5; color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+    }
+    .err { color: #d33; }
+    .toast {
+      position: fixed; bottom: 16px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--toast-bg); color: var(--toast-text);
+      padding: 8px 14px; border-radius: 6px; font-size: 13px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    footer { color: var(--muted); font-size: 11px; text-align: center; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <label for="mode">Mode</label>
+    <select id="mode">
+      <option value="component">encodeURIComponent (encode every reserved character)</option>
+      <option value="full">encodeURI (preserve URL structure: : / ? # &amp;)</option>
+    </select>
+    <button id="swap" title="Swap input/output">Swap</button>
+    <button id="clear">Clear</button>
+  </div>
+
+  <div class="pane">
+    <div class="head"><span>Input (decoded text)</span><button id="copyIn">Copy</button></div>
+    <textarea id="input" placeholder="Type or paste text to encode…
+You can also paste an already-encoded string and copy the decoded version below." spellcheck="false"></textarea>
+  </div>
+
+  <div class="pane">
+    <div class="head">
+      <span>Output (encoded ↔ decoded, live)</span>
+      <button class="primary" id="copyOut">Copy</button>
+    </div>
+    <textarea id="encoded" readonly placeholder="…" spellcheck="false"></textarea>
+  </div>
+
+  <footer>
+    Ported from the Raycast <a href="https://github.com/raycast/extensions/tree/004a0b6b7c846ef7d350217d2c91bc5d34fb265d/extensions/url-tools" target="_blank" rel="noopener">URL Tools</a> extension by huzef44 · MIT
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    const $mode = document.getElementById("mode");
+    const $in   = document.getElementById("input");
+    const $enc  = document.getElementById("encoded");
+    const $toast= document.getElementById("toast");
+
+    // The bottom pane shows the encoded form of the input by default.
+    // If the input *looks* already-encoded (contains %XX), show the decoded
+    // form instead so the tool serves both directions from one box.
+    function looksEncoded(s) { return /%[0-9A-Fa-f]{2}/.test(s); }
+
+    function encode(s, mode) {
+      try { return mode === "full" ? encodeURI(s) : encodeURIComponent(s); }
+      catch (e) { return "Error: " + e.message; }
+    }
+    function decode(s, mode) {
+      try { return mode === "full" ? decodeURI(s) : decodeURIComponent(s); }
+      catch (e) { return "Error: malformed percent-encoding"; }
+    }
+
+    function refresh() {
+      const v = $in.value;
+      if (!v) { $enc.value = ""; return; }
+      $enc.value = looksEncoded(v) ? decode(v, $mode.value) : encode(v, $mode.value);
+    }
+
+    function showToast(msg) {
+      $toast.textContent = msg;
+      $toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => $toast.classList.remove("show"), 1200);
+    }
+
+    async function copy(text, label) {
+      if (!text) return;
+      try { await navigator.clipboard.writeText(text); }
+      catch (_) {
+        const ta = document.createElement("textarea");
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand("copy"); ta.remove();
+      }
+      showToast(label + " copied");
+    }
+
+    document.getElementById("copyIn").addEventListener("click", () => copy($in.value, "Input"));
+    document.getElementById("copyOut").addEventListener("click", () => copy($enc.value, "Output"));
+    document.getElementById("swap").addEventListener("click", () => {
+      const a = $in.value, b = $enc.value;
+      $in.value = b; $enc.value = a;
+      refresh();
+    });
+    document.getElementById("clear").addEventListener("click", () => {
+      $in.value = ""; $enc.value = ""; $in.focus();
+    });
+    $in.addEventListener("input", refresh);
+    $mode.addEventListener("change", refresh);
+
+    refresh();
+  </script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Change Case</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --bg-hover: #ececec;
+      --text: #1a1a1a; --muted: #666; --border: #e0e0e0;
+      --accent: #6366f1; --accent-text: #fff;
+      --toast-bg: #333; --toast-text: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --bg-hover: #3a3a3a;
+              --text: #e0e0e0; --muted: #999; --border: #3a3a3a;
+              --accent: #818cf8; --accent-text: #1a1a1a; --toast-bg: #555; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .row label { color: var(--muted); font-size: 13px; }
+    button {
+      font: inherit; color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px;
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(1.1); }
+    .checkbox { display: inline-flex; gap: 6px; align-items: center; user-select: none; }
+    textarea {
+      width: 100%; min-height: 90px; resize: vertical;
+      font: 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      line-height: 1.5; color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+    }
+    .results {
+      flex: 1; overflow-y: auto; border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr; gap: 0;
+    }
+    .item {
+      display: grid; grid-template-columns: 130px 1fr auto;
+      gap: 12px; align-items: center;
+      padding: 10px 4px; border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .item:hover { background: var(--bg-hover); }
+    .item .name { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .item .value {
+      font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      word-break: break-all; color: var(--text);
+    }
+    .item .copy-hint { color: var(--muted); font-size: 11px; opacity: 0; }
+    .item:hover .copy-hint { opacity: 1; }
+    .toast {
+      position: fixed; bottom: 16px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--toast-bg); color: var(--toast-text);
+      padding: 8px 14px; border-radius: 6px; font-size: 13px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    footer { color: var(--muted); font-size: 11px; text-align: center; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <label for="input">Input</label>
+    <button id="paste">Paste from clipboard</button>
+    <button id="clear">Clear</button>
+    <label class="checkbox" title="Lowercase the input before splitting it into words. Off matches the upstream default.">
+      <input type="checkbox" id="preserveCase" checked /> Preserve casing
+    </label>
+  </div>
+  <textarea id="input" placeholder="Type or paste text here — every transformation appears below. Click any row to copy." spellcheck="false"></textarea>
+
+  <div class="results" id="results"></div>
+
+  <footer>
+    Ported from the Raycast <a href="https://github.com/raycast/extensions/tree/004a0b6b7c846ef7d350217d2c91bc5d34fb265d/extensions/change-case" target="_blank" rel="noopener">Change Case</a> extension by erics118 · MIT
+  </footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    // --- Word-splitter -----------------------------------------------------
+    // Split an arbitrary string into words. Honors the "preserve casing"
+    // toggle: when ON we treat boundaries between lowercase and uppercase as
+    // word boundaries (so "fooBar" → ["foo","Bar"]); when OFF we lowercase
+    // first (so "fooBar" → ["foobar"] then split only on non-alphanumerics).
+    function splitWords(input, preserveCase) {
+      if (!input) return [];
+      let s = input;
+      if (!preserveCase) s = s.toLowerCase();
+      // Insert separators before camelCase boundaries when preserving case.
+      if (preserveCase) {
+        s = s
+          .replace(/([a-z0-9])([A-Z])/g, "$1 $2")     // fooBar  -> foo Bar
+          .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2");  // FOOBar  -> FOO Bar
+      }
+      // Split on any run of non-alphanumeric characters.
+      return s.split(/[^A-Za-z0-9]+/).filter(Boolean);
+    }
+
+    function cap(w) { return w ? w[0].toUpperCase() + w.slice(1).toLowerCase() : w; }
+    function lc(w)  { return w.toLowerCase(); }
+    function uc(w)  { return w.toUpperCase(); }
+
+    // --- Transformations ---------------------------------------------------
+    const TRANSFORMS = [
+      ["Camel Case",        ws => ws.map((w, i) => i === 0 ? lc(w) : cap(w)).join("")],
+      ["Pascal Case",       ws => ws.map(cap).join("")],
+      ["Snake Case",        ws => ws.map(lc).join("_")],
+      ["Constant Case",     ws => ws.map(uc).join("_")],
+      ["Pascal Snake Case", ws => ws.map(cap).join("_")],
+      ["Kebab Case",        ws => ws.map(lc).join("-")],
+      ["Kebab Upper Case",  ws => ws.map(uc).join("-")],
+      ["Header Case",       ws => ws.map(cap).join("-")],
+      ["Dot Case",          ws => ws.map(lc).join(".")],
+      ["Path Case",         ws => ws.map(lc).join("/")],
+      ["No Case",           ws => ws.map(lc).join(" ")],
+      ["Capital Case",      ws => ws.map(cap).join(" ")],
+      ["Sentence Case",     ws => {
+        const out = ws.map(lc);
+        if (out.length) out[0] = cap(out[0]);
+        return out.join(" ");
+      }],
+      ["Title Case",        ws => {
+        // Common short words kept lowercase except as first/last token.
+        const small = new Set(["a","an","and","as","at","but","by","for","if","in","nor","of","on","or","so","the","to","up","yet"]);
+        return ws.map((w, i) => {
+          const lo = lc(w);
+          if (i !== 0 && i !== ws.length - 1 && small.has(lo)) return lo;
+          return cap(w);
+        }).join(" ");
+      }],
+      // The next two operate on the raw input rather than split words, since
+      // they're character-level transforms (matching upstream behaviour).
+      ["Upper Case",        (_, raw) => raw.toUpperCase()],
+      ["Lower Case",        (_, raw) => raw.toLowerCase()],
+      ["Swap Case",         (_, raw) =>
+        raw.replace(/[A-Za-z]/g, c =>
+          c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase())],
+      ["Sponge Case",       (_, raw) =>
+        raw.split("").map(c => Math.random() < 0.5 ? c.toLowerCase() : c.toUpperCase()).join("")],
+    ];
+
+    const $in    = document.getElementById("input");
+    const $res   = document.getElementById("results");
+    const $pres  = document.getElementById("preserveCase");
+    const $toast = document.getElementById("toast");
+
+    function showToast(msg) {
+      $toast.textContent = msg;
+      $toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => $toast.classList.remove("show"), 1200);
+    }
+
+    async function copy(text, label) {
+      if (!text) return;
+      try { await navigator.clipboard.writeText(text); }
+      catch (_) {
+        const ta = document.createElement("textarea");
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand("copy"); ta.remove();
+      }
+      showToast(`${label} copied`);
+    }
+
+    function render() {
+      const raw = $in.value;
+      const words = splitWords(raw, $pres.checked);
+      // Build rows; using textContent throughout avoids HTML-injection from
+      // user-supplied input.
+      $res.innerHTML = "";
+      for (const [name, fn] of TRANSFORMS) {
+        const value = raw ? fn(words, raw) : "";
+        const row = document.createElement("div");
+        row.className = "item";
+        const n = document.createElement("div"); n.className = "name";  n.textContent = name;
+        const v = document.createElement("div"); v.className = "value"; v.textContent = value || "—";
+        const h = document.createElement("div"); h.className = "copy-hint"; h.textContent = "click to copy";
+        row.appendChild(n); row.appendChild(v); row.appendChild(h);
+        if (value) row.addEventListener("click", () => copy(value, name));
+        $res.appendChild(row);
+      }
+    }
+
+    document.getElementById("clear").addEventListener("click", () => { $in.value = ""; render(); $in.focus(); });
+    document.getElementById("paste").addEventListener("click", async () => {
+      try {
+        const t = await navigator.clipboard.readText();
+        $in.value = t;
+        render();
+      } catch (_) {
+        showToast("Clipboard read not permitted");
+      }
+    });
+    $in.addEventListener("input", render);
+    $pres.addEventListener("change", render);
+
+    // Seed with a friendly example so the user sees what the tool does.
+    $in.value = "Hello world from Coco";
+    render();
+  </script>
+</body>
+</html>
