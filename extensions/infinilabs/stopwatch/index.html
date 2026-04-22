@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stopwatch</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e; --warning: #f59e0b;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; --warning: #fbbf24; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px; }
+    .display {
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      font-size: 48px; font-weight: 300;
+      text-align: center; padding: 20px;
+      background: var(--bg-elev); border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .display .ms { font-size: 24px; color: var(--muted); }
+    .controls { display: flex; gap: 10px; justify-content: center; }
+    button {
+      font: inherit; font-size: 14px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 24px; cursor: pointer; transition: all 0.15s;
+      flex: 1; max-width: 120px;
+    }
+    button:hover { background: var(--border); }
+    button:active { transform: scale(0.98); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    button.primary:hover { opacity: 0.9; }
+    button.success { background: var(--success); color: white; border-color: var(--success); }
+    button.warning { background: var(--warning); color: white; border-color: var(--warning); }
+    .laps-container {
+      flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 0;
+    }
+    .laps-header {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .laps-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    .laps {
+      flex: 1; overflow-y: auto;
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px;
+    }
+    .lap {
+      display: flex; justify-content: space-between; padding: 8px;
+      border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .lap:last-child { border-bottom: none; }
+    .lap-num { color: var(--muted); }
+    .lap-time { font-family: "SF Mono", Monaco, Consolas, monospace; }
+    .lap-diff { color: var(--muted); font-size: 11px; }
+    .empty { color: var(--muted); text-align: center; padding: 20px; font-size: 13px; }
+    footer {
+      color: var(--muted); font-size: 11px;
+      text-align: center; padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <h1>⏱️ Stopwatch</h1>
+  
+  <div class="display" id="display">
+    <span id="time">00:00:00</span><span class="ms" id="ms">.00</span>
+  </div>
+  
+  <div class="controls">
+    <button class="primary" id="startBtn" onclick="toggleStart()">Start</button>
+    <button id="lapBtn" onclick="lap()" disabled>Lap</button>
+    <button id="resetBtn" onclick="reset()">Reset</button>
+  </div>
+
+  <div class="laps-container">
+    <div class="laps-header">
+      <span class="laps-label">Laps</span>
+      <button style="padding:4px 10px;max-width:none;flex:none;font-size:12px" onclick="copyLaps()">Copy All</button>
+    </div>
+    <div class="laps" id="laps">
+      <div class="empty">No laps recorded</div>
+    </div>
+  </div>
+
+  <footer>Stopwatch · Lap times with copy</footer>
+
+  <script>
+    "use strict";
+
+    let running = false;
+    let startTime = 0;
+    let elapsed = 0;
+    let interval = null;
+    let laps = [];
+    let lastLapTime = 0;
+
+    const $time = document.getElementById("time");
+    const $ms = document.getElementById("ms");
+    const $startBtn = document.getElementById("startBtn");
+    const $lapBtn = document.getElementById("lapBtn");
+    const $lapsContainer = document.getElementById("laps");
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      const centiseconds = Math.floor((ms % 1000) / 10);
+      
+      const hh = hours.toString().padStart(2, "0");
+      const mm = minutes.toString().padStart(2, "0");
+      const ss = seconds.toString().padStart(2, "0");
+      const cs = centiseconds.toString().padStart(2, "0");
+      
+      return { main: `${hh}:${mm}:${ss}`, ms: `.${cs}` };
+    }
+
+    function updateDisplay() {
+      const now = Date.now();
+      elapsed = now - startTime;
+      const fmt = formatTime(elapsed);
+      $time.textContent = fmt.main;
+      $ms.textContent = fmt.ms;
+    }
+
+    function toggleStart() {
+      if (running) {
+        // Pause
+        running = false;
+        clearInterval(interval);
+        $startBtn.textContent = "Resume";
+        $startBtn.classList.remove("warning");
+        $startBtn.classList.add("success");
+        $lapBtn.disabled = true;
+      } else {
+        // Start/Resume
+        running = true;
+        startTime = Date.now() - elapsed;
+        interval = setInterval(updateDisplay, 10);
+        $startBtn.textContent = "Pause";
+        $startBtn.classList.remove("success");
+        $startBtn.classList.add("warning");
+        $lapBtn.disabled = false;
+      }
+    }
+
+    function lap() {
+      if (!running) return;
+      const lapTime = elapsed;
+      const diff = lapTime - lastLapTime;
+      lastLapTime = lapTime;
+      laps.push({ time: lapTime, diff: diff });
+      renderLaps();
+    }
+
+    function reset() {
+      running = false;
+      clearInterval(interval);
+      elapsed = 0;
+      startTime = 0;
+      lastLapTime = 0;
+      laps = [];
+      $time.textContent = "00:00:00";
+      $ms.textContent = ".00";
+      $startBtn.textContent = "Start";
+      $startBtn.classList.remove("warning", "success");
+      $startBtn.classList.add("primary");
+      $lapBtn.disabled = true;
+      $lapsContainer.innerHTML = '<div class="empty">No laps recorded</div>';
+    }
+
+    function renderLaps() {
+      if (laps.length === 0) {
+        $lapsContainer.innerHTML = '<div class="empty">No laps recorded</div>';
+        return;
+      }
+      $lapsContainer.innerHTML = laps.map((l, i) => {
+        const fmt = formatTime(l.time);
+        const diffFmt = formatTime(l.diff);
+        return `<div class="lap">
+          <span class="lap-num">Lap ${i + 1}</span>
+          <span class="lap-time">${fmt.main}${fmt.ms}</span>
+          <span class="lap-diff">+${diffFmt.main}${diffFmt.ms}</span>
+        </div>`;
+      }).reverse().join("");
+    }
+
+    async function copyLaps() {
+      if (laps.length === 0) return;
+      const text = laps.map((l, i) => {
+        const fmt = formatTime(l.time);
+        const diffFmt = formatTime(l.diff);
+        return `Lap ${i + 1}: ${fmt.main}${fmt.ms} (+${diffFmt.main}${diffFmt.ms})`;
+      }).join("\n");
+      
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    }
+  </script>
+</body>
+</html>
