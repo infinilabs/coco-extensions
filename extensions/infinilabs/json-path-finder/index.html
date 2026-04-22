@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON Path Finder</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e; --error: #ef4444;
+      --key: #0550ae; --string: #0a3069; --number: #0550ae; --bool: #cf222e; --null: #6e7781;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; --error: #f87171;
+              --key: #79c0ff; --string: #a5d6ff; --number: #79c0ff; --bool: #ff7b72; --null: #8b949e; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .path-bar {
+      display: flex; gap: 8px; align-items: center;
+      padding: 8px 12px; background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+    }
+    .path-label { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+    .path-value {
+      flex: 1; font: 13px "SF Mono", Monaco, Consolas, monospace;
+      color: var(--accent); min-height: 18px;
+    }
+    .copy-btn {
+      font: inherit; font-size: 11px;
+      padding: 4px 10px; border-radius: 4px;
+      background: var(--accent); color: var(--accent-text);
+      border: none; cursor: pointer;
+    }
+    .copy-btn:hover { opacity: 0.9; }
+    .copy-btn:disabled { opacity: 0.5; cursor: default; }
+    .container { display: flex; gap: 12px; flex: 1; min-height: 0; }
+    .pane { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    textarea {
+      flex: 1; font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); resize: none;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .tree {
+      flex: 1; padding: 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      overflow: auto; font: 12px "SF Mono", Monaco, Consolas, monospace;
+    }
+    .tree-node { padding-left: 16px; }
+    .tree-key { color: var(--key); cursor: pointer; }
+    .tree-key:hover { text-decoration: underline; }
+    .tree-string { color: var(--string); cursor: pointer; }
+    .tree-string:hover { background: var(--border); }
+    .tree-number { color: var(--number); cursor: pointer; }
+    .tree-number:hover { background: var(--border); }
+    .tree-bool { color: var(--bool); cursor: pointer; }
+    .tree-bool:hover { background: var(--border); }
+    .tree-null { color: var(--null); cursor: pointer; }
+    .tree-null:hover { background: var(--border); }
+    .tree-bracket { color: var(--muted); }
+    .tree-comma { color: var(--muted); }
+    .error { color: var(--error); padding: 20px; text-align: center; }
+    .status { font-size: 11px; color: var(--success); }
+  </style>
+</head>
+<body>
+  <h1>🔍 JSON Path Finder</h1>
+  
+  <div class="path-bar">
+    <span class="path-label">Path</span>
+    <span class="path-value" id="pathValue">Click a value to see its path</span>
+    <span class="status" id="status"></span>
+    <button class="copy-btn" id="copyBtn" onclick="copyPath()" disabled>Copy</button>
+  </div>
+
+  <div class="container">
+    <div class="pane">
+      <label>JSON Input</label>
+      <textarea id="input" placeholder="Paste JSON here..."></textarea>
+    </div>
+    <div class="pane">
+      <label>Tree View (click to get path)</label>
+      <div class="tree" id="tree"></div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const $input = document.getElementById("input");
+    const $tree = document.getElementById("tree");
+    const $pathValue = document.getElementById("pathValue");
+    const $copyBtn = document.getElementById("copyBtn");
+    const $status = document.getElementById("status");
+
+    let currentPath = "";
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function formatPath(pathParts) {
+      return pathParts.map((part, i) => {
+        if (typeof part === "number") {
+          return `[${part}]`;
+        }
+        if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(part)) {
+          return i === 0 ? part : `.${part}`;
+        }
+        return `["${part}"]`;
+      }).join("");
+    }
+
+    function renderValue(value, path = []) {
+      const pathStr = formatPath(path);
+      
+      if (value === null) {
+        return `<span class="tree-null" onclick="selectPath('${pathStr}')">null</span>`;
+      }
+      
+      if (typeof value === "boolean") {
+        return `<span class="tree-bool" onclick="selectPath('${pathStr}')">${value}</span>`;
+      }
+      
+      if (typeof value === "number") {
+        return `<span class="tree-number" onclick="selectPath('${pathStr}')">${value}</span>`;
+      }
+      
+      if (typeof value === "string") {
+        return `<span class="tree-string" onclick="selectPath('${pathStr}')">"${escapeHtml(value)}"</span>`;
+      }
+      
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          return `<span class="tree-bracket" onclick="selectPath('${pathStr}')">[]</span>`;
+        }
+        const items = value.map((v, i) => {
+          const comma = i < value.length - 1 ? '<span class="tree-comma">,</span>' : '';
+          return `<div class="tree-node">${renderValue(v, [...path, i])}${comma}</div>`;
+        }).join("");
+        return `<span class="tree-bracket">[</span>${items}<span class="tree-bracket">]</span>`;
+      }
+      
+      if (typeof value === "object") {
+        const keys = Object.keys(value);
+        if (keys.length === 0) {
+          return `<span class="tree-bracket" onclick="selectPath('${pathStr}')">{}</span>`;
+        }
+        const items = keys.map((k, i) => {
+          const comma = i < keys.length - 1 ? '<span class="tree-comma">,</span>' : '';
+          const keyPath = formatPath([...path, k]);
+          return `<div class="tree-node"><span class="tree-key" onclick="selectPath('${keyPath}')">"${escapeHtml(k)}"</span>: ${renderValue(value[k], [...path, k])}${comma}</div>`;
+        }).join("");
+        return `<span class="tree-bracket">{</span>${items}<span class="tree-bracket">}</span>`;
+      }
+      
+      return escapeHtml(String(value));
+    }
+
+    function parse() {
+      const input = $input.value.trim();
+      
+      if (!input) {
+        $tree.innerHTML = '<div class="error">Enter JSON to explore</div>';
+        return;
+      }
+
+      try {
+        const data = JSON.parse(input);
+        $tree.innerHTML = renderValue(data);
+      } catch (e) {
+        $tree.innerHTML = `<div class="error">Invalid JSON: ${escapeHtml(e.message)}</div>`;
+      }
+    }
+
+    window.selectPath = function(path) {
+      currentPath = path || "$";
+      $pathValue.textContent = currentPath;
+      $copyBtn.disabled = false;
+    };
+
+    async function copyPath() {
+      if (!currentPath) return;
+      
+      try {
+        await navigator.clipboard.writeText(currentPath);
+        showStatus("Copied!");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = currentPath;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied!");
+      }
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ""; }, 2000);
+    }
+
+    $input.addEventListener("input", parse);
+
+    // Sample data
+    $input.value = JSON.stringify({
+      "user": {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "age": 30,
+        "active": true,
+        "roles": ["admin", "editor"]
+      },
+      "settings": {
+        "theme": "dark",
+        "notifications": {
+          "email": true,
+          "push": false
+        }
+      }
+    }, null, 2);
+
+    parse();
+  </script>
+</body>
+</html>

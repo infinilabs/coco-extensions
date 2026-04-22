@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diff Viewer</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1;
+      --add-bg: #dcfce7; --add-text: #166534;
+      --del-bg: #fee2e2; --del-text: #991b1b;
+      --change-bg: #fef9c3; --change-text: #854d0e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8;
+              --add-bg: #14532d; --add-text: #86efac;
+              --del-bg: #7f1d1d; --del-text: #fca5a5;
+              --change-bg: #713f12; --change-text: #fde047; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px; }
+    .inputs { display: flex; gap: 12px; flex: 1; min-height: 0; }
+    .input-col { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    textarea {
+      flex: 1; font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 10px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); resize: none;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .actions { display: flex; gap: 8px; justify-content: center; }
+    button {
+      font: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 14px; cursor: pointer;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .result {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 6px; padding: 12px; max-height: 180px; overflow-y: auto;
+    }
+    .diff-line { font: 12px "SF Mono", Monaco, Consolas, monospace; padding: 2px 6px; border-radius: 3px; margin: 1px 0; }
+    .diff-add { background: var(--add-bg); color: var(--add-text); }
+    .diff-del { background: var(--del-bg); color: var(--del-text); }
+    .diff-same { color: var(--muted); }
+    .stats { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .stat-add { color: var(--add-text); }
+    .stat-del { color: var(--del-text); }
+    .empty { color: var(--muted); text-align: center; padding: 20px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>📊 Diff Viewer</h1>
+  
+  <div class="inputs">
+    <div class="input-col">
+      <label>Original Text</label>
+      <textarea id="textA" placeholder="Paste original text here..."></textarea>
+    </div>
+    <div class="input-col">
+      <label>Modified Text</label>
+      <textarea id="textB" placeholder="Paste modified text here..."></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="compare()">Compare</button>
+    <button onclick="swap()">⇅ Swap</button>
+    <button onclick="clearAll()">Clear</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="empty">Enter text in both fields and click Compare</div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const $textA = document.getElementById("textA");
+    const $textB = document.getElementById("textB");
+    const $result = document.getElementById("result");
+
+    // Simple diff algorithm (line-based)
+    function diff(a, b) {
+      const linesA = a.split("\n");
+      const linesB = b.split("\n");
+      const result = [];
+      
+      // LCS-based diff
+      const m = linesA.length;
+      const n = linesB.length;
+      
+      // Build LCS table
+      const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+      for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+          if (linesA[i - 1] === linesB[j - 1]) {
+            dp[i][j] = dp[i - 1][j - 1] + 1;
+          } else {
+            dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+          }
+        }
+      }
+      
+      // Backtrack to find diff
+      let i = m, j = n;
+      const ops = [];
+      
+      while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && linesA[i - 1] === linesB[j - 1]) {
+          ops.unshift({ type: "same", line: linesA[i - 1] });
+          i--; j--;
+        } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+          ops.unshift({ type: "add", line: linesB[j - 1] });
+          j--;
+        } else {
+          ops.unshift({ type: "del", line: linesA[i - 1] });
+          i--;
+        }
+      }
+      
+      return ops;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function compare() {
+      const a = $textA.value;
+      const b = $textB.value;
+      
+      if (!a && !b) {
+        $result.innerHTML = '<div class="empty">Enter text in both fields</div>';
+        return;
+      }
+      
+      if (a === b) {
+        $result.innerHTML = '<div class="empty">✓ Texts are identical</div>';
+        return;
+      }
+
+      const ops = diff(a, b);
+      
+      let added = 0, deleted = 0;
+      let html = '';
+      
+      for (const op of ops) {
+        const line = escapeHtml(op.line || " ");
+        if (op.type === "add") {
+          html += `<div class="diff-line diff-add">+ ${line}</div>`;
+          added++;
+        } else if (op.type === "del") {
+          html += `<div class="diff-line diff-del">- ${line}</div>`;
+          deleted++;
+        } else {
+          html += `<div class="diff-line diff-same">  ${line}</div>`;
+        }
+      }
+      
+      const stats = `<div class="stats"><span class="stat-add">+${added} added</span> · <span class="stat-del">-${deleted} deleted</span></div>`;
+      $result.innerHTML = stats + html;
+    }
+
+    function swap() {
+      const tmp = $textA.value;
+      $textA.value = $textB.value;
+      $textB.value = tmp;
+    }
+
+    function clearAll() {
+      $textA.value = "";
+      $textB.value = "";
+      $result.innerHTML = '<div class="empty">Enter text in both fields and click Compare</div>';
+    }
+
+    $textA.focus();
+  </script>
+</body>
+</html>
