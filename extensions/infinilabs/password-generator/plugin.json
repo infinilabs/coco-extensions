@@ -1,0 +1,34 @@
+{
+  "name": "Password Generator",
+  "description": "Generate secure random passwords with customizable length and character options.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "password",
+    "generator",
+    "security",
+    "random",
+    "crypto"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 450,
+    "height": 420
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

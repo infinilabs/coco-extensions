@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON Formatter</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e; --error: #ef4444;
+      --str: #22863a; --num: #005cc5; --bool: #d73a49; --null: #6f42c1; --key: #0550ae;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; --error: #f87171;
+              --str: #a5d6ff; --num: #79c0ff; --bool: #ff7b72; --null: #d2a8ff; --key: #7ee787; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 {
+      font-size: 18px; font-weight: 600; margin: 0;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .toolbar {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    button {
+      font: inherit; font-size: 13px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 6px 12px; cursor: pointer; transition: all 0.1s;
+    }
+    button:hover { background: var(--border); }
+    button:active { transform: scale(0.98); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    button.primary:hover { opacity: 0.9; }
+    .status {
+      font-size: 12px; padding: 4px 10px; border-radius: 4px;
+      display: flex; align-items: center; gap: 4px; margin-left: auto;
+    }
+    .status.valid { background: rgba(34,197,94,0.1); color: var(--success); }
+    .status.invalid { background: rgba(239,68,68,0.1); color: var(--error); }
+    .editor-container {
+      display: flex; flex: 1; gap: 12px; min-height: 0;
+    }
+    .editor-panel {
+      flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0;
+    }
+    .editor-label {
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    textarea {
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      font-size: 13px; line-height: 1.5;
+      padding: 12px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--bg-elev);
+      color: var(--text); resize: none; flex: 1;
+      tab-size: 2;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .output {
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      font-size: 13px; line-height: 1.5;
+      padding: 12px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--bg-elev);
+      flex: 1; overflow: auto; white-space: pre-wrap; word-break: break-word;
+    }
+    .output .string { color: var(--str); }
+    .output .number { color: var(--num); }
+    .output .boolean { color: var(--bool); }
+    .output .null { color: var(--null); }
+    .output .key { color: var(--key); }
+    .output .error { color: var(--error); font-family: inherit; }
+    footer {
+      color: var(--muted); font-size: 11px;
+      text-align: center; padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <h1>📋 JSON Formatter</h1>
+  
+  <div class="toolbar">
+    <button class="primary" onclick="formatJSON()">Format</button>
+    <button onclick="minifyJSON()">Minify</button>
+    <button onclick="copyOutput()">Copy Output</button>
+    <button onclick="clearAll()">Clear</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="editor-container">
+    <div class="editor-panel">
+      <span class="editor-label">Input</span>
+      <textarea id="input" placeholder="Paste JSON here..."></textarea>
+    </div>
+    <div class="editor-panel">
+      <span class="editor-label">Output</span>
+      <div class="output" id="output"></div>
+    </div>
+  </div>
+
+  <footer>JSON Formatter · Data stays local</footer>
+
+  <script>
+    "use strict";
+
+    const $input = document.getElementById("input");
+    const $output = document.getElementById("output");
+    const $status = document.getElementById("status");
+
+    let lastParsed = null;
+
+    function syntaxHighlight(json) {
+      if (typeof json !== "string") {
+        json = JSON.stringify(json, null, 2);
+      }
+      json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      return json.replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function(match) {
+        let cls = "number";
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = "key";
+          } else {
+            cls = "string";
+          }
+        } else if (/true|false/.test(match)) {
+          cls = "boolean";
+        } else if (/null/.test(match)) {
+          cls = "null";
+        }
+        return '<span class="' + cls + '">' + match + "</span>";
+      });
+    }
+
+    function setStatus(valid, message) {
+      $status.className = "status " + (valid ? "valid" : "invalid");
+      $status.innerHTML = (valid ? "✓ " : "✗ ") + message;
+    }
+
+    function formatJSON() {
+      const text = $input.value.trim();
+      if (!text) {
+        $output.innerHTML = "";
+        $status.className = "status";
+        $status.innerHTML = "";
+        lastParsed = null;
+        return;
+      }
+      try {
+        lastParsed = JSON.parse(text);
+        const formatted = JSON.stringify(lastParsed, null, 2);
+        $output.innerHTML = syntaxHighlight(formatted);
+        setStatus(true, "Valid JSON");
+      } catch (err) {
+        $output.innerHTML = '<span class="error">' + escapeHtml(err.message) + "</span>";
+        setStatus(false, "Invalid JSON");
+        lastParsed = null;
+      }
+    }
+
+    function minifyJSON() {
+      const text = $input.value.trim();
+      if (!text) return;
+      try {
+        lastParsed = JSON.parse(text);
+        const minified = JSON.stringify(lastParsed);
+        $output.textContent = minified;
+        setStatus(true, "Minified");
+      } catch (err) {
+        $output.innerHTML = '<span class="error">' + escapeHtml(err.message) + "</span>";
+        setStatus(false, "Invalid JSON");
+        lastParsed = null;
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    async function copyOutput() {
+      const text = $output.textContent;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    }
+
+    function clearAll() {
+      $input.value = "";
+      $output.innerHTML = "";
+      $status.className = "status";
+      $status.innerHTML = "";
+      lastParsed = null;
+      $input.focus();
+    }
+
+    $input.addEventListener("input", formatJSON);
+    $input.focus();
+  </script>
+</body>
+</html>

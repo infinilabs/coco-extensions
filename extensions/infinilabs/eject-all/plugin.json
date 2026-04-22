@@ -1,0 +1,29 @@
+{
+  "name": "Eject All Disks",
+  "description": "Eject all mounted external disks (macOS).",
+  "icon": "icon.png",
+  "type": "command",
+  "category": "system",
+  "tags": [
+    "eject",
+    "disk",
+    "usb",
+    "drive",
+    "macos"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "osascript -e 'tell application \"Finder\" to eject (every disk whose ejectable is true)'"
+    ]
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

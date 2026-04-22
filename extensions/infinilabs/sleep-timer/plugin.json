@@ -1,0 +1,29 @@
+{
+  "name": "Sleep Timer",
+  "description": "Put displays to sleep immediately (macOS).",
+  "icon": "icon.png",
+  "type": "command",
+  "category": "system",
+  "tags": [
+    "sleep",
+    "display",
+    "screen",
+    "power",
+    "macos"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "pmset displaysleepnow"
+    ]
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}
