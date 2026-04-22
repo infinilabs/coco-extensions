@@ -1,0 +1,29 @@
+{
+  "name": "Hide All Apps",
+  "description": "Hide all application windows on macOS. Shows only the desktop and menu bar.",
+  "icon": "icon.png",
+  "type": "command",
+  "category": "system",
+  "tags": [
+    "hide",
+    "windows",
+    "apps",
+    "desktop",
+    "macos"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "osascript -e 'tell application \"System Events\" to set visible of every process whose visible is true to false'"
+    ]
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

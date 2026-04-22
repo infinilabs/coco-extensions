@@ -1,0 +1,28 @@
+{
+  "name": "Restart Finder",
+  "description": "Restart the macOS Finder application. Useful when Finder becomes unresponsive or to apply certain system changes.",
+  "icon": "icon.png",
+  "type": "command",
+  "category": "system",
+  "tags": [
+    "finder",
+    "restart",
+    "macos",
+    "system"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "killall Finder"
+    ]
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

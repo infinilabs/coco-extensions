@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hash Generator</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .input-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    textarea {
+      font: inherit;
+      font-size: 14px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-elev);
+      color: var(--text);
+      resize: vertical;
+      min-height: 80px;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .hash-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .hash-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 10px 12px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .hash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .hash-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .hash-value {
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      font-size: 12px;
+      word-break: break-all;
+      line-height: 1.4;
+      color: var(--text);
+      user-select: all;
+    }
+    .hash-value.empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+    button {
+      font: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    button:hover {
+      background: var(--border);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    button.copied {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+    footer {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Hash Generator</h1>
+  
+  <div class="input-section">
+    <label for="input">Enter text to hash</label>
+    <textarea id="input" placeholder="Type or paste text here..."></textarea>
+  </div>
+
+  <div class="hash-list">
+    <div class="hash-item">
+      <div class="hash-header">
+        <span class="hash-label">MD5</span>
+        <button onclick="copyHash('md5')">Copy</button>
+      </div>
+      <div class="hash-value empty" id="md5">Enter text above</div>
+    </div>
+    <div class="hash-item">
+      <div class="hash-header">
+        <span class="hash-label">SHA-1</span>
+        <button onclick="copyHash('sha1')">Copy</button>
+      </div>
+      <div class="hash-value empty" id="sha1">Enter text above</div>
+    </div>
+    <div class="hash-item">
+      <div class="hash-header">
+        <span class="hash-label">SHA-256</span>
+        <button onclick="copyHash('sha256')">Copy</button>
+      </div>
+      <div class="hash-value empty" id="sha256">Enter text above</div>
+    </div>
+    <div class="hash-item">
+      <div class="hash-header">
+        <span class="hash-label">SHA-512</span>
+        <button onclick="copyHash('sha512')">Copy</button>
+      </div>
+      <div class="hash-value empty" id="sha512">Enter text above</div>
+    </div>
+  </div>
+
+  <footer>Hash Generator · Web Crypto API · No data leaves your device</footer>
+
+  <script>
+    "use strict";
+
+    const $input = document.getElementById("input");
+    const hashes = {
+      md5: document.getElementById("md5"),
+      sha1: document.getElementById("sha1"),
+      sha256: document.getElementById("sha256"),
+      sha512: document.getElementById("sha512")
+    };
+
+    // MD5 implementation (Web Crypto doesn't support MD5)
+    function md5(string) {
+      function rotateLeft(x, n) {
+        return (x << n) | (x >>> (32 - n));
+      }
+      function addUnsigned(x, y) {
+        const x4 = x & 0x80000000;
+        const y4 = y & 0x80000000;
+        const x8 = x & 0x40000000;
+        const y8 = y & 0x40000000;
+        const result = (x & 0x3fffffff) + (y & 0x3fffffff);
+        if (x8 & y8) return result ^ 0x80000000 ^ x4 ^ y4;
+        if (x8 | y8) {
+          if (result & 0x40000000) return result ^ 0xc0000000 ^ x4 ^ y4;
+          return result ^ 0x40000000 ^ x4 ^ y4;
+        }
+        return result ^ x4 ^ y4;
+      }
+      function F(x, y, z) { return (x & y) | (~x & z); }
+      function G(x, y, z) { return (x & z) | (y & ~z); }
+      function H(x, y, z) { return x ^ y ^ z; }
+      function I(x, y, z) { return y ^ (x | ~z); }
+      function FF(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
+        return addUnsigned(rotateLeft(a, s), b);
+      }
+      function GG(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac));
+        return addUnsigned(rotateLeft(a, s), b);
+      }
+      function HH(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac));
+        return addUnsigned(rotateLeft(a, s), b);
+      }
+      function II(a, b, c, d, x, s, ac) {
+        a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac));
+        return addUnsigned(rotateLeft(a, s), b);
+      }
+      function convertToWordArray(string) {
+        const lWordCount = (((string.length + 8) - ((string.length + 8) % 64)) / 64 + 1) * 16;
+        const lWordArray = new Array(lWordCount - 1);
+        let lBytePosition = 0, lByteCount = 0;
+        while (lByteCount < string.length) {
+          const lWordPosition = (lByteCount - (lByteCount % 4)) / 4;
+          lBytePosition = (lByteCount % 4) * 8;
+          lWordArray[lWordPosition] = (lWordArray[lWordPosition] | (string.charCodeAt(lByteCount) << lBytePosition));
+          lByteCount++;
+        }
+        const lWordPosition = (lByteCount - (lByteCount % 4)) / 4;
+        lBytePosition = (lByteCount % 4) * 8;
+        lWordArray[lWordPosition] = lWordArray[lWordPosition] | (0x80 << lBytePosition);
+        lWordArray[lWordCount - 2] = string.length << 3;
+        lWordArray[lWordCount - 1] = string.length >>> 29;
+        return lWordArray;
+      }
+      function wordToHex(lValue) {
+        let result = "";
+        for (let i = 0; i <= 3; i++) {
+          const lByte = (lValue >>> (i * 8)) & 255;
+          result += ("0" + lByte.toString(16)).slice(-2);
+        }
+        return result;
+      }
+
+      const utf8String = unescape(encodeURIComponent(string));
+      const x = convertToWordArray(utf8String);
+      let a = 0x67452301, b = 0xefcdab89, c = 0x98badcfe, d = 0x10325476;
+      const S = [7, 12, 17, 22, 5, 9, 14, 20, 4, 11, 16, 23, 6, 10, 15, 21];
+      const T = [];
+      for (let i = 1; i <= 64; i++) T[i] = Math.floor(Math.abs(Math.sin(i)) * 0x100000000);
+
+      for (let k = 0; k < x.length; k += 16) {
+        const AA = a, BB = b, CC = c, DD = d;
+        a = FF(a, b, c, d, x[k+0], S[0], T[1]); d = FF(d, a, b, c, x[k+1], S[1], T[2]);
+        c = FF(c, d, a, b, x[k+2], S[2], T[3]); b = FF(b, c, d, a, x[k+3], S[3], T[4]);
+        a = FF(a, b, c, d, x[k+4], S[0], T[5]); d = FF(d, a, b, c, x[k+5], S[1], T[6]);
+        c = FF(c, d, a, b, x[k+6], S[2], T[7]); b = FF(b, c, d, a, x[k+7], S[3], T[8]);
+        a = FF(a, b, c, d, x[k+8], S[0], T[9]); d = FF(d, a, b, c, x[k+9], S[1], T[10]);
+        c = FF(c, d, a, b, x[k+10], S[2], T[11]); b = FF(b, c, d, a, x[k+11], S[3], T[12]);
+        a = FF(a, b, c, d, x[k+12], S[0], T[13]); d = FF(d, a, b, c, x[k+13], S[1], T[14]);
+        c = FF(c, d, a, b, x[k+14], S[2], T[15]); b = FF(b, c, d, a, x[k+15], S[3], T[16]);
+        a = GG(a, b, c, d, x[k+1], S[4], T[17]); d = GG(d, a, b, c, x[k+6], S[5], T[18]);
+        c = GG(c, d, a, b, x[k+11], S[6], T[19]); b = GG(b, c, d, a, x[k+0], S[7], T[20]);
+        a = GG(a, b, c, d, x[k+5], S[4], T[21]); d = GG(d, a, b, c, x[k+10], S[5], T[22]);
+        c = GG(c, d, a, b, x[k+15], S[6], T[23]); b = GG(b, c, d, a, x[k+4], S[7], T[24]);
+        a = GG(a, b, c, d, x[k+9], S[4], T[25]); d = GG(d, a, b, c, x[k+14], S[5], T[26]);
+        c = GG(c, d, a, b, x[k+3], S[6], T[27]); b = GG(b, c, d, a, x[k+8], S[7], T[28]);
+        a = GG(a, b, c, d, x[k+13], S[4], T[29]); d = GG(d, a, b, c, x[k+2], S[5], T[30]);
+        c = GG(c, d, a, b, x[k+7], S[6], T[31]); b = GG(b, c, d, a, x[k+12], S[7], T[32]);
+        a = HH(a, b, c, d, x[k+5], S[8], T[33]); d = HH(d, a, b, c, x[k+8], S[9], T[34]);
+        c = HH(c, d, a, b, x[k+11], S[10], T[35]); b = HH(b, c, d, a, x[k+14], S[11], T[36]);
+        a = HH(a, b, c, d, x[k+1], S[8], T[37]); d = HH(d, a, b, c, x[k+4], S[9], T[38]);
+        c = HH(c, d, a, b, x[k+7], S[10], T[39]); b = HH(b, c, d, a, x[k+10], S[11], T[40]);
+        a = HH(a, b, c, d, x[k+13], S[8], T[41]); d = HH(d, a, b, c, x[k+0], S[9], T[42]);
+        c = HH(c, d, a, b, x[k+3], S[10], T[43]); b = HH(b, c, d, a, x[k+6], S[11], T[44]);
+        a = HH(a, b, c, d, x[k+9], S[8], T[45]); d = HH(d, a, b, c, x[k+12], S[9], T[46]);
+        c = HH(c, d, a, b, x[k+15], S[10], T[47]); b = HH(b, c, d, a, x[k+2], S[11], T[48]);
+        a = II(a, b, c, d, x[k+0], S[12], T[49]); d = II(d, a, b, c, x[k+7], S[13], T[50]);
+        c = II(c, d, a, b, x[k+14], S[14], T[51]); b = II(b, c, d, a, x[k+5], S[15], T[52]);
+        a = II(a, b, c, d, x[k+12], S[12], T[53]); d = II(d, a, b, c, x[k+3], S[13], T[54]);
+        c = II(c, d, a, b, x[k+10], S[14], T[55]); b = II(b, c, d, a, x[k+1], S[15], T[56]);
+        a = II(a, b, c, d, x[k+8], S[12], T[57]); d = II(d, a, b, c, x[k+15], S[13], T[58]);
+        c = II(c, d, a, b, x[k+6], S[14], T[59]); b = II(b, c, d, a, x[k+13], S[15], T[60]);
+        a = II(a, b, c, d, x[k+4], S[12], T[61]); d = II(d, a, b, c, x[k+11], S[13], T[62]);
+        c = II(c, d, a, b, x[k+2], S[14], T[63]); b = II(b, c, d, a, x[k+9], S[15], T[64]);
+        a = addUnsigned(a, AA); b = addUnsigned(b, BB);
+        c = addUnsigned(c, CC); d = addUnsigned(d, DD);
+      }
+      return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
+    }
+
+    // Web Crypto API hash function
+    async function webCryptoHash(algorithm, text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest(algorithm, data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function updateHashes() {
+      const text = $input.value;
+      
+      if (!text) {
+        for (const key of Object.keys(hashes)) {
+          hashes[key].textContent = "Enter text above";
+          hashes[key].classList.add("empty");
+        }
+        return;
+      }
+
+      // MD5 (pure JS)
+      hashes.md5.textContent = md5(text);
+      hashes.md5.classList.remove("empty");
+
+      // SHA hashes via Web Crypto
+      try {
+        hashes.sha1.textContent = await webCryptoHash("SHA-1", text);
+        hashes.sha1.classList.remove("empty");
+        
+        hashes.sha256.textContent = await webCryptoHash("SHA-256", text);
+        hashes.sha256.classList.remove("empty");
+        
+        hashes.sha512.textContent = await webCryptoHash("SHA-512", text);
+        hashes.sha512.classList.remove("empty");
+      } catch (err) {
+        console.error("Hash error:", err);
+      }
+    }
+
+    async function copyHash(type) {
+      const el = hashes[type];
+      if (el.classList.contains("empty")) return;
+      
+      const text = el.textContent;
+      const button = el.parentElement.querySelector("button");
+      
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        // Fallback for older browsers
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+      
+      button.textContent = "Copied!";
+      button.classList.add("copied");
+      setTimeout(() => {
+        button.textContent = "Copy";
+        button.classList.remove("copied");
+      }, 1500);
+    }
+
+    $input.addEventListener("input", updateHashes);
+    $input.focus();
+  </script>
+</body>
+</html>

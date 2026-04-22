@@ -1,0 +1,36 @@
+{
+  "name": "Hash Generator",
+  "description": "Generate MD5, SHA-1, SHA-256, and SHA-512 hashes from text input using the Web Crypto API. Supports copy to clipboard.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "hash",
+    "md5",
+    "sha1",
+    "sha256",
+    "sha512",
+    "crypto",
+    "developer"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 500,
+    "height": 480
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}
