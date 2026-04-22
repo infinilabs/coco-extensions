@@ -1,0 +1,62 @@
+{
+  "name": "System Monitor",
+  "description": "Capture CPU, memory, or disk-usage snapshots and copy them to the macOS clipboard. Ported from the Raycast System Monitor extension by hossammourad (MIT).",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": [
+    "system",
+    "monitor",
+    "cpu",
+    "memory",
+    "disk"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "commands": [
+    {
+      "name": "Copy CPU Snapshot",
+      "description": "Sample CPU usage with `top -l 1` and copy the CPU and load-average lines to the clipboard.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "/usr/bin/top -l 1 -n 0 -s 0 | /usr/bin/grep -E '^(CPU usage|Load Avg)' | /usr/bin/pbcopy"
+        ]
+      }
+    },
+    {
+      "name": "Copy Memory Snapshot",
+      "description": "Sample memory pressure with `vm_stat` and the `PhysMem` line of `top` and copy a combined snapshot to the clipboard.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "{ /usr/bin/top -l 1 -n 0 -s 0 | /usr/bin/grep -E '^PhysMem'; /usr/bin/vm_stat; } | /usr/bin/pbcopy"
+        ]
+      }
+    },
+    {
+      "name": "Copy Disk Snapshot",
+      "description": "List mounted local filesystems with `df -h` and copy the human-readable usage table to the clipboard.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "/bin/df -h -t nodevfs,nodevtmpfs,noautofs | /usr/bin/pbcopy"
+        ]
+      }
+    }
+  ]
+}

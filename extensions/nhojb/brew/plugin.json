@@ -1,0 +1,62 @@
+{
+  "name": "Brew",
+  "description": "Run the most common no-input Homebrew maintenance commands (update, upgrade, cleanup) from Coco AI. Ported from the Raycast Brew extension by nhojb (MIT). Requires `brew` on PATH.",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": [
+    "brew",
+    "homebrew",
+    "package-manager",
+    "maintenance"
+  ],
+  "platforms": [
+    "macos",
+    "linux"
+  ],
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "commands": [
+    {
+      "name": "Brew Update",
+      "description": "Run `brew update` to fetch the newest version of Homebrew and refresh the formulae index.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "nohup zsh -lc 'brew update' >/dev/null 2>&1 &"
+        ]
+      }
+    },
+    {
+      "name": "Brew Upgrade",
+      "description": "Run `brew upgrade` to upgrade every outdated formula and cask. Long-running; runs detached in the background.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "nohup zsh -lc 'brew upgrade' >/dev/null 2>&1 &"
+        ]
+      }
+    },
+    {
+      "name": "Brew Cleanup",
+      "description": "Run `brew cleanup` to remove old downloads and unused versions of installed formulae from the cache.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "nohup zsh -lc 'brew cleanup' >/dev/null 2>&1 &"
+        ]
+      }
+    }
+  ]
+}
