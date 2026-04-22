@@ -1,0 +1,34 @@
+{
+  "name": "Color Palette Generator",
+  "description": "Generate harmonious color palettes from a base color.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "design",
+  "tags": [
+    "color",
+    "palette",
+    "design",
+    "harmony",
+    "generator"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 480,
+    "height": 520
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

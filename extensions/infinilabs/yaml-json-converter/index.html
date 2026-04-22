@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YAML JSON Converter</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e; --error: #ef4444;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; --error: #f87171; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .panels { display: flex; gap: 12px; flex: 1; min-height: 0; }
+    .panel { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; }
+    .panel-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    textarea {
+      flex: 1; font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 10px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); resize: none;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .options { display: flex; gap: 12px; align-items: center; }
+    label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    input[type="number"] {
+      font: inherit; width: 50px; padding: 4px 6px;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: var(--bg-elev); color: var(--text);
+    }
+    .swap-btn {
+      font: inherit; font-size: 16px;
+      width: 36px; height: 36px;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); border-radius: 50%;
+      cursor: pointer; display: flex; align-items: center;
+      justify-content: center;
+    }
+    .swap-btn:hover { border-color: var(--accent); }
+    .actions { display: flex; gap: 8px; }
+    button {
+      font: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 16px; cursor: pointer;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .status { font-size: 11px; color: var(--success); }
+    .error { color: var(--error); font-size: 11px; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <h1>🔄 YAML ↔ JSON Converter</h1>
+
+  <div class="options">
+    <label>
+      Indent:
+      <input type="number" id="indent" value="2" min="1" max="8">
+    </label>
+    <button class="swap-btn" onclick="swap()" title="Swap">⇄</button>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-label" id="leftLabel">YAML</span>
+      </div>
+      <textarea id="leftInput" placeholder="Enter YAML here..."></textarea>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-label" id="rightLabel">JSON</span>
+      </div>
+      <textarea id="rightOutput" placeholder="JSON will appear here..." readonly></textarea>
+    </div>
+  </div>
+
+  <div class="error" id="errorMsg"></div>
+
+  <div class="actions">
+    <button class="primary" onclick="copyOutput()">Copy Output</button>
+    <button onclick="clearAll()">Clear</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <footer>YAML JSON Converter · All processing happens locally</footer>
+
+  <script>
+    "use strict";
+
+    // Simple YAML parser (handles common cases)
+    const YAML = {
+      parse: function(yaml) {
+        const lines = yaml.split('\n');
+        const result = [];
+        const stack = [{ indent: -1, obj: result, isArray: true }];
+        
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          const trimmed = line.trim();
+          
+          if (!trimmed || trimmed.startsWith('#')) continue;
+          
+          const indent = line.search(/\S/);
+          const isArrayItem = trimmed.startsWith('- ');
+          
+          // Pop stack until we find proper parent
+          while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
+            stack.pop();
+          }
+          
+          const parent = stack[stack.length - 1];
+          
+          if (isArrayItem) {
+            const content = trimmed.slice(2).trim();
+            const colonIdx = content.indexOf(':');
+            
+            if (colonIdx === -1 || content.startsWith('"') || content.startsWith("'")) {
+              // Simple array item
+              const val = this.parseValue(content);
+              if (Array.isArray(parent.obj)) {
+                parent.obj.push(val);
+              } else {
+                const lastKey = Object.keys(parent.obj).pop();
+                if (!Array.isArray(parent.obj[lastKey])) parent.obj[lastKey] = [];
+                parent.obj[lastKey].push(val);
+              }
+            } else {
+              // Object in array
+              const newObj = {};
+              const key = content.slice(0, colonIdx).trim();
+              const val = content.slice(colonIdx + 1).trim();
+              
+              if (val) {
+                newObj[key] = this.parseValue(val);
+              } else {
+                newObj[key] = null;
+              }
+              
+              if (Array.isArray(parent.obj)) {
+                parent.obj.push(newObj);
+              }
+              stack.push({ indent: indent + 2, obj: newObj, isArray: false });
+            }
+          } else {
+            const colonIdx = trimmed.indexOf(':');
+            if (colonIdx === -1) continue;
+            
+            const key = trimmed.slice(0, colonIdx).trim();
+            const val = trimmed.slice(colonIdx + 1).trim();
+            
+            if (!val) {
+              // Nested object or array
+              const nextLine = lines[i + 1] || '';
+              const nextTrimmed = nextLine.trim();
+              const isNextArray = nextTrimmed.startsWith('- ');
+              
+              const newVal = isNextArray ? [] : {};
+              parent.obj[key] = newVal;
+              stack.push({ indent, obj: newVal, isArray: isNextArray });
+            } else {
+              parent.obj[key] = this.parseValue(val);
+            }
+          }
+        }
+        
+        // If result has only one item and it's the root, return it directly
+        if (result.length === 1 && typeof result[0] === 'object') {
+          return result[0];
+        }
+        return result.length === 1 ? result[0] : (Object.keys(stack[0].obj).length > 0 && !Array.isArray(stack[0].obj) ? stack[0].obj : result);
+      },
+      
+      parseValue: function(val) {
+        if (!val) return null;
+        if (val === 'null' || val === '~') return null;
+        if (val === 'true') return true;
+        if (val === 'false') return false;
+        if (/^-?\d+$/.test(val)) return parseInt(val, 10);
+        if (/^-?\d+\.\d+$/.test(val)) return parseFloat(val);
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          return val.slice(1, -1);
+        }
+        return val;
+      },
+      
+      stringify: function(obj, indent = 2) {
+        return this.toYaml(obj, 0, indent);
+      },
+      
+      toYaml: function(obj, level, indent) {
+        const spaces = ' '.repeat(level * indent);
+        let result = '';
+        
+        if (Array.isArray(obj)) {
+          for (const item of obj) {
+            if (typeof item === 'object' && item !== null) {
+              const inner = this.toYaml(item, level + 1, indent);
+              const firstLine = inner.split('\n')[0];
+              result += spaces + '- ' + firstLine.trim() + '\n';
+              result += inner.split('\n').slice(1).map(l => spaces + '  ' + l.trim()).filter(l => l.trim()).join('\n');
+              if (inner.split('\n').length > 1) result += '\n';
+            } else {
+              result += spaces + '- ' + this.formatValue(item) + '\n';
+            }
+          }
+        } else if (typeof obj === 'object' && obj !== null) {
+          for (const [key, val] of Object.entries(obj)) {
+            if (typeof val === 'object' && val !== null) {
+              result += spaces + key + ':\n' + this.toYaml(val, level + 1, indent);
+            } else {
+              result += spaces + key + ': ' + this.formatValue(val) + '\n';
+            }
+          }
+        } else {
+          result = this.formatValue(obj);
+        }
+        
+        return result;
+      },
+      
+      formatValue: function(val) {
+        if (val === null) return 'null';
+        if (typeof val === 'string') {
+          if (val.includes(':') || val.includes('#') || val.includes('\n')) {
+            return '"' + val.replace(/"/g, '\\"') + '"';
+          }
+          return val;
+        }
+        return String(val);
+      }
+    };
+
+    const $leftInput = document.getElementById("leftInput");
+    const $rightOutput = document.getElementById("rightOutput");
+    const $leftLabel = document.getElementById("leftLabel");
+    const $rightLabel = document.getElementById("rightLabel");
+    const $indent = document.getElementById("indent");
+    const $errorMsg = document.getElementById("errorMsg");
+    const $status = document.getElementById("status");
+
+    let mode = "yaml-to-json"; // or "json-to-yaml"
+
+    function convert() {
+      const input = $leftInput.value.trim();
+      $errorMsg.textContent = '';
+      
+      if (!input) {
+        $rightOutput.value = '';
+        return;
+      }
+
+      const indentNum = parseInt($indent.value) || 2;
+
+      try {
+        if (mode === "yaml-to-json") {
+          const obj = YAML.parse(input);
+          $rightOutput.value = JSON.stringify(obj, null, indentNum);
+        } else {
+          const obj = JSON.parse(input);
+          $rightOutput.value = YAML.stringify(obj, indentNum);
+        }
+      } catch (e) {
+        $errorMsg.textContent = '❌ ' + e.message;
+        $rightOutput.value = '';
+      }
+    }
+
+    function swap() {
+      mode = mode === "yaml-to-json" ? "json-to-yaml" : "yaml-to-json";
+      $leftLabel.textContent = mode === "yaml-to-json" ? "YAML" : "JSON";
+      $rightLabel.textContent = mode === "yaml-to-json" ? "JSON" : "YAML";
+      $leftInput.placeholder = mode === "yaml-to-json" ? "Enter YAML here..." : "Enter JSON here...";
+      $rightOutput.placeholder = mode === "yaml-to-json" ? "JSON will appear here..." : "YAML will appear here...";
+      
+      // Swap content
+      const temp = $leftInput.value;
+      $leftInput.value = $rightOutput.value;
+      convert();
+    }
+
+    async function copyOutput() {
+      if (!$rightOutput.value) return;
+      try {
+        await navigator.clipboard.writeText($rightOutput.value);
+        showStatus("Copied!");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = $rightOutput.value;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied!");
+      }
+    }
+
+    function clearAll() {
+      $leftInput.value = '';
+      $rightOutput.value = '';
+      $errorMsg.textContent = '';
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ''; }, 2000);
+    }
+
+    $leftInput.addEventListener('input', convert);
+    $indent.addEventListener('change', convert);
+    $leftInput.focus();
+  </script>
+</body>
+</html>

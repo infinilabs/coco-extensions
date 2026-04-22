@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Line Number Adder</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .options { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    input[type="number"] {
+      font: inherit; font-size: 12px; width: 60px;
+      padding: 6px 10px; border: 1px solid var(--border);
+      border-radius: 4px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    input[type="text"] {
+      font: inherit; font-size: 12px; width: 50px;
+      padding: 6px 10px; border: 1px solid var(--border);
+      border-radius: 4px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); }
+    .panels { display: flex; gap: 12px; flex: 1; min-height: 0; }
+    .panel { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; }
+    .panel-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    .line-count { font-size: 11px; color: var(--muted); }
+    textarea {
+      flex: 1; font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 10px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); resize: none;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .actions { display: flex; gap: 8px; }
+    button {
+      font: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 16px; cursor: pointer;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .status { font-size: 11px; color: var(--success); }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <h1>🔢 Line Number Adder</h1>
+
+  <div class="options">
+    <label>
+      Start:
+      <input type="number" id="startNum" value="1" min="0">
+    </label>
+    <label>
+      Separator:
+      <input type="text" id="separator" value=". " maxlength="5">
+    </label>
+    <label>
+      <input type="checkbox" id="padNumbers" checked>
+      Pad Numbers
+    </label>
+    <label>
+      <input type="checkbox" id="skipEmpty">
+      Skip Empty Lines
+    </label>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-label">Input Text</span>
+        <span class="line-count" id="inputCount">0 lines</span>
+      </div>
+      <textarea id="input" placeholder="Paste text here..."></textarea>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-label">Output</span>
+        <span class="line-count" id="outputCount">0 lines</span>
+      </div>
+      <textarea id="output" readonly placeholder="Numbered text will appear here..."></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="copyOutput()">Copy Output</button>
+    <button onclick="removeNumbers()">Remove Numbers</button>
+    <button onclick="clearAll()">Clear</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <footer>Line Number Adder · All processing happens locally</footer>
+
+  <script>
+    "use strict";
+
+    const $input = document.getElementById("input");
+    const $output = document.getElementById("output");
+    const $startNum = document.getElementById("startNum");
+    const $separator = document.getElementById("separator");
+    const $padNumbers = document.getElementById("padNumbers");
+    const $skipEmpty = document.getElementById("skipEmpty");
+    const $inputCount = document.getElementById("inputCount");
+    const $outputCount = document.getElementById("outputCount");
+    const $status = document.getElementById("status");
+
+    function addLineNumbers() {
+      const text = $input.value;
+      if (!text) {
+        $output.value = '';
+        updateCounts();
+        return;
+      }
+
+      const lines = text.split('\n');
+      const startNum = parseInt($startNum.value) || 1;
+      const sep = $separator.value;
+      const pad = $padNumbers.checked;
+      const skipEmpty = $skipEmpty.checked;
+
+      // Calculate padding width
+      let lastNum = startNum;
+      lines.forEach(line => {
+        if (!skipEmpty || line.trim()) lastNum++;
+      });
+      const padWidth = String(lastNum - 1).length;
+
+      let num = startNum;
+      const result = lines.map(line => {
+        if (skipEmpty && !line.trim()) {
+          return line;
+        }
+        const numStr = pad ? String(num).padStart(padWidth, ' ') : String(num);
+        num++;
+        return numStr + sep + line;
+      });
+
+      $output.value = result.join('\n');
+      updateCounts();
+    }
+
+    function removeNumbers() {
+      const text = $input.value || $output.value;
+      if (!text) return;
+
+      // Try to detect and remove line numbers
+      const lines = text.split('\n');
+      const patterns = [
+        /^\s*\d+\.\s*/,      // "1. " or "  1. "
+        /^\s*\d+:\s*/,       // "1: " or "  1: "
+        /^\s*\d+\)\s*/,      // "1) "
+        /^\s*\d+\s+/,        // "1 " (number followed by space)
+        /^\[\d+\]\s*/,       // "[1] "
+        /^\(\d+\)\s*/,       // "(1) "
+      ];
+
+      const result = lines.map(line => {
+        for (const pattern of patterns) {
+          if (pattern.test(line)) {
+            return line.replace(pattern, '');
+          }
+        }
+        return line;
+      });
+
+      $input.value = result.join('\n');
+      addLineNumbers();
+    }
+
+    function updateCounts() {
+      const inputLines = $input.value ? $input.value.split('\n').length : 0;
+      const outputLines = $output.value ? $output.value.split('\n').length : 0;
+      $inputCount.textContent = inputLines + ' line' + (inputLines !== 1 ? 's' : '');
+      $outputCount.textContent = outputLines + ' line' + (outputLines !== 1 ? 's' : '');
+    }
+
+    async function copyOutput() {
+      if (!$output.value) return;
+      try {
+        await navigator.clipboard.writeText($output.value);
+        showStatus("Copied!");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = $output.value;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied!");
+      }
+    }
+
+    function clearAll() {
+      $input.value = '';
+      $output.value = '';
+      updateCounts();
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ''; }, 2000);
+    }
+
+    $input.addEventListener('input', addLineNumbers);
+    $startNum.addEventListener('change', addLineNumbers);
+    $separator.addEventListener('input', addLineNumbers);
+    $padNumbers.addEventListener('change', addLineNumbers);
+    $skipEmpty.addEventListener('change', addLineNumbers);
+
+    $input.focus();
+  </script>
+</body>
+</html>
