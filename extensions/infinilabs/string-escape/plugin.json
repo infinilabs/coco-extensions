@@ -1,0 +1,37 @@
+{
+  "name": "String Escape",
+  "description": "Escape and unescape strings for JSON, XML, HTML, URL, and Regex.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "developer",
+  "tags": [
+    "escape",
+    "unescape",
+    "json",
+    "xml",
+    "html",
+    "url",
+    "regex",
+    "developer"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": true,
+    "detachable": true,
+    "width": 500,
+    "height": 480
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}
