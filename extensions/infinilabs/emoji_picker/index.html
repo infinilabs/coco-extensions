@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emoji Picker</title>
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f5;
+      --bg-hover: #e8e8e8;
+      --text-primary: #1a1a1a;
+      --text-secondary: #666666;
+      --border-color: #e0e0e0;
+      --accent-color: #6366f1;
+      --accent-hover: #4f46e5;
+      --toast-bg: #333333;
+      --toast-text: #ffffff;
+      --scrollbar-thumb: #c0c0c0;
+      --scrollbar-track: transparent;
+      --category-active-bg: #e8e5ff;
+      --search-bg: #f0f0f0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1e1e1e;
+        --bg-secondary: #2a2a2a;
+        --bg-hover: #3a3a3a;
+        --text-primary: #e0e0e0;
+        --text-secondary: #999999;
+        --border-color: #3a3a3a;
+        --accent-color: #818cf8;
+        --accent-hover: #6366f1;
+        --toast-bg: #555555;
+        --toast-text: #ffffff;
+        --scrollbar-thumb: #555555;
+        --category-active-bg: #3730a3;
+        --search-bg: #2a2a2a;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* Search bar */
+    .search-container {
+      padding: 12px 12px 8px;
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--search-bg);
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-color);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      opacity: 0.5;
+    }
+
+    /* Category tabs */
+    .category-tabs {
+      display: flex;
+      padding: 0 8px 8px;
+      gap: 2px;
+      flex-shrink: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .category-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-tab {
+      flex-shrink: 0;
+      padding: 6px 8px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .category-tab:hover {
+      background: var(--bg-hover);
+    }
+
+    .category-tab.active {
+      background: var(--category-active-bg);
+    }
+
+    /* Emoji grid */
+    .emoji-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 8px 8px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+
+    .emoji-area::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .emoji-area::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 3px;
+    }
+
+    .emoji-area::-webkit-scrollbar-track {
+      background: var(--scrollbar-track);
+    }
+
+    .category-header {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 8px 4px 4px;
+      position: sticky;
+      top: 0;
+      background: var(--bg-primary);
+      z-index: 1;
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+      gap: 2px;
+    }
+
+    .emoji-btn {
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 26px;
+      line-height: 1;
+      padding: 6px;
+      transition: background 0.12s, transform 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1;
+    }
+
+    .emoji-btn:hover {
+      background: var(--bg-hover);
+      transform: scale(1.15);
+    }
+
+    .emoji-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--toast-bg);
+      color: var(--toast-text);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      pointer-events: none;
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+      gap: 8px;
+    }
+
+    .empty-state .icon {
+      font-size: 40px;
+    }
+
+    .empty-state .message {
+      font-size: 14px;
+    }
+
+    /* Frequently used section */
+    .frequent-section {
+      padding-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="search-container">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          class="search-input"
+          id="searchInput"
+          placeholder="Search emojis..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+    </div>
+
+    <div class="category-tabs" id="categoryTabs"></div>
+
+    <div class="emoji-area" id="emojiArea"></div>
+
+    <div class="toast" id="toast">Copied!</div>
+  </div>
+
+  <script>
+    // Curated emoji data organized by category
+    const emojiData = {
+      "Frequently Used": {
+        icon: "🕐",
+        emojis: []
+      },
+      "Smileys & People": {
+        icon: "😀",
+        emojis: [
+          "😀","😃","😄","😁","😆","😅","🤣","😂","🙂","🙃",
+          "😉","😊","😇","🥰","😍","🤩","😘","😗","😚","😙",
+          "🥲","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫",
+          "🤔","🫡","🤐","🤨","😐","😑","😶","🫥","😏","😒",
+          "🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒",
+          "🤕","🤢","🤮","🥵","🥶","🥴","😵","🤯","🤠","🥳",
+          "🥸","😎","🤓","🧐","😕","🫤","😟","🙁","😮","😯",
+          "😲","😳","🥺","🥹","😦","😧","😨","😰","😥","😢",
+          "😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤",
+          "😡","😠","🤬","😈","👿","💀","☠️","💩","🤡","👹",
+          "👺","👻","👽","👾","🤖","😺","😸","😹","😻","😼",
+          "😽","🙀","😿","😾","🙈","🙉","🙊","👋","🤚","🖐️",
+          "✋","🖖","🫱","🫲","🫳","🫴","👌","🤌","🤏","✌️",
+          "🤞","🫰","🤟","🤘","🤙","👈","👉","👆","🖕","👇",
+          "☝️","🫵","👍","👎","✊","👊","🤛","🤜","👏","🙌",
+          "🫶","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾",
+          "🦿","🦵","🦶","👂","🦻","👃","🧠","🫀","🫁","🦷",
+          "🦴","👀","👁️","👅","👄","🫦","👶","🧒","👦","👧",
+          "🧑","👱","👨","🧔","👩","🧓","👴","👵","🙍","🙎",
+          "🙅","🙆","💁","🙋","🧏","🙇","🤦","🤷","👮","🕵️",
+          "💂","🥷","👷","🫅","🤴","👸","👳","👲","🧕","🤵",
+          "👰","🤰","🫃","🫄","🤱","👼","🎅","🤶","🦸","🦹",
+          "🧙","🧚","🧛","🧜","🧝","🧞","🧟","🧌","💆","💇",
+          "🚶","🧍","🧎","🏃","💃","🕺","🕴️","👯","🧖","🧗",
+          "🤸","⛹️","🏋️","🚴","🚵","🤼","🤽","🤾","🤺","⛷️",
+          "🏂","🏌️","🏄","🚣","🏊","🤿","🧘","👪","👨‍👩‍👦","👨‍👩‍👧",
+          "👨‍👩‍👧‍👦","👨‍👩‍👦‍👦","👨‍👩‍👧‍👧","🗣️","👤","👥","🫂","❤️","🧡","💛",
+          "💚","💙","💜","🖤","🤍","🤎","💔","❤️‍🔥","❤️‍🩹","❣️",
+          "💕","💞","💓","💗","💖","💘","💝","💟"
+        ]
+      },
+      "Animals & Nature": {
+        icon: "🐻",
+        emojis: [
+          "🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐻‍❄️","🐨",
+          "🐯","🦁","🐮","🐷","🐽","🐸","🐵","🙈","🙉","🙊",
+          "🐒","🐔","🐧","🐦","🐤","🐣","🐥","🦆","🦅","🦉",
+          "🦇","🐺","🐗","🐴","🦄","🐝","🪱","🐛","🦋","🐌",
+          "🐞","🐜","🪰","🪲","🪳","🦟","🦗","🕷️","🕸️","🦂",
+          "🐢","🐍","🦎","🦖","🦕","🐙","🦑","🦐","🦞","🦀",
+          "🪸","🐡","🐠","🐟","🐬","🐳","🐋","🦈","🦭","🐊",
+          "🐅","🐆","🦓","🫏","🦍","🦧","🦣","🐘","🦛","🦏",
+          "🐪","🐫","🦒","🦘","🦬","🐃","🐂","🐄","🫎","🐎",
+          "🐖","🐏","🐑","🦙","🐐","🦌","🐕","🐩","🦮","🐕‍🦺",
+          "🐈","🐈‍⬛","🪽","🪿","🐓","🦃","🦤","🦚","🦜","🦢",
+          "🪶","🦩","🕊️","🐇","🦝","🦨","🦡","🦫","🦦","🦥",
+          "🐁","🐀","🐿️","🦔","🐾","🐉","🐲","🌵","🎄","🌲",
+          "🌳","🌴","🪵","🌱","🌿","☘️","🍀","🎍","🪴","🎋",
+          "🍃","🍂","🍁","🪺","🪹","🍄","🌾","💐","🌷","🌹",
+          "🥀","🌺","🌸","🌼","🌻","🌞","🌝","🌛","🌜","🌚",
+          "🌕","🌖","🌗","🌘","🌑","🌒","🌓","🌔","🌙","🌎",
+          "🌍","🌏","🪐","💫","⭐","🌟","✨","⚡","☄️","💥",
+          "🔥","🌪️","🌈","☀️","🌤️","⛅","🌥️","☁️","🌦️","🌧️",
+          "⛈️","🌩️","🌨️","❄️","☃️","⛄","🌬️","💨","💧","💦",
+          "🫧","☔","☂️","🌊","🌫️"
+        ]
+      },
+      "Food & Drink": {
+        icon: "🍔",
+        emojis: [
+          "🍏","🍎","🍐","🍊","🍋","🍌","🍉","🍇","🍓","🫐",
+          "🍈","🍒","🍑","🥭","🍍","🥥","🥝","🍅","🍆","🥑",
+          "🥦","🫑","🥬","🥒","🌶️","🫒","🧄","🧅","🥔","🍠",
+          "🫘","🥐","🍞","🥖","🥨","🧀","🥚","🍳","🧈","🥞",
+          "🧇","🥓","🥩","🍗","🍖","🦴","🌭","🍔","🍟","🍕",
+          "🫓","🥪","🥙","🧆","🌮","🌯","🫔","🥗","🥘","🫕",
+          "🥫","🍝","🍜","🍲","🍛","🍣","🍱","🥟","🦪","🍤",
+          "🍙","🍚","🍘","🍥","🥠","🥮","🍢","🍡","🍧","🍨",
+          "🍦","🥧","🧁","🍰","🎂","🍮","🍭","🍬","🍫","🍿",
+          "🍩","🍪","🌰","🥜","🍯","🥛","🍼","🫖","☕","🍵",
+          "🧃","🥤","🧋","🫙","🍶","🍺","🍻","🥂","🍷","🫗",
+          "🥃","🍸","🍹","🧉","🍾","🧊","🥄","🍴","🍽️","🥣",
+          "🥡","🥢","🧂"
+        ]
+      },
+      "Activities": {
+        icon: "⚽",
+        emojis: [
+          "⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱",
+          "🪀","🏓","🏸","🏒","🏑","🥍","🏏","🪃","🥅","⛳",
+          "🪁","🏹","🎣","🤿","🥊","🥋","🎽","🛹","🛼","🛷",
+          "⛸️","🥌","🎿","⛷️","🏂","🪂","🏋️","🤼","🤸","⛹️",
+          "🤺","🤾","🏌️","🏇","🧘","🏄","🏊","🤽","🚣","🧗",
+          "🚵","🚴","🏆","🥇","🥈","🥉","🏅","🎖️","🏵️","🎗️",
+          "🎪","🤹","🎭","🩰","🎨","🎬","🎤","🎧","🎼","🎹",
+          "🥁","🪘","🎷","🎺","🪗","🎸","🪕","🎻","🪈","🎲",
+          "♟️","🎯","🎳","🎮","🕹️","🎰","🧩"
+        ]
+      },
+      "Travel & Places": {
+        icon: "✈️",
+        emojis: [
+          "🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐",
+          "🛻","🚚","🚛","🚜","🦯","🦽","🦼","🛴","🚲","🛵",
+          "🏍️","🛺","🚨","🚔","🚍","🚘","🚖","🛞","🚡","🚠",
+          "🚟","🚃","🚋","🚞","🚝","🚄","🚅","🚈","🚂","🚆",
+          "🚇","🚊","🚉","✈️","🛫","🛬","🛩️","💺","🛰️","🚀",
+          "🛸","🚁","🛶","⛵","🚤","🛥️","🛳️","⛴️","🚢","⚓",
+          "🪝","⛽","🚧","🚦","🚥","🛑","🚏","🗺️","🗿","🗽",
+          "🗼","🏰","🏯","🏟️","🎡","🎢","🎠","⛲","⛱️","🏖️",
+          "🏝️","🏜️","🌋","⛰️","🏔️","🗻","🏕️","⛺","🛖","🏠",
+          "🏡","🏘️","🏚️","🏗️","🏭","🏢","🏬","🏣","🏤","🏥",
+          "🏦","🏨","🏪","🏫","🏩","💒","🏛️","⛪","🕌","🕍",
+          "🛕","🕋","⛩️","🛤️","🛣️","🗾","🎑","🏞️","🌅","🌄",
+          "🌠","🎇","🎆","🌇","🌆","🏙️","🌃","🌌","🌉","🌁"
+        ]
+      },
+      "Objects": {
+        icon: "💡",
+        emojis: [
+          "⌚","📱","📲","💻","⌨️","🖥️","🖨️","🖱️","🖲️","🕹️",
+          "🗜️","💽","💾","💿","📀","📼","📷","📸","📹","🎥",
+          "📽️","🎞️","📞","☎️","📟","📠","📺","📻","🎙️","🎚️",
+          "🎛️","🧭","⏱️","⏲️","⏰","🕰️","⌛","⏳","📡","🔋",
+          "🪫","🔌","💡","🔦","🕯️","🪔","🧯","🛢️","💸","💵",
+          "💴","💶","💷","🪙","💰","💳","🪪","💎","⚖️","🪜",
+          "🧰","🪛","🔧","🔩","⚙️","🗜️","⛓️","🧲","🔫","💣",
+          "🧨","🪓","🔪","🗡️","⚔️","🛡️","🚬","⚰️","🪦","⚱️",
+          "🏺","🔮","📿","🧿","🪬","💈","⚗️","🔭","🔬","🕳️",
+          "🩹","🩺","🩻","🩼","💊","💉","🩸","🧬","🦠","🧫",
+          "🧪","🌡️","🧹","🪠","🧺","🧻","🚽","🚰","🚿","🛁",
+          "🛀","🧼","🪥","🪒","🧽","🪣","🧴","🛎️","🔑","🗝️",
+          "🚪","🪑","🛋️","🛏️","🛌","🧸","🪆","🖼️","🪞","🪟",
+          "🛍️","🛒","🎁","🎈","🎏","🎀","🪄","🪅","🎊","🎉",
+          "🎎","🏮","🎐","🧧","✉️","📩","📨","📧","💌","📥",
+          "📤","📦","🏷️","🪧","📪","📫","📬","📭","📮","📯",
+          "📜","📃","📄","📑","🧾","📊","📈","📉","🗒️","🗓️",
+          "📆","📅","🗑️","📇","🗃️","🗳️","🗄️","📋","📁","📂",
+          "🗂️","🗞️","📰","📓","📔","📒","📕","📗","📘","📙",
+          "📚","📖","🔖","🧷","🔗","📎","🖇️","📐","📏","🧮",
+          "📌","📍","✂️","🖊️","🖋️","✒️","🖌️","🖍️","📝","✏️",
+          "🔍","🔎","🔏","🔐","🔒","🔓"
+        ]
+      },
+      "Symbols": {
+        icon: "💟",
+        emojis: [
+          "❤️","🧡","💛","💚","💙","💜","🖤","🤍","🤎","❤️‍🔥",
+          "❤️‍🩹","💔","❣️","💕","💞","💓","💗","💖","💘","💝",
+          "💟","☮️","✝️","☪️","🕉️","☸️","✡️","🔯","🕎","☯️",
+          "☦️","🛐","⛎","♈","♉","♊","♋","♌","♍","♎",
+          "♏","♐","♑","♒","♓","🆔","⚛️","🉑","☢️","☣️",
+          "📴","📳","🈶","🈚","🈸","🈺","🈷️","✴️","🆚","💮",
+          "🉐","㊙️","㊗️","🈴","🈵","🈹","🈲","🅰️","🅱️","🆎",
+          "🆑","🅾️","🆘","❌","⭕","🛑","⛔","📛","🚫","💯",
+          "💢","♨️","🚷","🚯","🚳","🚱","🔞","📵","🚭","❗",
+          "❕","❓","❔","‼️","⁉️","🔅","🔆","〽️","⚠️","🚸",
+          "🔱","⚜️","🔰","♻️","✅","🈯","💹","❇️","✳️","❎",
+          "🌐","💠","Ⓜ️","🌀","💤","🏧","🚾","♿","🅿️","🛗",
+          "🈳","🈂️","🛂","🛃","🛄","🛅","🚹","🚺","🚼","⚧️",
+          "🚻","🚮","🎦","📶","🈁","🔣","ℹ️","🔤","🔡","🔠",
+          "🆖","🆗","🆙","🆒","🆕","🆓","0️⃣","1️⃣","2️⃣","3️⃣",
+          "4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣","🔟","🔢","#️⃣","*️⃣",
+          "⏏️","▶️","⏸️","⏯️","⏹️","⏺️","⏭️","⏮️","⏩","⏪",
+          "🔀","🔁","🔂","⏫","⏬","◀️","🔼","🔽","➡️","⬅️",
+          "⬆️","⬇️","↗️","↘️","↙️","↖️","↕️","↔️","↩️","↪️",
+          "⤴️","⤵️","🔃","🔄","🔙","🔚","🔛","🔜","🔝","🛐",
+          "⚛️","🕉️","✡️","☸️","☯️","✝️","☦️","☪️","☮️","🕎",
+          "🔯","♾️","🔀","🔁","🔂","▶️","⏩","⏭️","⏯️","◀️",
+          "⏪","⏮️","🔼","⏫","🔽","⏬","⏸️","⏹️","⏺️","⏏️",
+          "🎵","🎶","🔈","🔇","🔉","🔊","📢","📣","📯","🔔",
+          "🔕","🎼","🎵","🎶","🏁","🚩","🎌","🏴","🏳️","🏳️‍🌈",
+          "🏳️‍⚧️","🏴‍☠️","🇺🇳"
+        ]
+      },
+      "Flags": {
+        icon: "🏁",
+        emojis: [
+          "🏁","🚩","🎌","🏴","🏳️","🏳️‍🌈","🏳️‍⚧️","🏴‍☠️",
+          "🇦🇨","🇦🇩","🇦🇪","🇦🇫","🇦🇬","🇦🇮","🇦🇱","🇦🇲",
+          "🇦🇴","🇦🇶","🇦🇷","🇦🇸","🇦🇹","🇦🇺","🇦🇼","🇦🇽",
+          "🇦🇿","🇧🇦","🇧🇧","🇧🇩","🇧🇪","🇧🇫","🇧🇬","🇧🇭",
+          "🇧🇮","🇧🇯","🇧🇱","🇧🇲","🇧🇳","🇧🇴","🇧🇶","🇧🇷",
+          "🇧🇸","🇧🇹","🇧🇻","🇧🇼","🇧🇾","🇧🇿","🇨🇦","🇨🇨",
+          "🇨🇩","🇨🇫","🇨🇬","🇨🇭","🇨🇮","🇨🇰","🇨🇱","🇨🇲",
+          "🇨🇳","🇨🇴","🇨🇵","🇨🇷","🇨🇺","🇨🇻","🇨🇼","🇨🇽",
+          "🇨🇾","🇨🇿","🇩🇪","🇩🇬","🇩🇯","🇩🇰","🇩🇲","🇩🇴",
+          "🇩🇿","🇪🇦","🇪🇨","🇪🇪","🇪🇬","🇪🇭","🇪🇷","🇪🇸",
+          "🇪🇹","🇪🇺","🇫🇮","🇫🇯","🇫🇰","🇫🇲","🇫🇴","🇫🇷",
+          "🇬🇦","🇬🇧","🇬🇩","🇬🇪","🇬🇫","🇬🇬","🇬🇭","🇬🇮",
+          "🇬🇱","🇬🇲","🇬🇳","🇬🇵","🇬🇶","🇬🇷","🇬🇸","🇬🇹",
+          "🇬🇺","🇬🇼","🇬🇾","🇭🇰","🇭🇲","🇭🇳","🇭🇷","🇭🇹",
+          "🇭🇺","🇮🇨","🇮🇩","🇮🇪","🇮🇱","🇮🇲","🇮🇳","🇮🇴",
+          "🇮🇶","🇮🇷","🇮🇸","🇮🇹","🇯🇪","🇯🇲","🇯🇴","🇯🇵",
+          "🇰🇪","🇰🇬","🇰🇭","🇰🇮","🇰🇲","🇰🇳","🇰🇵","🇰🇷",
+          "🇰🇼","🇰🇾","🇰🇿","🇱🇦","🇱🇧","🇱🇨","🇱🇮","🇱🇰",
+          "🇱🇷","🇱🇸","🇱🇹","🇱🇺","🇱🇻","🇱🇾","🇲🇦","🇲🇨",
+          "🇲🇩","🇲🇪","🇲🇫","🇲🇬","🇲🇭","🇲🇰","🇲🇱","🇲🇲",
+          "🇲🇳","🇲🇴","🇲🇵","🇲🇶","🇲🇷","🇲🇸","🇲🇹","🇲🇺",
+          "🇲🇻","🇲🇼","🇲🇽","🇲🇾","🇲🇿","🇳🇦","🇳🇨","🇳🇪",
+          "🇳🇫","🇳🇬","🇳🇮","🇳🇱","🇳🇴","🇳🇵","🇳🇷","🇳🇺",
+          "🇳🇿","🇴🇲","🇵🇦","🇵🇪","🇵🇫","🇵🇬","🇵🇭","🇵🇰",
+          "🇵🇱","🇵🇲","🇵🇳","🇵🇷","🇵🇸","🇵🇹","🇵🇼","🇵🇾",
+          "🇶🇦","🇷🇪","🇷🇴","🇷🇸","🇷🇺","🇷🇼","🇸🇦","🇸🇧",
+          "🇸🇨","🇸🇩","🇸🇪","🇸🇬","🇸🇭","🇸🇮","🇸🇯","🇸🇰",
+          "🇸🇱","🇸🇲","🇸🇳","🇸🇴","🇸🇷","🇸🇸","🇸🇹","🇸🇻",
+          "🇸🇽","🇸🇾","🇸🇿","🇹🇦","🇹🇨","🇹🇩","🇹🇫","🇹🇬",
+          "🇹🇭","🇹🇯","🇹🇰","🇹🇱","🇹🇲","🇹🇳","🇹🇴","🇹🇷",
+          "🇹🇹","🇹🇻","🇹🇼","🇹🇿","🇺🇦","🇺🇬","🇺🇲","🇺🇳",
+          "🇺🇸","🇺🇾","🇺🇿","🇻🇦","🇻🇨","🇻🇪","🇻🇬","🇻🇮",
+          "🇻🇳","🇻🇺","🇼🇫","🇼🇸","🇽🇰","🇾🇪","🇾🇹","🇿🇦",
+          "🇿🇲","🇿🇼"
+        ]
+      }
+    };
+
+    // Keyword mappings for search
+    const emojiKeywords = {
+      "😀": "grinning face happy smile",
+      "😃": "grinning face big eyes happy smile",
+      "😄": "grinning face smiling eyes happy",
+      "😁": "beaming face grin smile",
+      "😆": "grinning squinting face laugh",
+      "😅": "grinning sweat nervous smile",
+      "🤣": "rolling floor laughing rofl lol",
+      "😂": "face tears joy laughing crying lol",
+      "🙂": "slightly smiling face",
+      "🙃": "upside down face silly",
+      "😉": "winking face wink",
+      "😊": "smiling blushing face happy",
+      "😇": "smiling halo angel innocent",
+      "🥰": "smiling hearts love adore",
+      "😍": "heart eyes love face",
+      "🤩": "star struck excited amazed",
+      "😘": "face blowing kiss love",
+      "😗": "kissing face",
+      "😚": "kissing closed eyes",
+      "😙": "kissing smiling eyes",
+      "🥲": "smiling face tear happy sad",
+      "😋": "face savoring food yummy delicious",
+      "😛": "face tongue stuck out",
+      "😜": "winking face tongue playful",
+      "🤪": "zany face crazy wild",
+      "😝": "squinting face tongue",
+      "🤑": "money mouth face rich dollar",
+      "🤗": "hugging face hug",
+      "🤭": "face hand over mouth giggle",
+      "🤫": "shushing face quiet secret",
+      "🤔": "thinking face hmm wonder",
+      "🤐": "zipper mouth face secret quiet",
+      "🤨": "face raised eyebrow suspicious",
+      "😐": "neutral face straight",
+      "😑": "expressionless face blank",
+      "😶": "face without mouth silence",
+      "😏": "smirking face smug",
+      "😒": "unamused face bored annoyed",
+      "🙄": "face rolling eyes annoyed",
+      "😬": "grimacing face awkward",
+      "😌": "relieved face peaceful calm",
+      "😔": "pensive face sad thoughtful",
+      "😪": "sleepy face tired",
+      "🤤": "drooling face",
+      "😴": "sleeping face zzz",
+      "😷": "face medical mask sick",
+      "🤒": "face thermometer sick fever",
+      "🤕": "face bandage hurt injured",
+      "🤢": "nauseated face sick green",
+      "🤮": "face vomiting sick throw up",
+      "🥵": "hot face overheated sweating",
+      "🥶": "cold face freezing frozen",
+      "🥴": "woozy face dizzy drunk",
+      "😵": "face crossed out dizzy",
+      "🤯": "exploding head mind blown shocked",
+      "🤠": "cowboy hat face",
+      "🥳": "partying face celebration party",
+      "🥸": "disguised face glasses nose",
+      "😎": "smiling sunglasses cool",
+      "🤓": "nerd face glasses geek",
+      "🧐": "monocle face curious inspect",
+      "😕": "confused face",
+      "😟": "worried face",
+      "🙁": "slightly frowning face sad",
+      "😮": "face open mouth surprised",
+      "😯": "hushed face surprised",
+      "😲": "astonished face shocked",
+      "😳": "flushed face embarrassed",
+      "🥺": "pleading face puppy eyes please",
+      "😦": "frowning face open mouth",
+      "😧": "anguished face",
+      "😨": "fearful face scared afraid",
+      "😰": "anxious face sweat worried",
+      "😥": "sad relieved face disappointed",
+      "😢": "crying face tear sad",
+      "😭": "loudly crying face sobbing",
+      "😱": "face screaming fear horror",
+      "😖": "confounded face",
+      "😣": "persevering face",
+      "😞": "disappointed face sad",
+      "😓": "downcast face sweat",
+      "😩": "weary face tired",
+      "😫": "tired face exhausted",
+      "🥱": "yawning face bored sleepy",
+      "😤": "face steam nose angry huffing",
+      "😡": "pouting face angry red mad",
+      "😠": "angry face mad",
+      "🤬": "face symbols mouth swearing cursing",
+      "😈": "smiling face horns devil",
+      "👿": "angry face horns devil imp",
+      "💀": "skull dead death",
+      "☠️": "skull crossbones death poison",
+      "💩": "pile poo poop",
+      "🤡": "clown face",
+      "👹": "ogre monster",
+      "👺": "goblin monster",
+      "👻": "ghost halloween",
+      "👽": "alien extraterrestrial ufo space",
+      "👾": "alien monster space invader game",
+      "🤖": "robot face bot",
+      "👋": "waving hand hello hi bye",
+      "🤚": "raised back hand",
+      "🖐️": "hand splayed fingers",
+      "✋": "raised hand stop high five",
+      "🖖": "vulcan salute spock",
+      "👌": "ok hand okay perfect",
+      "🤏": "pinching hand small tiny",
+      "✌️": "victory hand peace sign",
+      "🤞": "crossed fingers luck hope",
+      "🤟": "love you gesture hand",
+      "🤘": "sign horns rock metal",
+      "🤙": "call me hand phone shaka",
+      "👈": "backhand index pointing left",
+      "👉": "backhand index pointing right",
+      "👆": "backhand index pointing up",
+      "🖕": "middle finger",
+      "👇": "backhand index pointing down",
+      "☝️": "index pointing up",
+      "👍": "thumbs up like approve good yes",
+      "👎": "thumbs down dislike bad no",
+      "✊": "raised fist power solidarity",
+      "👊": "oncoming fist bump punch",
+      "🤛": "left facing fist bump",
+      "🤜": "right facing fist bump",
+      "👏": "clapping hands applause bravo",
+      "🙌": "raising hands celebration hooray",
+      "👐": "open hands",
+      "🤲": "palms up together pray",
+      "🤝": "handshake agreement deal",
+      "🙏": "folded hands please thank you pray namaste",
+      "💪": "flexed biceps muscle strong",
+      "❤️": "red heart love",
+      "🧡": "orange heart love",
+      "💛": "yellow heart love",
+      "💚": "green heart love",
+      "💙": "blue heart love",
+      "💜": "purple heart love",
+      "🖤": "black heart love dark",
+      "🤍": "white heart love",
+      "🤎": "brown heart love",
+      "💔": "broken heart love sad",
+      "💕": "two hearts love",
+      "💞": "revolving hearts love",
+      "💓": "beating heart love",
+      "💗": "growing heart love",
+      "💖": "sparkling heart love",
+      "💘": "heart arrow love cupid",
+      "💝": "heart ribbon love gift",
+      "💟": "heart decoration love",
+      "🔥": "fire hot flame lit",
+      "✨": "sparkles stars magic shine",
+      "⭐": "star",
+      "🌟": "glowing star bright",
+      "💫": "dizzy star shooting",
+      "🎉": "party popper celebration tada",
+      "🎊": "confetti ball celebration party",
+      "🎁": "wrapped gift present birthday",
+      "🎂": "birthday cake celebration",
+      "🍕": "pizza food",
+      "🍔": "hamburger burger food",
+      "☕": "hot beverage coffee tea",
+      "🍺": "beer mug drink alcohol",
+      "🍷": "wine glass drink alcohol",
+      "🚀": "rocket launch space startup",
+      "✈️": "airplane travel fly",
+      "🏠": "house home",
+      "💻": "laptop computer work code programming",
+      "📱": "mobile phone cell",
+      "⌨️": "keyboard type computer",
+      "🖥️": "desktop computer monitor screen",
+      "📧": "email letter mail",
+      "📞": "telephone phone call",
+      "🔍": "magnifying glass search left",
+      "🔎": "magnifying glass search right",
+      "💡": "light bulb idea",
+      "🔒": "locked padlock secure",
+      "🔓": "unlocked padlock open",
+      "⚙️": "gear settings cog",
+      "🔧": "wrench tool fix",
+      "🔨": "hammer tool build",
+      "📝": "memo note write pencil",
+      "📋": "clipboard list",
+      "📊": "bar chart graph statistics",
+      "📈": "chart increasing up growth",
+      "📉": "chart decreasing down decline",
+      "✅": "check mark button done complete yes",
+      "❌": "cross mark no wrong delete",
+      "⚠️": "warning caution alert",
+      "💯": "hundred points perfect score",
+      "👀": "eyes look see watch",
+      "🐶": "dog face puppy pet",
+      "🐱": "cat face kitten pet",
+      "🌈": "rainbow colors",
+      "☀️": "sun sunny weather",
+      "🌙": "crescent moon night",
+      "⚡": "high voltage lightning electricity",
+      "💧": "droplet water",
+      "🌊": "water wave ocean sea",
+      "🎵": "musical note music",
+      "🎶": "musical notes music",
+      "🏆": "trophy cup winner champion award",
+      "🥇": "first place medal gold winner",
+      "🥈": "second place medal silver",
+      "🥉": "third place medal bronze",
+      "⏰": "alarm clock time",
+      "📅": "calendar date schedule",
+      "📌": "pushpin pin location",
+      "🔗": "link chain url",
+      "📎": "paperclip attachment",
+      "✂️": "scissors cut",
+      "🗑️": "wastebasket trash delete bin",
+      "📦": "package box delivery",
+      "🏁": "chequered flag race finish",
+      "🚩": "triangular flag post red flag",
+      "🏳️‍🌈": "rainbow flag pride lgbtq",
+      "⚽": "soccer ball football sport",
+      "🏀": "basketball sport",
+      "🎮": "video game controller gaming",
+      "🎯": "direct hit target bullseye",
+      "🧩": "puzzle piece jigsaw",
+      "🎨": "artist palette paint art colors"
+    };
+
+    // Frequently used emojis - stored in localStorage
+    const STORAGE_KEY = "infinilabs_emoji_picker_frequent";
+    const MAX_FREQUENT = 24;
+
+    function getFrequentEmojis() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch (e) {
+        // Ignore storage errors
+      }
+      return [];
+    }
+
+    function addFrequentEmoji(emoji) {
+      const frequent = getFrequentEmojis();
+      const filtered = frequent.filter(function(e) { return e !== emoji; });
+      filtered.unshift(emoji);
+      const trimmed = filtered.slice(0, MAX_FREQUENT);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+      } catch (e) {
+        // Ignore storage errors
+      }
+      return trimmed;
+    }
+
+    // Category names in order
+    const categoryNames = Object.keys(emojiData);
+
+    // Build category tabs
+    const categoryTabs = document.getElementById("categoryTabs");
+    const emojiArea = document.getElementById("emojiArea");
+    const searchInput = document.getElementById("searchInput");
+    const toast = document.getElementById("toast");
+    let toastTimeout = null;
+
+    function showToast(emoji) {
+      toast.textContent = "Copied " + emoji;
+      toast.classList.add("show");
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(function() {
+        toast.classList.remove("show");
+      }, 1200);
+    }
+
+    function copyEmoji(emoji) {
+      navigator.clipboard.writeText(emoji).then(function() {
+        showToast(emoji);
+        const frequent = addFrequentEmoji(emoji);
+        emojiData["Frequently Used"].emojis = frequent;
+        if (!searchInput.value.trim()) {
+          renderEmojis();
+        }
+      }).catch(function() {
+        // Deprecated execCommand fallback for older browsers without Clipboard API
+        var textArea = document.createElement("textarea");
+        textArea.value = emoji;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand("copy");
+          showToast(emoji);
+          var frequent = addFrequentEmoji(emoji);
+          emojiData["Frequently Used"].emojis = frequent;
+          if (!searchInput.value.trim()) {
+            renderEmojis();
+          }
+        } catch (e) {
+          // Copy failed silently
+        }
+        document.body.removeChild(textArea);
+      });
+    }
+
+    function createEmojiButton(emoji) {
+      var btn = document.createElement("button");
+      btn.className = "emoji-btn";
+      btn.textContent = emoji;
+      btn.title = emoji;
+      btn.setAttribute("aria-label", "Copy " + emoji);
+      btn.addEventListener("click", function() {
+        copyEmoji(emoji);
+      });
+      return btn;
+    }
+
+    function renderEmojis(filter) {
+      emojiArea.innerHTML = "";
+      var hasResults = false;
+
+      categoryNames.forEach(function(categoryName) {
+        var category = emojiData[categoryName];
+        var emojis = category.emojis;
+
+        if (!emojis || emojis.length === 0) return;
+
+        if (filter) {
+          var lowerFilter = filter.toLowerCase();
+          emojis = emojis.filter(function(emoji) {
+            var keywords = emojiKeywords[emoji] || "";
+            return emoji.includes(lowerFilter) || keywords.toLowerCase().includes(lowerFilter);
+          });
+          if (emojis.length === 0) return;
+        }
+
+        hasResults = true;
+
+        var section = document.createElement("div");
+        section.id = "category-" + categoryName.replace(/\s+/g, "-");
+
+        var header = document.createElement("div");
+        header.className = "category-header";
+        header.textContent = categoryName;
+        section.appendChild(header);
+
+        var grid = document.createElement("div");
+        grid.className = "emoji-grid";
+
+        emojis.forEach(function(emoji) {
+          grid.appendChild(createEmojiButton(emoji));
+        });
+
+        section.appendChild(grid);
+        emojiArea.appendChild(section);
+      });
+
+      if (!hasResults) {
+        var empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.innerHTML = '<span class="icon">🔍</span><span class="message">No emojis found</span>';
+        emojiArea.appendChild(empty);
+      }
+    }
+
+    function renderCategoryTabs() {
+      categoryTabs.innerHTML = "";
+      categoryNames.forEach(function(categoryName) {
+        var category = emojiData[categoryName];
+        if (categoryName === "Frequently Used" && (!category.emojis || category.emojis.length === 0)) {
+          return;
+        }
+        var tab = document.createElement("button");
+        tab.className = "category-tab";
+        tab.textContent = category.icon;
+        tab.title = categoryName;
+        tab.setAttribute("aria-label", categoryName);
+        tab.addEventListener("click", function() {
+          searchInput.value = "";
+          renderEmojis();
+          var target = document.getElementById("category-" + categoryName.replace(/\s+/g, "-"));
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+          // Update active state
+          document.querySelectorAll(".category-tab").forEach(function(t) {
+            t.classList.remove("active");
+          });
+          tab.classList.add("active");
+        });
+        categoryTabs.appendChild(tab);
+      });
+    }
+
+    // Highlight active category on scroll
+    function updateActiveCategory() {
+      var sections = categoryNames.map(function(name) {
+        return document.getElementById("category-" + name.replace(/\s+/g, "-"));
+      }).filter(Boolean);
+
+      var scrollTop = emojiArea.scrollTop;
+      var currentSection = null;
+
+      sections.forEach(function(section) {
+        if (section.offsetTop - emojiArea.offsetTop <= scrollTop + 10) {
+          currentSection = section;
+        }
+      });
+
+      if (currentSection) {
+        var currentId = currentSection.id;
+        document.querySelectorAll(".category-tab").forEach(function(tab) {
+          var categoryName = tab.title;
+          var expectedId = "category-" + categoryName.replace(/\s+/g, "-");
+          if (expectedId === currentId) {
+            tab.classList.add("active");
+          } else {
+            tab.classList.remove("active");
+          }
+        });
+      }
+    }
+
+    // Debounce helper
+    function debounce(fn, delay) {
+      var timer;
+      return function() {
+        var args = arguments;
+        var context = this;
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+          fn.apply(context, args);
+        }, delay);
+      };
+    }
+
+    // Search handling
+    searchInput.addEventListener("input", debounce(function() {
+      var query = searchInput.value.trim();
+      renderEmojis(query || null);
+    }, 150));
+
+    // Scroll-based active category highlighting
+    emojiArea.addEventListener("scroll", debounce(updateActiveCategory, 50));
+
+    // Initialize
+    emojiData["Frequently Used"].emojis = getFrequentEmojis();
+    renderCategoryTabs();
+    renderEmojis();
+
+    // Set first visible tab as active
+    var firstTab = categoryTabs.querySelector(".category-tab");
+    if (firstTab) {
+      firstTab.classList.add("active");
+    }
+  </script>
+</body>
+</html>
