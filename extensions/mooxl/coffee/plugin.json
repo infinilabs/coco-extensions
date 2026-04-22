@@ -1,0 +1,87 @@
+{
+  "name": "Coffee",
+  "description": "Prevent your Mac from sleeping. Ported from the Raycast Coffee extension by mooxl (MIT). Wraps the macOS `caffeinate` utility.",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": [
+    "caffeinate",
+    "sleep",
+    "system",
+    "productivity"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "commands": [
+    {
+      "name": "Caffeinate",
+      "description": "Prevent your Mac from sleeping (display + system + disk).",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "nohup caffeinate -dimsu >/dev/null 2>&1 &"
+        ]
+      }
+    },
+    {
+      "name": "Decaffeinate",
+      "description": "Stop preventing your Mac from sleeping.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "killall caffeinate 2>/dev/null; true"
+        ]
+      }
+    },
+    {
+      "name": "Toggle Caffeinate",
+      "description": "Toggle Mac sleep prevention on or off.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "if pgrep -x caffeinate >/dev/null; then killall caffeinate; else nohup caffeinate -dimsu >/dev/null 2>&1 & fi"
+        ]
+      }
+    },
+    {
+      "name": "Caffeinate for 1 Hour",
+      "description": "Prevent your Mac from sleeping for one hour.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "killall caffeinate 2>/dev/null; nohup caffeinate -dimsu -t 3600 >/dev/null 2>&1 &"
+        ]
+      }
+    },
+    {
+      "name": "Caffeinate for 8 Hours",
+      "description": "Prevent your Mac from sleeping for eight hours.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "killall caffeinate 2>/dev/null; nohup caffeinate -dimsu -t 28800 >/dev/null 2>&1 &"
+        ]
+      }
+    }
+  ]
+}

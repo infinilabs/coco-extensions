@@ -1,0 +1,113 @@
+{
+  "name": "Apple Music",
+  "description": "Control the Apple Music app from Coco AI: play/pause, next/previous, volume, like the current track. Ported from the Raycast Music extension by fedevitaledev (MIT).",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": [
+    "music",
+    "apple-music",
+    "media",
+    "player"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "commands": [
+    {
+      "name": "Toggle Play/Pause",
+      "description": "Toggle play or pause of the current track in Apple Music.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Music\" to playpause' -e 'end try'"
+        ]
+      }
+    },
+    {
+      "name": "Next Track",
+      "description": "Skip to the next track in Apple Music.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Music\" to next track' -e 'end try'"
+        ]
+      }
+    },
+    {
+      "name": "Previous Track",
+      "description": "Return to the previous track in Apple Music.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Music\" to previous track' -e 'end try'"
+        ]
+      }
+    },
+    {
+      "name": "Volume Up",
+      "description": "Increase Apple Music's volume by 10.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Music\" to set sound volume to (sound volume + 10)' -e 'end try'"
+        ]
+      }
+    },
+    {
+      "name": "Volume Down",
+      "description": "Decrease Apple Music's volume by 10.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Music\" to set sound volume to (sound volume - 10)' -e 'end try'"
+        ]
+      }
+    },
+    {
+      "name": "Like Current Track",
+      "description": "Mark the current track as loved/favorited in Apple Music.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Music\" to set favorited of current track to true' -e 'end try'"
+        ]
+      }
+    },
+    {
+      "name": "Reveal Current Track",
+      "description": "Reveal the currently playing track inside the Apple Music app.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Music\" to reveal current track' -e 'tell application \"Music\" to activate' -e 'end try'"
+        ]
+      }
+    }
+  ]
+}
