@@ -1,0 +1,61 @@
+{
+  "name": "Quit Applications",
+  "description": "Quit running macOS applications from Coco AI: quit the frontmost app, restart the frontmost app, or quit every other foreground app at once. Ported from the Raycast Quit Applications extension by mackopes (MIT).",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": [
+    "system",
+    "applications",
+    "productivity",
+    "quit"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "commands": [
+    {
+      "name": "Quit Frontmost Application",
+      "description": "Quit the application that is currently in the foreground.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"System Events\" to set fm to name of first application process whose frontmost is true' -e 'tell application fm to quit' -e 'end try'"
+        ]
+      }
+    },
+    {
+      "name": "Restart Frontmost Application",
+      "description": "Quit the application that is currently in the foreground and immediately reactivate it.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"System Events\" to set fm to name of first application process whose frontmost is true' -e 'tell application fm' -e 'repeat while its running' -e 'quit' -e 'delay 0.5' -e 'end repeat' -e 'activate' -e 'end tell' -e 'end try'"
+        ]
+      }
+    },
+    {
+      "name": "Quit All Other Applications",
+      "description": "Quit every other foreground application (Finder is left alone). The app calling this command may also be quit.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"System Events\" to set procs to name of every process whose background only is false and name is not \"Finder\"' -e 'repeat with p in procs' -e 'try' -e 'tell application (p as string) to quit' -e 'end try' -e 'end repeat' -e 'end try'"
+        ]
+      }
+    }
+  ]
+}
