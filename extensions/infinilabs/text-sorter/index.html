@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Sorter</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .options {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    }
+    .option-group {
+      display: flex; align-items: center; gap: 6px;
+    }
+    label { font-size: 12px; color: var(--muted); }
+    select {
+      font: inherit; font-size: 12px;
+      padding: 6px 10px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+    .checkbox-label {
+      display: flex; align-items: center; gap: 4px; cursor: pointer;
+    }
+    input[type="checkbox"] { cursor: pointer; }
+    .field { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 0; }
+    .field-label {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; display: flex; justify-content: space-between;
+    }
+    textarea {
+      flex: 1; font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); resize: none; min-height: 120px;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .actions { display: flex; gap: 8px; justify-content: center; }
+    button {
+      font: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 16px; cursor: pointer;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .stats { font-size: 11px; color: var(--muted); }
+    .status { font-size: 11px; color: var(--success); }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="options">
+    <div class="option-group">
+      <label>Sort:</label>
+      <select id="sortType">
+        <option value="alpha">Alphabetical (A-Z)</option>
+        <option value="alpha-desc">Alphabetical (Z-A)</option>
+        <option value="numeric">Numeric (0-9)</option>
+        <option value="numeric-desc">Numeric (9-0)</option>
+        <option value="length">By Length (short-long)</option>
+        <option value="length-desc">By Length (long-short)</option>
+        <option value="random">Random Shuffle</option>
+      </select>
+    </div>
+    <label class="checkbox-label">
+      <input type="checkbox" id="unique"> Remove duplicates
+    </label>
+    <label class="checkbox-label">
+      <input type="checkbox" id="trimLines"> Trim lines
+    </label>
+    <label class="checkbox-label">
+      <input type="checkbox" id="ignoreCase"> Ignore case
+    </label>
+  </div>
+
+  <div class="field">
+    <div class="field-label">
+      <span>Input</span>
+      <span class="stats" id="inputStats">0 lines</span>
+    </div>
+    <textarea id="input" placeholder="Enter lines of text to sort..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="sort()">Sort</button>
+    <button onclick="copyOutput()">Copy</button>
+    <button onclick="clearAll()">Clear</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <div class="field">
+    <div class="field-label">
+      <span>Output</span>
+      <span class="stats" id="outputStats">0 lines</span>
+    </div>
+    <textarea id="output" placeholder="Sorted result..." readonly></textarea>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const $input = document.getElementById("input");
+    const $output = document.getElementById("output");
+    const $sortType = document.getElementById("sortType");
+    const $unique = document.getElementById("unique");
+    const $trimLines = document.getElementById("trimLines");
+    const $ignoreCase = document.getElementById("ignoreCase");
+    const $inputStats = document.getElementById("inputStats");
+    const $outputStats = document.getElementById("outputStats");
+    const $status = document.getElementById("status");
+
+    function updateInputStats() {
+      const lines = $input.value.split("\n").filter(l => l.length > 0);
+      $inputStats.textContent = `${lines.length} lines`;
+    }
+
+    $input.addEventListener("input", updateInputStats);
+
+    function sort() {
+      let lines = $input.value.split("\n");
+      
+      if ($trimLines.checked) {
+        lines = lines.map(l => l.trim());
+      }
+      
+      // Filter empty lines
+      lines = lines.filter(l => l.length > 0);
+      
+      if ($unique.checked) {
+        const seen = new Set();
+        lines = lines.filter(l => {
+          const key = $ignoreCase.checked ? l.toLowerCase() : l;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      }
+
+      const sortType = $sortType.value;
+      
+      switch (sortType) {
+        case "alpha":
+          lines.sort((a, b) => {
+            const aVal = $ignoreCase.checked ? a.toLowerCase() : a;
+            const bVal = $ignoreCase.checked ? b.toLowerCase() : b;
+            return aVal.localeCompare(bVal);
+          });
+          break;
+        case "alpha-desc":
+          lines.sort((a, b) => {
+            const aVal = $ignoreCase.checked ? a.toLowerCase() : a;
+            const bVal = $ignoreCase.checked ? b.toLowerCase() : b;
+            return bVal.localeCompare(aVal);
+          });
+          break;
+        case "numeric":
+          lines.sort((a, b) => {
+            const numA = parseFloat(a) || 0;
+            const numB = parseFloat(b) || 0;
+            return numA - numB;
+          });
+          break;
+        case "numeric-desc":
+          lines.sort((a, b) => {
+            const numA = parseFloat(a) || 0;
+            const numB = parseFloat(b) || 0;
+            return numB - numA;
+          });
+          break;
+        case "length":
+          lines.sort((a, b) => a.length - b.length);
+          break;
+        case "length-desc":
+          lines.sort((a, b) => b.length - a.length);
+          break;
+        case "random":
+          for (let i = lines.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [lines[i], lines[j]] = [lines[j], lines[i]];
+          }
+          break;
+      }
+      
+      $output.value = lines.join("\n");
+      $outputStats.textContent = `${lines.length} lines`;
+      showStatus("Sorted!");
+    }
+
+    async function copyOutput() {
+      const text = $output.value;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showStatus("Copied!");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied!");
+      }
+    }
+
+    function clearAll() {
+      $input.value = "";
+      $output.value = "";
+      $inputStats.textContent = "0 lines";
+      $outputStats.textContent = "0 lines";
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ""; }, 2000);
+    }
+
+    $input.focus();
+  </script>
+</body>
+</html>

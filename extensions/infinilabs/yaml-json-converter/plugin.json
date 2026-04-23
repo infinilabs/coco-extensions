@@ -1,0 +1,32 @@
+{
+  "name": "YAML JSON Converter",
+  "description": "Convert between YAML and JSON formats.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "developer",
+  "tags": [
+    "yaml",
+    "json",
+    "convert",
+    "data",
+    "developer"
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

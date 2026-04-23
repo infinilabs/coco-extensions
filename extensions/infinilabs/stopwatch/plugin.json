@@ -1,0 +1,38 @@
+{
+  "name": "Stopwatch",
+  "description": "A simple stopwatch with lap times and copy to clipboard.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "stopwatch",
+    "timer",
+    "lap",
+    "time",
+    "productivity"
+  ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

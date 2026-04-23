@@ -1,0 +1,38 @@
+{
+  "name": "Random Number Generator",
+  "description": "Generate one or more random integers or decimals within a configurable range and copy them to the clipboard. Ported from the Raycast Random Number Generator extension by sekwah41 (MIT).",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "random",
+    "number",
+    "generator",
+    "math",
+    "developer-tools"
+  ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

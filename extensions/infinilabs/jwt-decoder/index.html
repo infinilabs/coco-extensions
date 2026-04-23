@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JWT Decoder</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e; --error: #ef4444; --warning: #f59e0b;
+      --header: #3b82f6; --payload: #8b5cf6; --signature: #ec4899;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; --error: #f87171; --warning: #fbbf24;
+              --header: #60a5fa; --payload: #a78bfa; --signature: #f472b6; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin: 0; }
+    .input-area { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    textarea {
+      font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 12px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--bg-elev);
+      color: var(--text); resize: none; height: 80px;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .decoded { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .section {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px;
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 600; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot.header { background: var(--header); }
+    .dot.payload { background: var(--payload); }
+    .dot.signature { background: var(--signature); }
+    .json {
+      font: 11px "SF Mono", Monaco, Consolas, monospace;
+      white-space: pre-wrap; word-break: break-all;
+      color: var(--muted); line-height: 1.5;
+    }
+    .json .key { color: var(--accent); }
+    .json .string { color: var(--success); }
+    .json .number { color: var(--warning); }
+    .json .boolean { color: var(--error); }
+    .exp-info {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      font-size: 12px; margin-top: 8px;
+      padding-top: 8px; border-top: 1px solid var(--border);
+    }
+    .exp-item { display: flex; flex-direction: column; gap: 2px; }
+    .exp-label { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+    .exp-value { font-weight: 500; }
+    .exp-value.expired { color: var(--error); }
+    .exp-value.valid { color: var(--success); }
+    .empty { color: var(--muted); text-align: center; padding: 40px; font-size: 13px; }
+    footer {
+      color: var(--muted); font-size: 11px;
+      text-align: center; padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="input-area">
+    <label>JWT Token</label>
+    <textarea id="input" placeholder="Paste JWT token here (eyJhbGciOiJIUzI1NiIs...)"></textarea>
+  </div>
+
+  <div class="decoded" id="decoded">
+    <div class="empty">Paste a JWT token to decode</div>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const $input = document.getElementById("input");
+    const $decoded = document.getElementById("decoded");
+
+    function base64UrlDecode(str) {
+      // Convert base64url to base64
+      let base64 = str.replace(/-/g, "+").replace(/_/g, "/");
+      // Add padding
+      while (base64.length % 4) base64 += "=";
+      return atob(base64);
+    }
+
+    function syntaxHighlight(json) {
+      if (typeof json !== "string") json = JSON.stringify(json, null, 2);
+      return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
+        let cls = "number";
+        if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+            cls = "key";
+            match = match.slice(0, -1); // Remove colon for styling
+            return `<span class="${cls}">${escapeHtml(match)}</span>:`;
+          } else {
+            cls = "string";
+          }
+        } else if (/true|false/.test(match)) {
+          cls = "boolean";
+        } else if (/null/.test(match)) {
+          cls = "null";
+        }
+        return `<span class="${cls}">${escapeHtml(match)}</span>`;
+      });
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function formatTimestamp(ts) {
+      if (!ts) return "N/A";
+      const date = new Date(ts * 1000);
+      return date.toLocaleString();
+    }
+
+    function getTimeRemaining(exp) {
+      if (!exp) return null;
+      const now = Math.floor(Date.now() / 1000);
+      const diff = exp - now;
+      if (diff <= 0) return { expired: true, text: "Expired" };
+      
+      const days = Math.floor(diff / 86400);
+      const hours = Math.floor((diff % 86400) / 3600);
+      const mins = Math.floor((diff % 3600) / 60);
+      
+      if (days > 0) return { expired: false, text: `${days}d ${hours}h` };
+      if (hours > 0) return { expired: false, text: `${hours}h ${mins}m` };
+      return { expired: false, text: `${mins}m` };
+    }
+
+    function decode() {
+      const token = $input.value.trim();
+      if (!token) {
+        $decoded.innerHTML = '<div class="empty">Paste a JWT token to decode</div>';
+        return;
+      }
+
+      const parts = token.split(".");
+      if (parts.length !== 3) {
+        $decoded.innerHTML = '<div class="empty" style="color:var(--error)">Invalid JWT format (expected 3 parts)</div>';
+        return;
+      }
+
+      try {
+        const header = JSON.parse(base64UrlDecode(parts[0]));
+        const payload = JSON.parse(base64UrlDecode(parts[1]));
+        
+        let expInfo = "";
+        if (payload.exp || payload.iat || payload.nbf) {
+          const remaining = getTimeRemaining(payload.exp);
+          expInfo = `<div class="exp-info">
+            ${payload.iat ? `<div class="exp-item"><span class="exp-label">Issued At</span><span class="exp-value">${formatTimestamp(payload.iat)}</span></div>` : ""}
+            ${payload.exp ? `<div class="exp-item"><span class="exp-label">Expires</span><span class="exp-value">${formatTimestamp(payload.exp)}</span></div>` : ""}
+            ${remaining ? `<div class="exp-item"><span class="exp-label">Status</span><span class="exp-value ${remaining.expired ? "expired" : "valid"}">${remaining.text}</span></div>` : ""}
+          </div>`;
+        }
+
+        $decoded.innerHTML = `
+          <div class="section">
+            <div class="section-header"><span class="dot header"></span>Header</div>
+            <div class="json">${syntaxHighlight(JSON.stringify(header, null, 2))}</div>
+          </div>
+          <div class="section">
+            <div class="section-header"><span class="dot payload"></span>Payload</div>
+            <div class="json">${syntaxHighlight(JSON.stringify(payload, null, 2))}</div>
+            ${expInfo}
+          </div>
+          <div class="section">
+            <div class="section-header"><span class="dot signature"></span>Signature</div>
+            <div class="json" style="word-break:break-all">${escapeHtml(parts[2])}</div>
+          </div>
+        `;
+      } catch (e) {
+        $decoded.innerHTML = `<div class="empty" style="color:var(--error)">Failed to decode: ${escapeHtml(e.message)}</div>`;
+      }
+    }
+
+    $input.addEventListener("input", decode);
+    $input.focus();
+  </script>
+</body>
+</html>

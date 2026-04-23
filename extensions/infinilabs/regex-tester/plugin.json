@@ -1,0 +1,39 @@
+{
+  "name": "Regex Tester",
+  "description": "Test regular expressions against text with live highlighting of matches. Supports flags (g, i, m, s, u) and shows match groups.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "regex",
+    "regular expression",
+    "pattern",
+    "match",
+    "developer",
+    "text"
+  ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

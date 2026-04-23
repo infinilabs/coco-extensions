@@ -1,0 +1,39 @@
+{
+  "name": "Unix Timestamp Converter",
+  "description": "Convert Unix timestamps to readable date/time formats or generate timestamps from human-readable dates. Ported from the Raycast Unix Timestamp Converter extension by ride-space (MIT).",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "timestamp",
+    "unix",
+    "date",
+    "time",
+    "converter",
+    "developer-tools"
+  ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

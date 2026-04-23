@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aspect Ratio Calculator</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin: 0; }
+    .section { margin-bottom: 8px; }
+    .section-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+    .dimension-row {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .dimension-input {
+      display: flex; flex-direction: column; gap: 4px; flex: 1;
+    }
+    .dimension-input label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+    input[type="number"] {
+      font: 14px "SF Mono", Monaco, Consolas, monospace;
+      padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); width: 100%;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    .x { font-size: 18px; color: var(--muted); padding-top: 18px; }
+    .ratio-display {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; text-align: center;
+    }
+    .ratio-value {
+      font-size: 28px; font-weight: 700; color: var(--accent);
+    }
+    .ratio-decimal { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+    .preset {
+      font: inherit; font-size: 11px;
+      padding: 6px 10px; border-radius: 4px;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .preset:hover { border-color: var(--accent); }
+    .preset.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .resize-section {
+      background: var(--bg-elev); border-radius: 8px; padding: 12px;
+    }
+    .resize-row { display: flex; gap: 8px; align-items: flex-end; margin-top: 8px; }
+    .resize-result {
+      font-size: 14px; font-weight: 600; color: var(--accent);
+      padding: 10px 12px; background: var(--bg);
+      border-radius: 6px; text-align: center; flex: 1;
+    }
+    .lock-btn {
+      font: inherit; font-size: 16px;
+      width: 36px; height: 36px;
+      padding: 0; border-radius: 6px;
+      background: var(--bg-elev); color: var(--muted);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .lock-btn.locked { color: var(--accent); border-color: var(--accent); }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); margin-top: auto; }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <div class="section-title">Original Dimensions</div>
+    <div class="dimension-row">
+      <div class="dimension-input">
+        <label>Width</label>
+        <input type="number" id="width" value="1920" min="1">
+      </div>
+      <span class="x">×</span>
+      <div class="dimension-input">
+        <label>Height</label>
+        <input type="number" id="height" value="1080" min="1">
+      </div>
+    </div>
+  </div>
+
+  <div class="ratio-display">
+    <div class="ratio-value" id="ratioValue">16:9</div>
+    <div class="ratio-decimal" id="ratioDecimal">1.778</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Common Presets</div>
+    <div class="presets">
+      <button class="preset" data-w="16" data-h="9">16:9</button>
+      <button class="preset" data-w="4" data-h="3">4:3</button>
+      <button class="preset" data-w="1" data-h="1">1:1</button>
+      <button class="preset" data-w="21" data-h="9">21:9</button>
+      <button class="preset" data-w="9" data-h="16">9:16</button>
+      <button class="preset" data-w="3" data-h="2">3:2</button>
+      <button class="preset" data-w="2" data-h="3">2:3</button>
+      <button class="preset" data-w="5" data-h="4">5:4</button>
+    </div>
+  </div>
+
+  <div class="resize-section">
+    <div class="section-title">Resize (maintain ratio)</div>
+    <div class="resize-row">
+      <div class="dimension-input">
+        <label>New Width</label>
+        <input type="number" id="newWidth" value="1280" min="1">
+      </div>
+      <button class="lock-btn locked" id="lockBtn" onclick="toggleLock()" title="Lock aspect ratio">🔒</button>
+      <div class="dimension-input">
+        <label>New Height</label>
+        <input type="number" id="newHeight" value="720" min="1">
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const $width = document.getElementById("width");
+    const $height = document.getElementById("height");
+    const $ratioValue = document.getElementById("ratioValue");
+    const $ratioDecimal = document.getElementById("ratioDecimal");
+    const $newWidth = document.getElementById("newWidth");
+    const $newHeight = document.getElementById("newHeight");
+    const $lockBtn = document.getElementById("lockBtn");
+
+    let locked = true;
+    let lastChanged = "width";
+
+    function gcd(a, b) {
+      a = Math.abs(a);
+      b = Math.abs(b);
+      while (b) {
+        [a, b] = [b, a % b];
+      }
+      return a;
+    }
+
+    function calculateRatio() {
+      const w = parseInt($width.value) || 1;
+      const h = parseInt($height.value) || 1;
+      
+      const divisor = gcd(w, h);
+      const ratioW = w / divisor;
+      const ratioH = h / divisor;
+      
+      // Try to find common ratio name
+      const decimal = w / h;
+      let displayRatio = `${ratioW}:${ratioH}`;
+      
+      // Check for common ratios
+      const commonRatios = [
+        { w: 16, h: 9, name: "16:9" },
+        { w: 4, h: 3, name: "4:3" },
+        { w: 1, h: 1, name: "1:1" },
+        { w: 21, h: 9, name: "21:9" },
+        { w: 3, h: 2, name: "3:2" },
+        { w: 9, h: 16, name: "9:16" },
+        { w: 2, h: 3, name: "2:3" },
+        { w: 5, h: 4, name: "5:4" }
+      ];
+      
+      for (const ratio of commonRatios) {
+        if (Math.abs(decimal - ratio.w / ratio.h) < 0.001) {
+          displayRatio = ratio.name;
+          break;
+        }
+      }
+      
+      $ratioValue.textContent = displayRatio;
+      $ratioDecimal.textContent = decimal.toFixed(3);
+      
+      // Update presets
+      document.querySelectorAll(".preset").forEach(p => {
+        const pw = parseInt(p.dataset.w);
+        const ph = parseInt(p.dataset.h);
+        if (Math.abs(decimal - pw / ph) < 0.001) {
+          p.classList.add("active");
+        } else {
+          p.classList.remove("active");
+        }
+      });
+    }
+
+    function updateNewDimensions() {
+      if (!locked) return;
+      
+      const w = parseInt($width.value) || 1;
+      const h = parseInt($height.value) || 1;
+      const ratio = w / h;
+      
+      if (lastChanged === "width") {
+        const newW = parseInt($newWidth.value) || 1;
+        $newHeight.value = Math.round(newW / ratio);
+      } else {
+        const newH = parseInt($newHeight.value) || 1;
+        $newWidth.value = Math.round(newH * ratio);
+      }
+    }
+
+    function toggleLock() {
+      locked = !locked;
+      $lockBtn.textContent = locked ? "🔒" : "🔓";
+      $lockBtn.classList.toggle("locked", locked);
+    }
+
+    // Event listeners
+    $width.addEventListener("input", () => {
+      calculateRatio();
+      updateNewDimensions();
+    });
+    
+    $height.addEventListener("input", () => {
+      calculateRatio();
+      updateNewDimensions();
+    });
+
+    $newWidth.addEventListener("input", () => {
+      lastChanged = "width";
+      updateNewDimensions();
+    });
+
+    $newHeight.addEventListener("input", () => {
+      lastChanged = "height";
+      updateNewDimensions();
+    });
+
+    // Preset buttons
+    document.querySelectorAll(".preset").forEach(preset => {
+      preset.addEventListener("click", () => {
+        const w = parseInt(preset.dataset.w);
+        const h = parseInt(preset.dataset.h);
+        
+        // Keep the larger dimension and adjust the other
+        const currentW = parseInt($width.value) || 1920;
+        const currentH = parseInt($height.value) || 1080;
+        
+        if (currentW >= currentH) {
+          $width.value = currentW;
+          $height.value = Math.round(currentW * h / w);
+        } else {
+          $height.value = currentH;
+          $width.value = Math.round(currentH * w / h);
+        }
+        
+        calculateRatio();
+        $newWidth.value = $width.value;
+        updateNewDimensions();
+      });
+    });
+
+    calculateRatio();
+  </script>
+</body>
+</html>

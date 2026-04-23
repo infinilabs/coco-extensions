@@ -1,0 +1,38 @@
+{
+  "name": "UUID Generator",
+  "description": "Generate one or more UUIDs (v4 or v7) and copy them to the clipboard, with an optional uppercase toggle. Ported from the Raycast UUID Generator extension by jmaeso (MIT).",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "uuid",
+    "guid",
+    "generator",
+    "v4",
+    "v7"
+  ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

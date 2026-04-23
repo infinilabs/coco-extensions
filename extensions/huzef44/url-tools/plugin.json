@@ -1,0 +1,38 @@
+{
+  "name": "URL Tools",
+  "description": "Encode and decode URL component / full-URL strings side by side, with one-click copy. Ported from the Raycast URL Tools extension by huzef44 (MIT).",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "url",
+    "encode",
+    "decode",
+    "percent-encoding",
+    "developer-tools"
+  ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

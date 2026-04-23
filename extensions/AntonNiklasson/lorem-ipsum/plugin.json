@@ -1,0 +1,38 @@
+{
+  "name": "Lorem Ipsum",
+  "description": "Generate placeholder Lorem Ipsum text — paragraphs, sentences, or words — and copy it to the clipboard. Ported from the Raycast Lorem Ipsum extension by AntonNiklasson (MIT).",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "utility",
+  "tags": [
+    "lorem",
+    "ipsum",
+    "placeholder",
+    "generator",
+    "text"
+  ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

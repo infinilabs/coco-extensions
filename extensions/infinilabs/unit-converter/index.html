@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unit Converter</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px; }
+    .tabs {
+      display: flex; gap: 4px; flex-wrap: wrap;
+    }
+    .tab {
+      font: inherit; font-size: 12px; font-weight: 500;
+      padding: 6px 12px; border-radius: 6px;
+      background: var(--bg-elev); color: var(--muted);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .converter {
+      display: flex; flex-direction: column; gap: 12px; flex: 1;
+    }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    .input-row { display: flex; gap: 8px; }
+    input[type="number"] {
+      flex: 1; font: inherit; font-size: 16px;
+      padding: 12px; border: 1px solid var(--border);
+      border-radius: 8px; background: var(--bg-elev);
+      color: var(--text); -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input:focus { outline: none; border-color: var(--accent); }
+    select {
+      font: inherit; font-size: 14px;
+      padding: 12px 32px 12px 12px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg-elev) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M2 4l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 12px center;
+      color: var(--text); cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      min-width: 100px;
+    }
+    select:focus { outline: none; border-color: var(--accent); }
+    .swap {
+      align-self: center; font-size: 20px;
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 50%; width: 36px; height: 36px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .swap:hover { background: var(--border); }
+    footer {
+      color: var(--muted); font-size: 11px;
+      text-align: center; padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="tabs" id="tabs"></div>
+  
+  <div class="converter">
+    <div class="field">
+      <label>From</label>
+      <div class="input-row">
+        <input type="number" id="fromValue" placeholder="Enter value" step="any">
+        <select id="fromUnit"></select>
+      </div>
+    </div>
+    
+    <button class="swap" onclick="swap()">⇅</button>
+    
+    <div class="field">
+      <label>To</label>
+      <div class="input-row">
+        <input type="number" id="toValue" readonly tabindex="-1">
+        <select id="toUnit"></select>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const UNITS = {
+      length: {
+        name: "Length",
+        units: [
+          { id: "m", name: "Meters", factor: 1 },
+          { id: "km", name: "Kilometers", factor: 1000 },
+          { id: "cm", name: "Centimeters", factor: 0.01 },
+          { id: "mm", name: "Millimeters", factor: 0.001 },
+          { id: "mi", name: "Miles", factor: 1609.344 },
+          { id: "yd", name: "Yards", factor: 0.9144 },
+          { id: "ft", name: "Feet", factor: 0.3048 },
+          { id: "in", name: "Inches", factor: 0.0254 }
+        ]
+      },
+      weight: {
+        name: "Weight",
+        units: [
+          { id: "kg", name: "Kilograms", factor: 1 },
+          { id: "g", name: "Grams", factor: 0.001 },
+          { id: "mg", name: "Milligrams", factor: 0.000001 },
+          { id: "lb", name: "Pounds", factor: 0.453592 },
+          { id: "oz", name: "Ounces", factor: 0.0283495 },
+          { id: "st", name: "Stone", factor: 6.35029 }
+        ]
+      },
+      temperature: {
+        name: "Temperature",
+        units: [
+          { id: "c", name: "Celsius" },
+          { id: "f", name: "Fahrenheit" },
+          { id: "k", name: "Kelvin" }
+        ],
+        convert: (val, from, to) => {
+          // Convert to Celsius first
+          let c;
+          if (from === "c") c = val;
+          else if (from === "f") c = (val - 32) * 5/9;
+          else if (from === "k") c = val - 273.15;
+          // Convert from Celsius to target
+          if (to === "c") return c;
+          if (to === "f") return c * 9/5 + 32;
+          if (to === "k") return c + 273.15;
+        }
+      },
+      volume: {
+        name: "Volume",
+        units: [
+          { id: "l", name: "Liters", factor: 1 },
+          { id: "ml", name: "Milliliters", factor: 0.001 },
+          { id: "gal", name: "Gallons (US)", factor: 3.78541 },
+          { id: "qt", name: "Quarts", factor: 0.946353 },
+          { id: "pt", name: "Pints", factor: 0.473176 },
+          { id: "cup", name: "Cups", factor: 0.236588 },
+          { id: "floz", name: "Fluid Ounces", factor: 0.0295735 }
+        ]
+      },
+      area: {
+        name: "Area",
+        units: [
+          { id: "m2", name: "Square Meters", factor: 1 },
+          { id: "km2", name: "Square Kilometers", factor: 1000000 },
+          { id: "ha", name: "Hectares", factor: 10000 },
+          { id: "ac", name: "Acres", factor: 4046.86 },
+          { id: "ft2", name: "Square Feet", factor: 0.092903 },
+          { id: "yd2", name: "Square Yards", factor: 0.836127 },
+          { id: "mi2", name: "Square Miles", factor: 2589988 }
+        ]
+      },
+      speed: {
+        name: "Speed",
+        units: [
+          { id: "mps", name: "m/s", factor: 1 },
+          { id: "kph", name: "km/h", factor: 0.277778 },
+          { id: "mph", name: "mph", factor: 0.44704 },
+          { id: "kn", name: "Knots", factor: 0.514444 },
+          { id: "fps", name: "ft/s", factor: 0.3048 }
+        ]
+      }
+    };
+
+    let currentCategory = "length";
+    const $tabs = document.getElementById("tabs");
+    const $fromValue = document.getElementById("fromValue");
+    const $toValue = document.getElementById("toValue");
+    const $fromUnit = document.getElementById("fromUnit");
+    const $toUnit = document.getElementById("toUnit");
+
+    function renderTabs() {
+      $tabs.innerHTML = Object.entries(UNITS).map(([key, cat]) => 
+        `<button class="tab${key === currentCategory ? " active" : ""}" onclick="selectCategory('${key}')">${cat.name}</button>`
+      ).join("");
+    }
+
+    function selectCategory(cat) {
+      currentCategory = cat;
+      renderTabs();
+      populateUnits();
+      convert();
+    }
+
+    function populateUnits() {
+      const units = UNITS[currentCategory].units;
+      const options = units.map(u => `<option value="${u.id}">${u.name}</option>`).join("");
+      $fromUnit.innerHTML = options;
+      $toUnit.innerHTML = options;
+      if (units.length > 1) $toUnit.selectedIndex = 1;
+    }
+
+    function convert() {
+      const val = parseFloat($fromValue.value);
+      if (isNaN(val)) {
+        $toValue.value = "";
+        return;
+      }
+      
+      const cat = UNITS[currentCategory];
+      const fromId = $fromUnit.value;
+      const toId = $toUnit.value;
+      
+      let result;
+      if (cat.convert) {
+        // Custom conversion (temperature)
+        result = cat.convert(val, fromId, toId);
+      } else {
+        // Factor-based conversion
+        const fromUnit = cat.units.find(u => u.id === fromId);
+        const toUnit = cat.units.find(u => u.id === toId);
+        const base = val * fromUnit.factor;
+        result = base / toUnit.factor;
+      }
+      
+      // Smart formatting
+      if (Math.abs(result) < 0.0001 || Math.abs(result) >= 1000000) {
+        $toValue.value = result.toExponential(6);
+      } else {
+        $toValue.value = parseFloat(result.toPrecision(10));
+      }
+    }
+
+    function swap() {
+      const fromIdx = $fromUnit.selectedIndex;
+      const toIdx = $toUnit.selectedIndex;
+      $fromUnit.selectedIndex = toIdx;
+      $toUnit.selectedIndex = fromIdx;
+      $fromValue.value = $toValue.value;
+      convert();
+    }
+
+    $fromValue.addEventListener("input", convert);
+    $fromUnit.addEventListener("change", convert);
+    $toUnit.addEventListener("change", convert);
+
+    renderTabs();
+    populateUnits();
+    $fromValue.focus();
+  </script>
+</body>
+</html>

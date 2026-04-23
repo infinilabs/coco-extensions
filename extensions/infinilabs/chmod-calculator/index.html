@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chmod Calculator</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin: 0; }
+    .perm-table {
+      display: grid; grid-template-columns: auto repeat(3, 1fr);
+      gap: 8px; align-items: center;
+    }
+    .perm-header {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; text-align: center;
+    }
+    .perm-label {
+      font-size: 12px; font-weight: 500;
+    }
+    .perm-cell {
+      display: flex; justify-content: center;
+    }
+    .checkbox-group {
+      display: flex; flex-direction: column; gap: 4px; align-items: center;
+    }
+    .checkbox-label {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 11px; color: var(--muted); cursor: pointer;
+    }
+    input[type="checkbox"] {
+      width: 18px; height: 18px; cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .result-section {
+      background: var(--bg-elev); border-radius: 8px; padding: 16px;
+    }
+    .result-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0;
+    }
+    .result-row:not(:last-child) {
+      border-bottom: 1px solid var(--border);
+    }
+    .result-label { font-size: 12px; color: var(--muted); }
+    .result-value {
+      font: 600 16px "SF Mono", Monaco, Consolas, monospace;
+      color: var(--accent);
+    }
+    .copy-btn {
+      font: inherit; font-size: 11px;
+      padding: 4px 10px; border-radius: 4px;
+      background: var(--bg); color: var(--text);
+      border: 1px solid var(--border); cursor: pointer;
+      margin-left: 8px;
+    }
+    .copy-btn:hover { background: var(--border); }
+    .command-section { margin-top: 8px; }
+    .command-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .command {
+      font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 10px 12px; background: var(--bg);
+      border-radius: 6px; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .presets {
+      display: flex; gap: 6px; flex-wrap: wrap;
+    }
+    .preset {
+      font: inherit; font-size: 11px;
+      padding: 6px 10px; border-radius: 4px;
+      background: var(--bg-elev); color: var(--text);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .preset:hover { border-color: var(--accent); }
+    .status { font-size: 11px; color: var(--success); margin-left: 8px; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); margin-top: auto; }
+  </style>
+</head>
+<body>
+  <div class="perm-table">
+    <div></div>
+    <div class="perm-header">Owner</div>
+    <div class="perm-header">Group</div>
+    <div class="perm-header">Others</div>
+    
+    <div class="perm-label">Read (4)</div>
+    <div class="perm-cell"><input type="checkbox" id="or" checked></div>
+    <div class="perm-cell"><input type="checkbox" id="gr" checked></div>
+    <div class="perm-cell"><input type="checkbox" id="wr" checked></div>
+    
+    <div class="perm-label">Write (2)</div>
+    <div class="perm-cell"><input type="checkbox" id="ow" checked></div>
+    <div class="perm-cell"><input type="checkbox" id="gw"></div>
+    <div class="perm-cell"><input type="checkbox" id="ww"></div>
+    
+    <div class="perm-label">Execute (1)</div>
+    <div class="perm-cell"><input type="checkbox" id="ox" checked></div>
+    <div class="perm-cell"><input type="checkbox" id="gx" checked></div>
+    <div class="perm-cell"><input type="checkbox" id="wx" checked></div>
+  </div>
+
+  <div class="result-section">
+    <div class="result-row">
+      <span class="result-label">Numeric</span>
+      <span>
+        <span class="result-value" id="numericValue">755</span>
+        <button class="copy-btn" onclick="copy('numeric')">Copy</button>
+      </span>
+    </div>
+    <div class="result-row">
+      <span class="result-label">Symbolic</span>
+      <span>
+        <span class="result-value" id="symbolicValue">rwxr-xr-x</span>
+        <button class="copy-btn" onclick="copy('symbolic')">Copy</button>
+      </span>
+    </div>
+    <div class="command-section">
+      <div class="command-label">Command</div>
+      <div class="command">
+        <span id="commandValue">chmod 755 filename</span>
+        <button class="copy-btn" onclick="copy('command')">Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="command-label">Common Presets</div>
+    <div class="presets">
+      <button class="preset" onclick="setPreset(755)">755 (Executable)</button>
+      <button class="preset" onclick="setPreset(644)">644 (File)</button>
+      <button class="preset" onclick="setPreset(600)">600 (Private)</button>
+      <button class="preset" onclick="setPreset(777)">777 (All)</button>
+      <button class="preset" onclick="setPreset(700)">700 (Owner Only)</button>
+      <button class="preset" onclick="setPreset(666)">666 (RW All)</button>
+    </div>
+  </div>
+
+  <span class="status" id="status"></span>
+
+
+
+  <script>
+    "use strict";
+
+    const checkboxes = {
+      or: document.getElementById("or"),
+      ow: document.getElementById("ow"),
+      ox: document.getElementById("ox"),
+      gr: document.getElementById("gr"),
+      gw: document.getElementById("gw"),
+      gx: document.getElementById("gx"),
+      wr: document.getElementById("wr"),
+      ww: document.getElementById("ww"),
+      wx: document.getElementById("wx")
+    };
+
+    const $numericValue = document.getElementById("numericValue");
+    const $symbolicValue = document.getElementById("symbolicValue");
+    const $commandValue = document.getElementById("commandValue");
+    const $status = document.getElementById("status");
+
+    function calculate() {
+      const owner = (checkboxes.or.checked ? 4 : 0) + (checkboxes.ow.checked ? 2 : 0) + (checkboxes.ox.checked ? 1 : 0);
+      const group = (checkboxes.gr.checked ? 4 : 0) + (checkboxes.gw.checked ? 2 : 0) + (checkboxes.gx.checked ? 1 : 0);
+      const others = (checkboxes.wr.checked ? 4 : 0) + (checkboxes.ww.checked ? 2 : 0) + (checkboxes.wx.checked ? 1 : 0);
+
+      const numeric = `${owner}${group}${others}`;
+      
+      const toSymbolic = (r, w, x) => (r ? 'r' : '-') + (w ? 'w' : '-') + (x ? 'x' : '-');
+      const symbolic = toSymbolic(checkboxes.or.checked, checkboxes.ow.checked, checkboxes.ox.checked) +
+                       toSymbolic(checkboxes.gr.checked, checkboxes.gw.checked, checkboxes.gx.checked) +
+                       toSymbolic(checkboxes.wr.checked, checkboxes.ww.checked, checkboxes.wx.checked);
+
+      $numericValue.textContent = numeric;
+      $symbolicValue.textContent = symbolic;
+      $commandValue.textContent = `chmod ${numeric} filename`;
+    }
+
+    function setPreset(value) {
+      const digits = value.toString().padStart(3, '0').split('').map(Number);
+      
+      checkboxes.or.checked = !!(digits[0] & 4);
+      checkboxes.ow.checked = !!(digits[0] & 2);
+      checkboxes.ox.checked = !!(digits[0] & 1);
+      checkboxes.gr.checked = !!(digits[1] & 4);
+      checkboxes.gw.checked = !!(digits[1] & 2);
+      checkboxes.gx.checked = !!(digits[1] & 1);
+      checkboxes.wr.checked = !!(digits[2] & 4);
+      checkboxes.ww.checked = !!(digits[2] & 2);
+      checkboxes.wx.checked = !!(digits[2] & 1);
+      
+      calculate();
+    }
+
+    async function copy(type) {
+      let text;
+      if (type === 'numeric') text = $numericValue.textContent;
+      else if (type === 'symbolic') text = $symbolicValue.textContent;
+      else text = $commandValue.textContent;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showStatus("Copied!");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied!");
+      }
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ""; }, 2000);
+    }
+
+    Object.values(checkboxes).forEach(cb => {
+      cb.addEventListener("change", calculate);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Palette Generator</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 14px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .controls { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    input[type="color"] {
+      width: 40px; height: 32px; border: none;
+      border-radius: 6px; cursor: pointer;
+    }
+    input[type="text"] {
+      font: inherit; font-size: 12px; width: 80px;
+      padding: 6px 10px; border: 1px solid var(--border);
+      border-radius: 4px; background: var(--bg-elev);
+      color: var(--text); text-transform: uppercase;
+    }
+    select {
+      font: inherit; font-size: 12px;
+      padding: 6px 10px; border: 1px solid var(--border);
+      border-radius: 4px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    .palette { display: flex; flex-direction: column; gap: 8px; flex: 1; overflow-y: auto; }
+    .palette-row { display: flex; gap: 8px; }
+    .palette-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-top: 8px; }
+    .color-swatch {
+      flex: 1; height: 60px; border-radius: 8px;
+      display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 8px;
+      cursor: pointer; position: relative;
+      transition: transform 0.1s;
+    }
+    .color-swatch:hover { transform: scale(1.02); }
+    .swatch-hex {
+      font: 600 11px "SF Mono", Monaco, Consolas, monospace;
+      padding: 4px 6px; border-radius: 4px;
+      background: rgba(0,0,0,0.2); color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .actions { display: flex; gap: 8px; }
+    button {
+      font: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 16px; cursor: pointer;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .status { font-size: 11px; color: var(--success); }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <label>
+      Base Color:
+      <input type="color" id="colorPicker" value="#6366f1">
+      <input type="text" id="hexInput" value="#6366F1" maxlength="7">
+    </label>
+    <label>
+      Harmony:
+      <select id="harmonyType">
+        <option value="complementary">Complementary</option>
+        <option value="analogous">Analogous</option>
+        <option value="triadic">Triadic</option>
+        <option value="tetradic">Tetradic</option>
+        <option value="split">Split Complementary</option>
+        <option value="monochromatic">Monochromatic</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="palette" id="palette"></div>
+
+  <div class="actions">
+    <button class="primary" onclick="copyAll()">Copy All</button>
+    <button onclick="randomize()">🎲 Random</button>
+    <span class="status" id="status"></span>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const $colorPicker = document.getElementById("colorPicker");
+    const $hexInput = document.getElementById("hexInput");
+    const $harmonyType = document.getElementById("harmonyType");
+    const $palette = document.getElementById("palette");
+    const $status = document.getElementById("status");
+
+    // Color conversion utilities
+    function hexToHSL(hex) {
+      let r = parseInt(hex.slice(1, 3), 16) / 255;
+      let g = parseInt(hex.slice(3, 5), 16) / 255;
+      let b = parseInt(hex.slice(5, 7), 16) / 255;
+
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      }
+
+      return { h: h * 360, s: s * 100, l: l * 100 };
+    }
+
+    function hslToHex(h, s, l) {
+      h = ((h % 360) + 360) % 360;
+      s = Math.max(0, Math.min(100, s)) / 100;
+      l = Math.max(0, Math.min(100, l)) / 100;
+
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let r, g, b;
+
+      if (h < 60) { r = c; g = x; b = 0; }
+      else if (h < 120) { r = x; g = c; b = 0; }
+      else if (h < 180) { r = 0; g = c; b = x; }
+      else if (h < 240) { r = 0; g = x; b = c; }
+      else if (h < 300) { r = x; g = 0; b = c; }
+      else { r = c; g = 0; b = x; }
+
+      r = Math.round((r + m) * 255);
+      g = Math.round((g + m) * 255);
+      b = Math.round((b + m) * 255);
+
+      return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+
+    function generatePalette(baseHex, type) {
+      const { h, s, l } = hexToHSL(baseHex);
+      const colors = [];
+
+      switch (type) {
+        case 'complementary':
+          colors.push({ label: 'Base', hex: baseHex });
+          colors.push({ label: 'Complement', hex: hslToHex(h + 180, s, l) });
+          break;
+
+        case 'analogous':
+          colors.push({ label: 'Analogous -30°', hex: hslToHex(h - 30, s, l) });
+          colors.push({ label: 'Base', hex: baseHex });
+          colors.push({ label: 'Analogous +30°', hex: hslToHex(h + 30, s, l) });
+          break;
+
+        case 'triadic':
+          colors.push({ label: 'Base', hex: baseHex });
+          colors.push({ label: 'Triadic +120°', hex: hslToHex(h + 120, s, l) });
+          colors.push({ label: 'Triadic +240°', hex: hslToHex(h + 240, s, l) });
+          break;
+
+        case 'tetradic':
+          colors.push({ label: 'Base', hex: baseHex });
+          colors.push({ label: 'Tetradic +90°', hex: hslToHex(h + 90, s, l) });
+          colors.push({ label: 'Tetradic +180°', hex: hslToHex(h + 180, s, l) });
+          colors.push({ label: 'Tetradic +270°', hex: hslToHex(h + 270, s, l) });
+          break;
+
+        case 'split':
+          colors.push({ label: 'Base', hex: baseHex });
+          colors.push({ label: 'Split +150°', hex: hslToHex(h + 150, s, l) });
+          colors.push({ label: 'Split +210°', hex: hslToHex(h + 210, s, l) });
+          break;
+
+        case 'monochromatic':
+          colors.push({ label: 'Lightest', hex: hslToHex(h, s, 90) });
+          colors.push({ label: 'Light', hex: hslToHex(h, s, 70) });
+          colors.push({ label: 'Base', hex: baseHex });
+          colors.push({ label: 'Dark', hex: hslToHex(h, s, 30) });
+          colors.push({ label: 'Darkest', hex: hslToHex(h, s, 15) });
+          break;
+      }
+
+      // Generate shades for each color
+      const result = { main: colors, shades: [] };
+      colors.forEach(c => {
+        const { h: ch, s: cs } = hexToHSL(c.hex);
+        result.shades.push({
+          label: c.label + ' Shades',
+          colors: [
+            hslToHex(ch, cs, 95),
+            hslToHex(ch, cs, 80),
+            hslToHex(ch, cs, 60),
+            hslToHex(ch, cs, 40),
+            hslToHex(ch, cs, 20)
+          ]
+        });
+      });
+
+      return result;
+    }
+
+    function render() {
+      const hex = $colorPicker.value;
+      const type = $harmonyType.value;
+      const palette = generatePalette(hex, type);
+
+      $palette.innerHTML = '';
+
+      // Main colors row
+      const mainLabel = document.createElement('div');
+      mainLabel.className = 'palette-label';
+      mainLabel.textContent = 'Harmony Colors';
+      $palette.appendChild(mainLabel);
+
+      const mainRow = document.createElement('div');
+      mainRow.className = 'palette-row';
+      palette.main.forEach(c => {
+        mainRow.appendChild(createSwatch(c.hex));
+      });
+      $palette.appendChild(mainRow);
+
+      // Shades
+      palette.shades.forEach(shade => {
+        const label = document.createElement('div');
+        label.className = 'palette-label';
+        label.textContent = shade.label;
+        $palette.appendChild(label);
+
+        const row = document.createElement('div');
+        row.className = 'palette-row';
+        shade.colors.forEach(hex => {
+          row.appendChild(createSwatch(hex));
+        });
+        $palette.appendChild(row);
+      });
+    }
+
+    function createSwatch(hex) {
+      const swatch = document.createElement('div');
+      swatch.className = 'color-swatch';
+      swatch.style.background = hex;
+      
+      const hexLabel = document.createElement('span');
+      hexLabel.className = 'swatch-hex';
+      hexLabel.textContent = hex;
+      swatch.appendChild(hexLabel);
+      
+      swatch.addEventListener('click', () => copyColor(hex));
+      return swatch;
+    }
+
+    async function copyColor(hex) {
+      try {
+        await navigator.clipboard.writeText(hex);
+        showStatus("Copied: " + hex);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = hex;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied: " + hex);
+      }
+    }
+
+    function copyAll() {
+      const swatches = document.querySelectorAll('.swatch-hex');
+      const colors = [...swatches].map(s => s.textContent).join('\n');
+      copyColor(colors);
+      showStatus("Copied all colors!");
+    }
+
+    function randomize() {
+      const hex = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase();
+      $colorPicker.value = hex;
+      $hexInput.value = hex;
+      render();
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ''; }, 2000);
+    }
+
+    $colorPicker.addEventListener('input', () => {
+      $hexInput.value = $colorPicker.value.toUpperCase();
+      render();
+    });
+
+    $hexInput.addEventListener('input', () => {
+      let hex = $hexInput.value;
+      if (!hex.startsWith('#')) hex = '#' + hex;
+      if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        $colorPicker.value = hex;
+        render();
+      }
+    });
+
+    $harmonyType.addEventListener('change', render);
+
+    render();
+  </script>
+</body>
+</html>

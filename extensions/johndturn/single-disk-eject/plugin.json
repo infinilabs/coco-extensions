@@ -1,0 +1,35 @@
+{
+  "name": "Single Disk Eject",
+  "description": "Safely eject mounted, ejectable disks on macOS from Coco AI. Ported from the Raycast Single Disk Eject extension by johndturn (MIT).",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": [
+    "system",
+    "disk",
+    "eject",
+    "storage"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "commands": [
+    {
+      "name": "Eject All Ejectable Disks",
+      "description": "Eject every currently mounted disk that the system reports as ejectable (USB drives, SD cards, external SSDs, mounted disk images, etc.). Internal disks are skipped.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "osascript -e 'try' -e 'tell application \"Finder\" to eject (every disk whose ejectable is true)' -e 'end try'"
+        ]
+      }
+    }
+  ]
+}

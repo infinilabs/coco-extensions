@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regex Tester</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-light: #c7d2fe;
+      --error: #ef4444; --error-bg: #fef2f2; --match-bg: #fef08a;
+      --group1: #bbf7d0; --group2: #bfdbfe; --group3: #fecaca;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-light: #4338ca;
+              --error: #f87171; --error-bg: #450a0a; --match-bg: #854d0e;
+              --group1: #166534; --group2: #1e40af; --group3: #991b1b; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .regex-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .regex-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 12px;
+    }
+    .regex-input-wrapper.error {
+      border-color: var(--error);
+      background: var(--error-bg);
+    }
+    .regex-slash {
+      color: var(--muted);
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      font-size: 14px;
+    }
+    .regex-input-wrapper input {
+      flex: 1;
+      font: inherit;
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      font-size: 14px;
+      padding: 10px 8px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      outline: none;
+    }
+    .flags-input {
+      width: 60px;
+      text-align: left;
+    }
+    textarea {
+      font: inherit;
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      font-size: 14px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-elev);
+      color: var(--text);
+      resize: vertical;
+      min-height: 100px;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .error-message {
+      color: var(--error);
+      font-size: 12px;
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+    }
+    .results {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .stats {
+      display: flex;
+      gap: 16px;
+      padding: 10px 12px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .stat {
+      display: flex;
+      gap: 6px;
+    }
+    .stat-label {
+      color: var(--muted);
+    }
+    .stat-value {
+      font-weight: 600;
+    }
+    .highlighted-text {
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 12px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .match {
+      background: var(--match-bg);
+      border-radius: 2px;
+      padding: 1px 2px;
+    }
+    .match-groups {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 150px;
+      overflow-y: auto;
+      padding: 12px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .match-item {
+      font-size: 12px;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .match-index {
+      color: var(--muted);
+      min-width: 60px;
+    }
+    .match-value {
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      background: var(--match-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .group-value {
+      font-family: "SF Mono", Monaco, Consolas, monospace;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+    .group-0 { background: var(--match-bg); }
+    .group-1 { background: var(--group1); }
+    .group-2 { background: var(--group2); }
+    .group-3 { background: var(--group3); }
+    footer {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <label>Regular Expression</label>
+    <div class="regex-row">
+      <div class="regex-input-wrapper" id="regexWrapper">
+        <span class="regex-slash">/</span>
+        <input type="text" id="pattern" placeholder="pattern" />
+        <span class="regex-slash">/</span>
+        <input type="text" id="flags" class="flags-input" value="g" placeholder="flags" />
+      </div>
+    </div>
+    <div class="error-message" id="error"></div>
+  </div>
+
+  <div class="section">
+    <label>Test String</label>
+    <textarea id="testString" placeholder="Enter text to test against the pattern..."></textarea>
+  </div>
+
+  <div class="results">
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-label">Matches:</span>
+        <span class="stat-value" id="matchCount">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Groups:</span>
+        <span class="stat-value" id="groupCount">0</span>
+      </div>
+    </div>
+    
+    <label>Highlighted Matches</label>
+    <div class="highlighted-text" id="highlighted">Enter a pattern and test string above</div>
+    
+    <label>Match Details</label>
+    <div class="match-groups" id="matchDetails">
+      <div class="match-item" style="color: var(--muted)">No matches yet</div>
+    </div>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const $pattern = document.getElementById("pattern");
+    const $flags = document.getElementById("flags");
+    const $testString = document.getElementById("testString");
+    const $regexWrapper = document.getElementById("regexWrapper");
+    const $error = document.getElementById("error");
+    const $matchCount = document.getElementById("matchCount");
+    const $groupCount = document.getElementById("groupCount");
+    const $highlighted = document.getElementById("highlighted");
+    const $matchDetails = document.getElementById("matchDetails");
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function updateResults() {
+      const pattern = $pattern.value;
+      const flags = $flags.value;
+      const testString = $testString.value;
+
+      // Clear previous state
+      $regexWrapper.classList.remove("error");
+      $error.textContent = "";
+
+      if (!pattern || !testString) {
+        $matchCount.textContent = "0";
+        $groupCount.textContent = "0";
+        $highlighted.textContent = testString || "Enter a pattern and test string above";
+        $matchDetails.innerHTML = '<div class="match-item" style="color: var(--muted)">No matches yet</div>';
+        return;
+      }
+
+      let regex;
+      try {
+        regex = new RegExp(pattern, flags);
+      } catch (e) {
+        $regexWrapper.classList.add("error");
+        $error.textContent = e.message;
+        $matchCount.textContent = "0";
+        $groupCount.textContent = "0";
+        $highlighted.textContent = testString;
+        $matchDetails.innerHTML = '<div class="match-item" style="color: var(--muted)">Invalid pattern</div>';
+        return;
+      }
+
+      // Find all matches
+      const matches = [];
+      let match;
+      
+      if (flags.includes("g")) {
+        while ((match = regex.exec(testString)) !== null) {
+          matches.push({
+            index: match.index,
+            value: match[0],
+            groups: match.slice(1)
+          });
+          // Prevent infinite loop on zero-length matches
+          if (match[0].length === 0) regex.lastIndex++;
+        }
+      } else {
+        match = regex.exec(testString);
+        if (match) {
+          matches.push({
+            index: match.index,
+            value: match[0],
+            groups: match.slice(1)
+          });
+        }
+      }
+
+      // Update stats
+      $matchCount.textContent = matches.length;
+      $groupCount.textContent = matches.length > 0 ? matches[0].groups.length : 0;
+
+      // Build highlighted text
+      if (matches.length === 0) {
+        $highlighted.textContent = testString;
+        $matchDetails.innerHTML = '<div class="match-item" style="color: var(--muted)">No matches found</div>';
+        return;
+      }
+
+      let highlighted = "";
+      let lastIndex = 0;
+      for (const m of matches) {
+        highlighted += escapeHtml(testString.slice(lastIndex, m.index));
+        highlighted += '<span class="match">' + escapeHtml(m.value) + '</span>';
+        lastIndex = m.index + m.value.length;
+      }
+      highlighted += escapeHtml(testString.slice(lastIndex));
+      $highlighted.innerHTML = highlighted;
+
+      // Build match details
+      let details = "";
+      matches.forEach((m, i) => {
+        details += '<div class="match-item">';
+        details += '<span class="match-index">Match ' + (i + 1) + ':</span>';
+        details += '<span class="match-value">' + escapeHtml(m.value) + '</span>';
+        if (m.groups.length > 0) {
+          m.groups.forEach((g, gi) => {
+            if (g !== undefined) {
+              details += '<span class="group-value group-' + ((gi % 3) + 1) + '">$' + (gi + 1) + ': ' + escapeHtml(g) + '</span>';
+            }
+          });
+        }
+        details += '</div>';
+      });
+      $matchDetails.innerHTML = details;
+    }
+
+    // Debounce for performance
+    let debounceTimer;
+    function debouncedUpdate() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(updateResults, 100);
+    }
+
+    $pattern.addEventListener("input", debouncedUpdate);
+    $flags.addEventListener("input", debouncedUpdate);
+    $testString.addEventListener("input", debouncedUpdate);
+
+    $pattern.focus();
+  </script>
+</body>
+</html>

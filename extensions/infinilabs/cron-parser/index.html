@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cron Parser</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e; --error: #ef4444;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; --error: #f87171; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin: 0; }
+    .input-area {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+    }
+    label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 8px; }
+    input {
+      font: 16px "SF Mono", Monaco, Consolas, monospace;
+      padding: 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg);
+      color: var(--text); width: 100%; text-align: center;
+      letter-spacing: 2px;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    .presets {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px;
+    }
+    .preset {
+      font: inherit; font-size: 11px;
+      padding: 4px 8px; border-radius: 4px;
+      background: var(--bg); color: var(--muted);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .preset:hover { color: var(--text); border-color: var(--accent); }
+    .explanation {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+    }
+    .human { font-size: 15px; font-weight: 500; margin-bottom: 12px; }
+    .human.error { color: var(--error); }
+    .parts { display: flex; gap: 8px; flex-wrap: wrap; }
+    .part {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 8px 12px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 6px;
+      min-width: 70px;
+    }
+    .part-value { font: 14px "SF Mono", Monaco, Consolas, monospace; color: var(--accent); }
+    .part-label { font-size: 10px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+    .next-runs {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; flex: 1; overflow-y: auto;
+    }
+    .next-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+    .run {
+      font: 13px "SF Mono", Monaco, Consolas, monospace;
+      padding: 8px; border-bottom: 1px solid var(--border);
+    }
+    .run:last-child { border-bottom: none; }
+    .run-rel { color: var(--muted); font-size: 11px; margin-left: 8px; }
+    footer {
+      color: var(--muted); font-size: 11px;
+      text-align: center; padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="input-area">
+    <label>Cron Expression (5 fields)</label>
+    <input type="text" id="input" placeholder="* * * * *" value="0 9 * * 1-5">
+    <div class="presets">
+      <button class="preset" onclick="setExpr('* * * * *')">Every minute</button>
+      <button class="preset" onclick="setExpr('0 * * * *')">Every hour</button>
+      <button class="preset" onclick="setExpr('0 0 * * *')">Daily midnight</button>
+      <button class="preset" onclick="setExpr('0 9 * * 1-5')">Weekdays 9am</button>
+      <button class="preset" onclick="setExpr('0 0 1 * *')">Monthly</button>
+      <button class="preset" onclick="setExpr('*/15 * * * *')">Every 15 min</button>
+    </div>
+  </div>
+
+  <div class="explanation">
+    <div class="human" id="human">-</div>
+    <div class="parts" id="parts"></div>
+  </div>
+
+  <div class="next-runs">
+    <div class="next-title">Next 5 Scheduled Runs</div>
+    <div id="runs">-</div>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const FIELDS = ["minute", "hour", "day", "month", "weekday"];
+    const RANGES = [
+      { min: 0, max: 59 },
+      { min: 0, max: 23 },
+      { min: 1, max: 31 },
+      { min: 1, max: 12 },
+      { min: 0, max: 6 }
+    ];
+    const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const MONTHS = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const $input = document.getElementById("input");
+    const $human = document.getElementById("human");
+    const $parts = document.getElementById("parts");
+    const $runs = document.getElementById("runs");
+
+    function setExpr(expr) {
+      $input.value = expr;
+      parse();
+    }
+
+    function parseField(field, idx) {
+      const range = RANGES[idx];
+      const values = new Set();
+      
+      for (const part of field.split(",")) {
+        let [main, step] = part.split("/");
+        step = step ? parseInt(step, 10) : 1;
+        
+        if (main === "*") {
+          for (let i = range.min; i <= range.max; i += step) values.add(i);
+        } else if (main.includes("-")) {
+          const [start, end] = main.split("-").map(n => parseInt(n, 10));
+          for (let i = start; i <= end; i += step) values.add(i);
+        } else {
+          values.add(parseInt(main, 10));
+        }
+      }
+      
+      return Array.from(values).sort((a, b) => a - b);
+    }
+
+    function describeField(values, idx) {
+      const range = RANGES[idx];
+      const field = FIELDS[idx];
+      
+      if (values.length === range.max - range.min + 1) return "every " + field;
+      if (values.length === 1) {
+        const v = values[0];
+        if (idx === 4) return "on " + WEEKDAYS[v];
+        if (idx === 3) return "in " + MONTHS[v];
+        return "at " + field + " " + v;
+      }
+      if (idx === 4) return "on " + values.map(v => WEEKDAYS[v]).join(", ");
+      if (idx === 3) return "in " + values.map(v => MONTHS[v]).join(", ");
+      return field + " " + values.join(", ");
+    }
+
+    function getNextRuns(parsed, count = 5) {
+      const runs = [];
+      let date = new Date();
+      date.setSeconds(0, 0);
+      date.setMinutes(date.getMinutes() + 1);
+      
+      const maxIterations = 525600; // One year of minutes
+      let iterations = 0;
+      
+      while (runs.length < count && iterations < maxIterations) {
+        iterations++;
+        
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const weekday = date.getDay();
+        const hour = date.getHours();
+        const minute = date.getMinutes();
+        
+        if (parsed[3].includes(month) &&
+            parsed[2].includes(day) &&
+            parsed[4].includes(weekday) &&
+            parsed[1].includes(hour) &&
+            parsed[0].includes(minute)) {
+          runs.push(new Date(date));
+        }
+        
+        date.setMinutes(date.getMinutes() + 1);
+      }
+      
+      return runs;
+    }
+
+    function relativeTime(date) {
+      const now = Date.now();
+      const diff = date.getTime() - now;
+      const mins = Math.floor(diff / 60000);
+      const hours = Math.floor(mins / 60);
+      const days = Math.floor(hours / 24);
+      
+      if (days > 0) return `in ${days}d ${hours % 24}h`;
+      if (hours > 0) return `in ${hours}h ${mins % 60}m`;
+      return `in ${mins}m`;
+    }
+
+    function parse() {
+      const expr = $input.value.trim();
+      const parts = expr.split(/\s+/);
+      
+      if (parts.length !== 5) {
+        $human.textContent = "Invalid: Expected 5 fields (minute hour day month weekday)";
+        $human.classList.add("error");
+        $parts.innerHTML = "";
+        $runs.innerHTML = "-";
+        return;
+      }
+      
+      try {
+        const parsed = parts.map((p, i) => parseField(p, i));
+        
+        // Validate ranges
+        for (let i = 0; i < 5; i++) {
+          for (const v of parsed[i]) {
+            if (v < RANGES[i].min || v > RANGES[i].max) {
+              throw new Error(`${FIELDS[i]} value ${v} out of range`);
+            }
+          }
+        }
+        
+        // Build human description
+        const descriptions = [];
+        if (parsed[0].length < 60) descriptions.push("minute " + parsed[0].join(","));
+        if (parsed[1].length < 24) descriptions.push("hour " + parsed[1].join(","));
+        if (parsed[2].length < 31) descriptions.push("day " + parsed[2].join(","));
+        if (parsed[3].length < 12) descriptions.push("month " + parsed[3].map(m => MONTHS[m]).join(","));
+        if (parsed[4].length < 7) descriptions.push(parsed[4].map(d => WEEKDAYS[d]).join(","));
+        
+        $human.textContent = descriptions.length ? "Runs at: " + descriptions.join(", ") : "Runs every minute";
+        $human.classList.remove("error");
+        
+        // Show parts
+        $parts.innerHTML = parts.map((p, i) => `
+          <div class="part">
+            <span class="part-value">${p}</span>
+            <span class="part-label">${FIELDS[i]}</span>
+          </div>
+        `).join("");
+        
+        // Calculate next runs
+        const runs = getNextRuns(parsed);
+        $runs.innerHTML = runs.map(d => `
+          <div class="run">
+            ${d.toLocaleString()}
+            <span class="run-rel">${relativeTime(d)}</span>
+          </div>
+        `).join("") || '<div class="run">No runs found in next year</div>';
+        
+      } catch (e) {
+        $human.textContent = "Error: " + e.message;
+        $human.classList.add("error");
+        $parts.innerHTML = "";
+        $runs.innerHTML = "-";
+      }
+    }
+
+    $input.addEventListener("input", parse);
+    parse();
+    $input.focus();
+  </script>
+</body>
+</html>

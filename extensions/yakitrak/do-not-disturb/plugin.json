@@ -1,0 +1,62 @@
+{
+  "name": "Do Not Disturb",
+  "description": "Turn macOS Do Not Disturb on, off, or toggle it from Coco AI. Ported from the Raycast Do Not Disturb extension by yakitrak (MIT). Requires a one-time install of the bundled `DND Raycast.shortcut` (see README).",
+  "icon": "icon.png",
+  "type": "extension",
+  "category": "Utilities",
+  "tags": [
+    "do-not-disturb",
+    "dnd",
+    "focus",
+    "notifications",
+    "productivity"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "commands": [
+    {
+      "name": "Turn On Do Not Disturb",
+      "description": "Enable Do Not Disturb mode by running the bundled \"DND Raycast\" macOS Shortcut.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "echo on | shortcuts run 'DND Raycast' >/dev/null 2>&1"
+        ]
+      }
+    },
+    {
+      "name": "Turn Off Do Not Disturb",
+      "description": "Disable Do Not Disturb mode by running the bundled \"DND Raycast\" macOS Shortcut.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "echo off | shortcuts run 'DND Raycast' >/dev/null 2>&1"
+        ]
+      }
+    },
+    {
+      "name": "Toggle Do Not Disturb",
+      "description": "Toggle Do Not Disturb mode by inspecting the current state and flipping it via the bundled \"DND Raycast\" macOS Shortcut.",
+      "icon": "icon.png",
+      "type": "command",
+      "action": {
+        "exec": "zsh",
+        "args": [
+          "-c",
+          "if [ -n \"$(echo status | shortcuts run 'DND Raycast' 2>/dev/null)\" ]; then echo off | shortcuts run 'DND Raycast' >/dev/null 2>&1; else echo on | shortcuts run 'DND Raycast' >/dev/null 2>&1; fi"
+        ]
+      }
+    }
+  ]
+}

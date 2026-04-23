@@ -1,0 +1,29 @@
+{
+  "name": "Show Desktop",
+  "description": "Show the desktop by hiding all windows (macOS). Run again to restore windows.",
+  "icon": "icon.png",
+  "type": "command",
+  "category": "system",
+  "tags": [
+    "desktop",
+    "windows",
+    "hide",
+    "show",
+    "macos"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "osascript -e 'tell application \"System Events\" to key code 103 using {command down, fn down}'"
+    ]
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

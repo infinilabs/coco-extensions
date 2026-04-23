@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Magic 8-Ball</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px; gap: 20px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin: 0; }
+    .ball-container {
+      position: relative; width: 200px; height: 200px;
+    }
+    .ball {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle at 30% 30%, #333, #000);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3), inset 0 -10px 30px rgba(0,0,0,0.4);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .ball:hover { transform: scale(1.02); }
+    .ball:active { transform: scale(0.98); }
+    .ball.shake {
+      animation: shake 0.5s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+      75% { transform: rotate(-3deg); }
+    }
+    .window {
+      width: 90px; height: 90px;
+      background: #1a1a2e;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+    .triangle {
+      width: 0; height: 0;
+      border-left: 35px solid transparent;
+      border-right: 35px solid transparent;
+      border-bottom: 60px solid #1a1a2e;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .answer {
+      position: absolute;
+      width: 70px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1.2;
+      top: 15px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .answer.show { opacity: 1; }
+    .answer.positive { color: #4ade80; }
+    .answer.neutral { color: #fbbf24; }
+    .answer.negative { color: #f87171; }
+    .instruction {
+      font-size: 14px; color: var(--muted);
+      text-align: center; max-width: 280px;
+    }
+    input {
+      font: inherit; font-size: 14px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-elev);
+      color: var(--text);
+      width: 100%; max-width: 300px;
+      text-align: center;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    input::placeholder { color: var(--muted); }
+    footer {
+      color: var(--muted); font-size: 11px;
+      text-align: center; margin-top: auto;
+      padding-top: 10px; border-top: 1px solid var(--border);
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <input type="text" id="question" placeholder="Ask a yes/no question..." maxlength="100">
+  
+  <div class="ball-container">
+    <div class="ball" id="ball" onclick="shake()">
+      <div class="window">
+        <div class="triangle">
+          <span class="answer" id="answer">8</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <p class="instruction" id="instruction">Click the ball or press Enter to reveal your answer</p>
+  
+
+
+  <script>
+    "use strict";
+
+    const ANSWERS = [
+      // Positive (10)
+      { text: "It is certain", type: "positive" },
+      { text: "It is decidedly so", type: "positive" },
+      { text: "Without a doubt", type: "positive" },
+      { text: "Yes definitely", type: "positive" },
+      { text: "You may rely on it", type: "positive" },
+      { text: "As I see it, yes", type: "positive" },
+      { text: "Most likely", type: "positive" },
+      { text: "Outlook good", type: "positive" },
+      { text: "Yes", type: "positive" },
+      { text: "Signs point to yes", type: "positive" },
+      // Neutral (5)
+      { text: "Reply hazy, try again", type: "neutral" },
+      { text: "Ask again later", type: "neutral" },
+      { text: "Better not tell you now", type: "neutral" },
+      { text: "Cannot predict now", type: "neutral" },
+      { text: "Concentrate and ask again", type: "neutral" },
+      // Negative (5)
+      { text: "Don't count on it", type: "negative" },
+      { text: "My reply is no", type: "negative" },
+      { text: "My sources say no", type: "negative" },
+      { text: "Outlook not so good", type: "negative" },
+      { text: "Very doubtful", type: "negative" }
+    ];
+
+    const $ball = document.getElementById("ball");
+    const $answer = document.getElementById("answer");
+    const $question = document.getElementById("question");
+    const $instruction = document.getElementById("instruction");
+    let isShaking = false;
+
+    function shake() {
+      if (isShaking) return;
+      isShaking = true;
+      
+      // Reset
+      $answer.classList.remove("show", "positive", "neutral", "negative");
+      $answer.textContent = "";
+      $ball.classList.add("shake");
+      
+      // Get random answer using crypto
+      const randomIndex = crypto.getRandomValues(new Uint32Array(1))[0] % ANSWERS.length;
+      const result = ANSWERS[randomIndex];
+      
+      setTimeout(() => {
+        $ball.classList.remove("shake");
+        $answer.textContent = result.text;
+        $answer.classList.add("show", result.type);
+        isShaking = false;
+        
+        if ($question.value.trim()) {
+          $instruction.textContent = "Ask another question...";
+        }
+      }, 600);
+    }
+
+    $question.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        shake();
+      }
+    });
+
+    // Show initial "8"
+    $answer.textContent = "8";
+    $answer.classList.add("show");
+  </script>
+</body>
+</html>

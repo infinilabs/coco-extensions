@@ -23,10 +23,8 @@
     "search_bar": false,
     "filter_bar": false,
     "footer": false,
-    "resizable":true,
-    "detachable":true,
-    "width":1000,
-    "height":650
+    "resizable": false,
+    "detachable": false
   },
   "page": "index.html",
   "version": {

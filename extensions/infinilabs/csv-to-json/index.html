@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSV to JSON</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .panels { display: flex; gap: 12px; flex: 1; min-height: 0; }
+    .panel { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .panel-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    textarea {
+      flex: 1; font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 10px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); resize: none;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .options {
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+    }
+    label {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; cursor: pointer;
+    }
+    input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: var(--accent);
+    }
+    select {
+      font: inherit; font-size: 12px;
+      padding: 6px 10px; border: 1px solid var(--border);
+      border-radius: 4px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    .actions { display: flex; gap: 8px; }
+    button {
+      font: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 16px; cursor: pointer;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .status { font-size: 11px; color: var(--success); }
+    .count { font-size: 11px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="options">
+    <label>
+      <input type="checkbox" id="hasHeader" checked>
+      First row is header
+    </label>
+    <label>
+      Delimiter:
+      <select id="delimiter">
+        <option value=",">Comma (,)</option>
+        <option value=";">Semicolon (;)</option>
+        <option value="\t">Tab</option>
+        <option value="|">Pipe (|)</option>
+      </select>
+    </label>
+    <label>
+      <input type="checkbox" id="prettyPrint" checked>
+      Pretty print
+    </label>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <span class="panel-label">CSV Input</span>
+      <textarea id="csvInput" placeholder="Paste CSV data here...
+name,email,age
+John,john@example.com,30
+Jane,jane@example.com,25"></textarea>
+    </div>
+    <div class="panel">
+      <span class="panel-label">JSON Output <span class="count" id="count"></span></span>
+      <textarea id="jsonOutput" readonly placeholder="JSON will appear here..."></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="copyOutput()">Copy JSON</button>
+    <button onclick="swapMode()">JSON → CSV</button>
+    <button onclick="clearAll()">Clear</button>
+    <span class="status" id="status"></span>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const $csvInput = document.getElementById("csvInput");
+    const $jsonOutput = document.getElementById("jsonOutput");
+    const $hasHeader = document.getElementById("hasHeader");
+    const $delimiter = document.getElementById("delimiter");
+    const $prettyPrint = document.getElementById("prettyPrint");
+    const $count = document.getElementById("count");
+    const $status = document.getElementById("status");
+
+    function parseCSV(csv, delimiter) {
+      const lines = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < csv.length; i++) {
+        const char = csv[i];
+        
+        if (char === '"') {
+          if (inQuotes && csv[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+          if (current.trim() || lines.length > 0) {
+            lines.push(current);
+            current = '';
+          }
+          if (char === '\r' && csv[i + 1] === '\n') i++;
+        } else {
+          current += char;
+        }
+      }
+      if (current.trim()) lines.push(current);
+      
+      return lines.map(line => {
+        const cells = [];
+        let cell = '';
+        let inQ = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            if (inQ && line[i + 1] === '"') {
+              cell += '"';
+              i++;
+            } else {
+              inQ = !inQ;
+            }
+          } else if (ch === delimiter && !inQ) {
+            cells.push(cell.trim());
+            cell = '';
+          } else {
+            cell += ch;
+          }
+        }
+        cells.push(cell.trim());
+        return cells;
+      });
+    }
+
+    function convert() {
+      const csv = $csvInput.value.trim();
+      if (!csv) {
+        $jsonOutput.value = '';
+        $count.textContent = '';
+        return;
+      }
+
+      try {
+        const delimiter = $delimiter.value === '\\t' ? '\t' : $delimiter.value;
+        const rows = parseCSV(csv, delimiter);
+        
+        if (rows.length === 0) {
+          $jsonOutput.value = '[]';
+          $count.textContent = '(0 rows)';
+          return;
+        }
+
+        let result;
+        if ($hasHeader.checked && rows.length > 1) {
+          const headers = rows[0];
+          result = rows.slice(1).map(row => {
+            const obj = {};
+            headers.forEach((h, i) => {
+              const val = row[i] || '';
+              // Try to parse numbers
+              if (/^-?\d+(\.\d+)?$/.test(val)) {
+                obj[h] = parseFloat(val);
+              } else if (val.toLowerCase() === 'true') {
+                obj[h] = true;
+              } else if (val.toLowerCase() === 'false') {
+                obj[h] = false;
+              } else {
+                obj[h] = val;
+              }
+            });
+            return obj;
+          });
+          $count.textContent = `(${result.length} rows)`;
+        } else {
+          result = rows;
+          $count.textContent = `(${result.length} rows)`;
+        }
+
+        $jsonOutput.value = $prettyPrint.checked 
+          ? JSON.stringify(result, null, 2)
+          : JSON.stringify(result);
+      } catch (e) {
+        $jsonOutput.value = 'Error: ' + e.message;
+        $count.textContent = '';
+      }
+    }
+
+    async function copyOutput() {
+      if (!$jsonOutput.value) return;
+      try {
+        await navigator.clipboard.writeText($jsonOutput.value);
+        showStatus("Copied!");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = $jsonOutput.value;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied!");
+      }
+    }
+
+    function swapMode() {
+      // Swap inputs
+      const json = $jsonOutput.value || $csvInput.value;
+      try {
+        const data = JSON.parse(json);
+        if (!Array.isArray(data)) throw new Error('Not an array');
+        
+        const delimiter = $delimiter.value === '\\t' ? '\t' : $delimiter.value;
+        
+        if (data.length === 0) {
+          $csvInput.value = '';
+          return;
+        }
+
+        // Get all keys
+        const keys = [...new Set(data.flatMap(obj => Object.keys(obj)))];
+        
+        const lines = [keys.join(delimiter)];
+        data.forEach(obj => {
+          const row = keys.map(k => {
+            const v = obj[k];
+            if (v === null || v === undefined) return '';
+            const s = String(v);
+            if (s.includes(delimiter) || s.includes('"') || s.includes('\n')) {
+              return '"' + s.replace(/"/g, '""') + '"';
+            }
+            return s;
+          });
+          lines.push(row.join(delimiter));
+        });
+        
+        $csvInput.value = lines.join('\n');
+        convert();
+      } catch (e) {
+        showStatus("Invalid JSON");
+      }
+    }
+
+    function clearAll() {
+      $csvInput.value = '';
+      $jsonOutput.value = '';
+      $count.textContent = '';
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ''; }, 2000);
+    }
+
+    $csvInput.addEventListener("input", convert);
+    $hasHeader.addEventListener("change", convert);
+    $delimiter.addEventListener("change", convert);
+    $prettyPrint.addEventListener("change", convert);
+    
+    $csvInput.focus();
+  </script>
+</body>
+</html>

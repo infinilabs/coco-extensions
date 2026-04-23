@@ -1,0 +1,38 @@
+{
+  "name": "Keyboard Shortcuts",
+  "description": "Reference of common keyboard shortcuts for popular applications.",
+  "icon": "icon.png",
+  "type": "view",
+  "category": "productivity",
+  "tags": [
+    "keyboard",
+    "shortcuts",
+    "hotkeys",
+    "reference",
+    "productivity"
+  ],
+  "screenshots": [
+    {
+      "title": "Screenshot",
+      "url": "screenshot.png"
+    }
+  ],
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "page": "index.html",
+  "ui": {
+    "search_bar": false,
+    "filter_bar": false,
+    "footer": false,
+    "resizable": false,
+    "detachable": false
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

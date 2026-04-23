@@ -1,0 +1,27 @@
+{
+  "name": "IP Address",
+  "description": "Copy your primary local IP address to the clipboard. Ported from the Raycast IP Address extension by thomas (MIT).",
+  "icon": "icon.png",
+  "type": "command",
+  "category": "utility",
+  "tags": [
+    "ip",
+    "network",
+    "address",
+    "developer-tools"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "ip=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null || ifconfig | awk '/inet / && !/127\\.0\\.0\\.1/{print $2; exit}'); [ -n \"$ip\" ] && echo -n \"$ip\" | pbcopy"
+    ]
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560"
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Toggle Appearance",
+  "description": "Toggle between light and dark mode (macOS).",
+  "icon": "icon.png",
+  "type": "command",
+  "category": "system",
+  "tags": [
+    "dark mode",
+    "light mode",
+    "appearance",
+    "theme",
+    "macos"
+  ],
+  "platforms": [
+    "macos"
+  ],
+  "action": {
+    "exec": "zsh",
+    "args": [
+      "-c",
+      "osascript -e 'tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode'"
+    ]
+  },
+  "version": {
+    "number": "0.1.0"
+  },
+  "minimum_coco_version": "0.9.0-SNAPSHOT-2560",
+  "permission": {}
+}

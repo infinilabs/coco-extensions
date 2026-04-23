@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base Converter</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e; --error: #ef4444;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; --error: #f87171; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 20px; gap: 16px;
+    }
+    h1 { font-size: 18px; font-weight: 600; margin: 0; }
+    .field {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    label {
+      font-size: 11px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; display: flex; justify-content: space-between; align-items: center;
+    }
+    input {
+      font: 14px "SF Mono", Monaco, Consolas, monospace;
+      padding: 10px 12px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); width: 100%;
+    }
+    input:focus { outline: none; border-color: var(--accent); }
+    input.error { border-color: var(--error); }
+    .copy-btn {
+      font: inherit; font-size: 10px;
+      padding: 2px 6px; border-radius: 3px;
+      background: var(--bg); color: var(--muted);
+      border: 1px solid var(--border); cursor: pointer;
+    }
+    .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+    .status { font-size: 10px; color: var(--success); }
+    footer {
+      color: var(--muted); font-size: 11px;
+      text-align: center; padding-top: 8px;
+      border-top: 1px solid var(--border); margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="field">
+    <label>Decimal (Base 10) <button class="copy-btn" onclick="copy('dec')">Copy</button></label>
+    <input type="text" id="dec" placeholder="e.g. 255" oninput="convert('dec')">
+  </div>
+
+  <div class="field">
+    <label>Hexadecimal (Base 16) <button class="copy-btn" onclick="copy('hex')">Copy</button></label>
+    <input type="text" id="hex" placeholder="e.g. FF" oninput="convert('hex')">
+  </div>
+
+  <div class="field">
+    <label>Octal (Base 8) <button class="copy-btn" onclick="copy('oct')">Copy</button></label>
+    <input type="text" id="oct" placeholder="e.g. 377" oninput="convert('oct')">
+  </div>
+
+  <div class="field">
+    <label>Binary (Base 2) <button class="copy-btn" onclick="copy('bin')">Copy</button></label>
+    <input type="text" id="bin" placeholder="e.g. 11111111" oninput="convert('bin')">
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const bases = { dec: 10, hex: 16, oct: 8, bin: 2 };
+    const inputs = {};
+    for (const key of Object.keys(bases)) {
+      inputs[key] = document.getElementById(key);
+    }
+
+    function convert(source) {
+      const input = inputs[source].value.trim();
+      
+      // Clear error states
+      Object.values(inputs).forEach(el => el.classList.remove("error"));
+      
+      if (!input) {
+        // Clear all
+        Object.values(inputs).forEach(el => el.value = "");
+        return;
+      }
+
+      // Parse the input value
+      let num;
+      try {
+        num = parseInt(input, bases[source]);
+        if (isNaN(num)) throw new Error("Invalid number");
+        if (num < 0) throw new Error("Negative numbers not supported");
+      } catch {
+        inputs[source].classList.add("error");
+        return;
+      }
+
+      // Update all other fields
+      for (const [key, base] of Object.entries(bases)) {
+        if (key !== source) {
+          inputs[key].value = num.toString(base).toUpperCase();
+        }
+      }
+    }
+
+    async function copy(key) {
+      const value = inputs[key].value;
+      if (!value) return;
+      
+      try {
+        await navigator.clipboard.writeText(value);
+        showCopied(key);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = value;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showCopied(key);
+      }
+    }
+
+    function showCopied(key) {
+      const label = inputs[key].previousElementSibling;
+      const btn = label.querySelector(".copy-btn");
+      const original = btn.textContent;
+      btn.textContent = "Copied!";
+      btn.style.color = "var(--success)";
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.style.color = "";
+      }, 1500);
+    }
+
+    inputs.dec.focus();
+  </script>
+</body>
+</html>

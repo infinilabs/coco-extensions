@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pomodoro</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #e55039; --accent-text: #fff;
+      --toast-bg: #333; --toast-text: #fff;
+      --focus-color: #e55039; --short-color: #27ae60; --long-color: #2980b9;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #e74c3c; --accent-text: #fff; --toast-bg: #555; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 16px; gap: 20px;
+    }
+
+    /* Mode tabs */
+    .tabs { display: flex; gap: 6px; }
+    .tab {
+      font: inherit; font-size: 13px; padding: 6px 14px;
+      border: 1px solid var(--border); border-radius: 20px;
+      background: var(--bg-elev); color: var(--muted); cursor: pointer;
+    }
+    .tab.active { color: #fff; border-color: transparent; font-weight: 600; }
+    .tab[data-mode="focus"].active  { background: var(--focus-color); }
+    .tab[data-mode="short"].active  { background: var(--short-color); }
+    .tab[data-mode="long"].active   { background: var(--long-color); }
+
+    /* SVG ring */
+    .ring-wrap { position: relative; width: 200px; height: 200px; }
+    .ring-wrap svg { transform: rotate(-90deg); }
+    .ring-bg  { fill: none; stroke: var(--border); stroke-width: 12; }
+    .ring-fg  { fill: none; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 0.5s linear, stroke 0.3s; }
+    .ring-time {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      font-size: 42px; font-weight: 700; font-variant-numeric: tabular-nums;
+      letter-spacing: -1px;
+    }
+
+    /* Buttons */
+    .btn-row { display: flex; gap: 10px; }
+    button {
+      font: inherit; font-size: 14px; padding: 9px 22px;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg-elev); color: var(--text); cursor: pointer;
+    }
+    button.primary { font-weight: 600; color: #fff; border-color: transparent; }
+    #btnStart.focus-mode  { background: var(--focus-color); }
+    #btnStart.short-mode  { background: var(--short-color); }
+    #btnStart.long-mode   { background: var(--long-color); }
+    button:hover { filter: brightness(1.1); }
+
+    /* Session counter */
+    .sessions { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .sessions-label { color: var(--muted); font-size: 12px; }
+    .dots { display: flex; gap: 6px; }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--border); transition: background 0.3s;
+    }
+    .dot.done { background: var(--focus-color); }
+
+    /* Status line */
+    .status { color: var(--muted); font-size: 13px; min-height: 1.4em; text-align: center; }
+
+    .toast {
+      position: fixed; bottom: 16px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--toast-bg); color: var(--toast-text);
+      padding: 8px 14px; border-radius: 6px; font-size: 13px;
+      opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    footer { color: var(--muted); font-size: 11px; text-align: center; position: absolute; bottom: 10px; }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="tabs">
+    <button class="tab active" data-mode="focus">Focus</button>
+    <button class="tab" data-mode="short">Short Break</button>
+    <button class="tab" data-mode="long">Long Break</button>
+  </div>
+
+  <div class="ring-wrap">
+    <svg width="200" height="200" viewBox="0 0 200 200">
+      <circle class="ring-bg" cx="100" cy="100" r="88" />
+      <circle class="ring-fg" id="ringFg" cx="100" cy="100" r="88"
+              stroke-dasharray="553" stroke-dashoffset="0" />
+    </svg>
+    <div class="ring-time" id="timeDisplay">25:00</div>
+  </div>
+
+  <div class="btn-row">
+    <button class="primary focus-mode" id="btnStart">Start</button>
+    <button id="btnReset">Reset</button>
+  </div>
+
+  <div class="sessions">
+    <span class="sessions-label">Sessions completed</span>
+    <div class="dots" id="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="status" id="status">Ready to focus</div>
+
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    const MODES = {
+      focus: { label: "Focus",       seconds: 25 * 60 },
+      short: { label: "Short Break", seconds: 5  * 60 },
+      long:  { label: "Long Break",  seconds: 15 * 60 },
+    };
+    const CIRCUMFERENCE = 2 * Math.PI * 88; // r=88
+
+    let mode = "focus";
+    let totalSec = MODES.focus.seconds;
+    let remaining = totalSec;
+    let running = false;
+    let timerId = null;
+    let sessions = 0;  // completed focus sessions in current cycle (resets every 4)
+
+    const $time   = document.getElementById("timeDisplay");
+    const $ring   = document.getElementById("ringFg");
+    const $start  = document.getElementById("btnStart");
+    const $reset  = document.getElementById("btnReset");
+    const $status = document.getElementById("status");
+    const $dots   = document.getElementById("dots").children;
+    const $toast  = document.getElementById("toast");
+
+    function fmt(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, "0");
+      const s = (sec % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function updateRing() {
+      const progress = remaining / totalSec;
+      const offset = CIRCUMFERENCE * (1 - progress);
+      $ring.style.strokeDashoffset = offset;
+      const colors = { focus: "#e55039", short: "#27ae60", long: "#2980b9" };
+      $ring.style.stroke = colors[mode];
+    }
+
+    function updateDots() {
+      for (let i = 0; i < $dots.length; i++) {
+        $dots[i].classList.toggle("done", i < sessions);
+      }
+    }
+
+    function updateUI() {
+      $time.textContent = fmt(remaining);
+      updateRing();
+      $start.textContent = running ? "Pause" : (remaining < totalSec ? "Resume" : "Start");
+      $start.className = `primary ${mode}-mode`;
+      updateDots();
+    }
+
+    function showToast(msg) {
+      $toast.textContent = msg;
+      $toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => $toast.classList.remove("show"), 2000);
+    }
+
+    function onComplete() {
+      running = false;
+      clearInterval(timerId);
+      remaining = 0;
+      updateUI();
+
+      if (mode === "focus") {
+        sessions = (sessions + 1) % ($dots.length + 1);
+        if (sessions === 0) sessions = $dots.length; // show all 4 filled before reset
+        updateDots();
+        showToast("Focus session complete! Take a break.");
+        $status.textContent = "Session complete — take a break!";
+      } else {
+        $status.textContent = "Break over — ready to focus!";
+        showToast("Break over — let's focus!");
+      }
+    }
+
+    function tick() {
+      if (remaining <= 0) { onComplete(); return; }
+      remaining--;
+      updateUI();
+    }
+
+    function startStop() {
+      if (remaining <= 0) { setMode(mode); return; }
+      if (running) {
+        running = false;
+        clearInterval(timerId);
+        $status.textContent = "Paused";
+      } else {
+        running = true;
+        $status.textContent = mode === "focus" ? "Focusing…" : "On break…";
+        timerId = setInterval(tick, 1000);
+      }
+      updateUI();
+    }
+
+    function reset() {
+      running = false;
+      clearInterval(timerId);
+      remaining = totalSec;
+      $status.textContent = "Ready to " + (mode === "focus" ? "focus" : "take a break");
+      updateUI();
+    }
+
+    function setMode(m) {
+      running = false;
+      clearInterval(timerId);
+      mode = m;
+      totalSec = MODES[m].seconds;
+      remaining = totalSec;
+      document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.mode === m));
+      $status.textContent = m === "focus" ? "Ready to focus" : "Ready for a break";
+      updateUI();
+    }
+
+    $start.addEventListener("click", startStop);
+    $reset.addEventListener("click", reset);
+    document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => setMode(t.dataset.mode)));
+
+    // Init
+    $ring.style.strokeDasharray = CIRCUMFERENCE;
+    updateUI();
+  </script>
+</body>
+</html>

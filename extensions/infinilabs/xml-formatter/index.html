@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XML Formatter</title>
+  <style>
+    :root {
+      --bg: #ffffff; --bg-elev: #f5f5f5; --text: #1a1a1a; --muted: #666;
+      --border: #e0e0e0; --accent: #6366f1; --accent-text: #fff;
+      --success: #22c55e; --error: #ef4444;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #1e1e1e; --bg-elev: #2a2a2a; --text: #e0e0e0; --muted: #999;
+              --border: #3a3a3a; --accent: #818cf8; --accent-text: #1a1a1a;
+              --success: #4ade80; --error: #f87171; }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; padding: 16px; gap: 12px;
+    }
+    h1 { font-size: 16px; font-weight: 600; margin: 0; }
+    .options { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    label { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+    input[type="number"] {
+      font: inherit; font-size: 12px; width: 50px;
+      padding: 6px 10px; border: 1px solid var(--border);
+      border-radius: 4px; background: var(--bg-elev);
+      color: var(--text);
+    }
+    .panels { display: flex; gap: 12px; flex: 1; min-height: 0; }
+    .panel { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .panel-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+    textarea {
+      flex: 1; font: 12px "SF Mono", Monaco, Consolas, monospace;
+      padding: 10px; border: 1px solid var(--border);
+      border-radius: 6px; background: var(--bg-elev);
+      color: var(--text); resize: none;
+    }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .actions { display: flex; gap: 8px; }
+    button {
+      font: inherit; font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 16px; cursor: pointer;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+    .status { font-size: 11px; color: var(--success); }
+    .error { color: var(--error); font-size: 11px; }
+    .valid { color: var(--success); font-size: 11px; }
+    footer { color: var(--muted); font-size: 11px; text-align: center; padding-top: 8px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="options">
+    <label>
+      Indent:
+      <input type="number" id="indent" value="2" min="1" max="8">
+    </label>
+    <span id="validStatus"></span>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <span class="panel-label">Input XML</span>
+      <textarea id="input" placeholder="Paste your XML here..."></textarea>
+    </div>
+    <div class="panel">
+      <span class="panel-label">Formatted XML</span>
+      <textarea id="output" readonly placeholder="Formatted XML will appear here..."></textarea>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="primary" onclick="copyOutput()">Copy Output</button>
+    <button onclick="minify()">Minify</button>
+    <button onclick="clearAll()">Clear</button>
+    <span class="status" id="status"></span>
+  </div>
+
+
+
+  <script>
+    "use strict";
+
+    const $input = document.getElementById("input");
+    const $output = document.getElementById("output");
+    const $indent = document.getElementById("indent");
+    const $validStatus = document.getElementById("validStatus");
+    const $status = document.getElementById("status");
+
+    function formatXML(xml) {
+      if (!xml.trim()) return { formatted: '', valid: true };
+
+      const indentStr = ' '.repeat(parseInt($indent.value) || 2);
+      
+      // Try to parse XML to validate
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xml, 'application/xml');
+      const parseError = doc.getElementsByTagName('parsererror');
+      
+      if (parseError.length > 0) {
+        return { formatted: '', valid: false, error: parseError[0].textContent };
+      }
+
+      // Format the XML
+      let formatted = '';
+      let depth = 0;
+      
+      // Normalize and split into tokens
+      xml = xml.replace(/>\s*</g, '><').trim();
+      const tokens = xml.match(/<[^>]+>|[^<]+/g) || [];
+      
+      tokens.forEach(token => {
+        token = token.trim();
+        if (!token) return;
+        
+        if (token.startsWith('<?')) {
+          // XML declaration
+          formatted += token + '\n';
+        } else if (token.startsWith('<!--')) {
+          // Comment
+          formatted += indentStr.repeat(depth) + token + '\n';
+        } else if (token.startsWith('</')) {
+          // Closing tag
+          depth = Math.max(0, depth - 1);
+          formatted += indentStr.repeat(depth) + token + '\n';
+        } else if (token.startsWith('<') && (token.endsWith('/>') || token.includes('/>'))) {
+          // Self-closing tag
+          formatted += indentStr.repeat(depth) + token + '\n';
+        } else if (token.startsWith('<')) {
+          // Opening tag
+          formatted += indentStr.repeat(depth) + token + '\n';
+          depth++;
+        } else {
+          // Text content
+          if (token.trim()) {
+            formatted += indentStr.repeat(depth) + token.trim() + '\n';
+          }
+        }
+      });
+
+      return { formatted: formatted.trim(), valid: true };
+    }
+
+    function format() {
+      const result = formatXML($input.value);
+      
+      if (result.valid) {
+        $output.value = result.formatted;
+        $validStatus.className = 'valid';
+        $validStatus.textContent = result.formatted ? '✓ Valid XML' : '';
+      } else {
+        $output.value = '';
+        $validStatus.className = 'error';
+        $validStatus.textContent = '❌ Invalid XML';
+      }
+    }
+
+    function minify() {
+      const xml = $input.value.trim();
+      if (!xml) return;
+      
+      // Remove whitespace between tags
+      const minified = xml
+        .replace(/>\s+</g, '><')
+        .replace(/\n/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      $output.value = minified;
+    }
+
+    async function copyOutput() {
+      if (!$output.value) return;
+      try {
+        await navigator.clipboard.writeText($output.value);
+        showStatus("Copied!");
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = $output.value;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        showStatus("Copied!");
+      }
+    }
+
+    function clearAll() {
+      $input.value = '';
+      $output.value = '';
+      $validStatus.textContent = '';
+    }
+
+    function showStatus(msg) {
+      $status.textContent = msg;
+      setTimeout(() => { $status.textContent = ''; }, 2000);
+    }
+
+    $input.addEventListener('input', format);
+    $indent.addEventListener('change', format);
+    $input.focus();
+  </script>
+</body>
+</html>
